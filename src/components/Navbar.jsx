@@ -7,26 +7,26 @@ const Navbar = () => {
 
     const navLinks = [
         { name: 'ホーム', en: 'HOME', path: '/' },
-        { name: '修猷館', en: 'ABOUT', path: '/about' },
-        { name: '稽古', en: 'SCHEDULE', path: '/practice' },
+        { name: '修猷館について', en: 'ABOUT', path: '/about' },
+        { name: '稽古日', en: 'SCHEDULE', path: '/practice' },
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
-        { name: '入会', en: 'JOIN', path: '/join' },
+        { name: 'ご入会', en: 'JOIN', path: '/join' },
         { name: 'ニュース', en: 'NEWS', path: '/news' },
-        { name: 'FAQ', en: 'FAQ', path: '/faq' },
+        { name: 'よくある質問', en: 'FAQ', path: '/faq' },
         { name: 'リンク集', en: 'LINKS', path: '/links' },
-        { name: 'キャラ', en: 'CHAR', path: '/character' },
-        { name: '問合せ', en: 'CONTACT', path: '/contact' },
+        { name: 'キャラ', en: 'CHARACTER', path: '/character' },
+        { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
     ];
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
         <nav className="fixed w-full z-50 bg-gradient-to-r from-shuyukan-blue to-shuyukan-dark text-white border-b border-white/10 shadow-lg">
-            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+            <div className="w-full px-1 sm:px-2 lg:px-4">
                 <div className="flex items-center justify-between h-24">
                     {/* Logo Section */}
-                    <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-                        <div className="w-12 h-12 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
+                    <Link to="/" className="flex items-center gap-1.5 group flex-shrink-0">
+                        <div className="w-11 h-11 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
                             <img
                                 src="/assets/logo_shuyukan.jpg"
                                 alt="Shuyukan Logo"
@@ -34,10 +34,10 @@ const Navbar = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-xl font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
+                            <span className="text-lg font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
                                 修猷館
                             </span>
-                            <span className="text-[0.5rem] text-gray-400 uppercase tracking-[0.1em] font-light">
+                            <span className="text-[0.45rem] text-gray-400 uppercase tracking-[0.1em] font-light">
                                 Toyonaka
                             </span>
                         </div>
@@ -50,14 +50,14 @@ const Navbar = () => {
                                 key={link.name}
                                 to={link.path}
                                 className={`
-                                    group relative h-full flex flex-col justify-center items-center px-2 lg:px-2.5 transition-all duration-300
+                                    group relative h-full flex flex-col justify-center items-center px-1 lg:px-1.5 transition-all duration-300
                                     ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
                                 `}
                             >
-                                <span className={`text-[0.8rem] font-serif font-bold tracking-tighter transition-colors ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
+                                <span className={`text-[0.68rem] lg:text-[0.72rem] font-serif font-bold tracking-tighter transition-colors whitespace-nowrap ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
                                     {link.name}
                                 </span>
-                                <span className="text-[0.45rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
+                                <span className="text-[0.4rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
                                     {link.en}
                                 </span>
 
@@ -66,8 +66,8 @@ const Navbar = () => {
                             </Link>
                         ))}
 
-                        <div className="ml-2 pl-2 border-l border-white/10 h-10 flex items-center">
-                            <Link to="/login" className="px-3 py-1.5 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.7rem] font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
+                        <div className="ml-1 pl-1 border-l border-white/10 h-10 flex items-center">
+                            <Link to="/login" className="px-2 py-1.5 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.65rem] font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
                                 ログイン
                             </Link>
                         </div>
