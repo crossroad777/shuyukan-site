@@ -12,10 +12,13 @@ const Navbar = () => {
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
         { name: '入会案内', en: 'JOIN US', path: '/join' },
         { name: 'お知らせ', en: 'NEWS', path: '/news' },
+        { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
+    ];
+
+    const secondaryLinks = [
         { name: 'よくある質問', en: 'FAQ', path: '/faq' },
         { name: 'リンク集', en: 'LINKS', path: '/links' },
         { name: 'キャラクター', en: 'CHARACTER', path: '/character' },
-        { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
     ];
 
     const toggleMenu = () => setIsOpen(!isOpen);
@@ -98,7 +101,7 @@ const Navbar = () => {
             {/* Mobile Menu */}
             <div className={`md:hidden absolute w-full bg-shuyukan-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                 <div className="px-4 pt-4 pb-8 space-y-1">
-                    {navLinks.map((link) => (
+                    {[...navLinks, ...secondaryLinks].map((link) => (
                         <Link
                             key={link.name}
                             to={link.path}
