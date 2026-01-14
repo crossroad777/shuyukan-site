@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600&family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-shuyukan-blue: #181B26;
+  /* Deep Indigo (Kachi-iro) */
+  --color-shuyukan-dark: #0f111a;
+  /* Even darker shade */
+  --color-shuyukan-gold: #B4925A;
+  /* Traditional Gold */
+  --color-shuyukan-gold-light: #F2F0EB;
+  /* Off-White (Kinari) */
+  --color-shuyukan-red: #C9382F;
+  /* Vermilion Red (Shu) - Accent */
+  --color-shuyukan-purple: #6a4c93;
+  /* Deep Purple (as secondary accent if needed) */
+  --color-paper: #F2F0EB;
+  /* Off-White background */
+
+  --font-sans: "Inter", "Noto Sans JP", sans-serif;
+  --font-serif: "Cinzel", "Zen Old Mincho", "Noto Serif JP", serif;
+
+  --background-image-hero-dojo: url('/src/assets/zanshin/hero_bg.png');
+  --background-image-bamboo-pattern: url('/src/assets/pattern_bamboo.png');
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    color: #1e293b;
+    background-color: var(--color-paper);
+  }
+
+  ::selection {
+    background-color: var(--color-shuyukan-blue);
+    color: var(--color-shuyukan-gold);
+  }
+}
+
+.japanese-pattern {
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.asanoha-pattern {
+  background-image: var(--background-image-bamboo-pattern);
+  background-repeat: repeat;
+  background-size: 300px;
+  pointer-events: none;
+}
+
+/* Vertical Writing Mode */
+.writing-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.1em;
+}
+
+.font-japanese-serif {
+  font-family: "Noto Serif JP", serif;
+}

@@ -1,0 +1,80 @@
+import React from 'react';
+import FadeInSection from './FadeInSection.jsx';
+
+const Schedule = () => {
+    return (
+        <section className="py-20 bg-paper relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <FadeInSection>
+                    <div className="text-center mb-16">
+                        <h2 className="text-shuyukan-blue text-xs font-bold uppercase tracking-[0.2em] mb-3">Digital Dojo</h2>
+                        <h3 className="text-3xl font-serif font-bold text-shuyukan-blue mb-6">稽古日程</h3>
+                        <div className="w-16 h-[2px] bg-shuyukan-gold mx-auto" />
+                    </div>
+                </FadeInSection>
+
+                <FadeInSection delay={200}>
+                    <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 mb-8 max-w-4xl mx-auto">
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">基本稽古日程</h4>
+                                <ul className="space-y-4">
+                                    <li className="flex justify-between items-center text-slate-700">
+                                        <span className="font-bold w-12 text-shuyukan-red">土曜日</span>
+                                        <span className="font-medium">17:00 ～ 20:00</span>
+                                    </li>
+                                    <li className="flex justify-between items-center text-slate-700">
+                                        <span className="font-bold w-12 text-shuyukan-red">日曜日</span>
+                                        <span className="font-medium">14:00 ～ 16:00</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">場所・対象</h4>
+                                <p className="text-sm text-slate-600 mb-4">
+                                    <strong>豊中市立熊野田小学校</strong><br />
+                                    〒560-0015 豊中市赤阪1丁目5-1
+                                </p>
+                                <p className="text-xs text-slate-500 bg-gray-50 p-2 rounded">
+                                    対象：幼児、小学生、中学生、高校生、一般初心者<br />
+                                    出稽古も歓迎いたします。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </FadeInSection>
+
+                <FadeInSection delay={400}>
+                    <div className="bg-white p-4 shadow-xl rounded-sm border border-gray-100 max-w-5xl mx-auto">
+                        <div className="relative w-full aspect-video md:aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden shadow-inner">
+                            <iframe
+                                title="剣道部 練習予定（公開）"
+                                src="https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo"
+                                className="absolute top-0 left-0 w-full h-full border-0"
+                                frameBorder="0"
+                                scrolling="no"
+                            />
+                        </div>
+                        <div className="mt-4 text-center text-sm text-gray-400">
+                            <p>表示されない場合は、ブラウザの広告ブロック等を一度OFFにして確認してください。</p>
+                        </div>
+                    </div>
+                </FadeInSection>
+
+                <FadeInSection delay={600}>
+                    <div className="mt-8 text-center">
+                        <p className="text-slate-500 text-sm">
+                            ※ 試合や遠征により変更となる場合があります。
+                        </p>
+                    </div>
+                </FadeInSection>
+            </div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-shuyukan-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-shuyukan-blue/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        </section>
+    );
+};
+
+export default Schedule;
