@@ -12,7 +12,7 @@ export default function About() {
                 <img
                     src="/assets/zanshin/hero_bg.png"
                     alt="Shuyukan Philosophy"
-                    className="w-full h-[400px] object-cover object-top"
+                    className="w-full h-[500px] object-cover object-center"
                 />
                 <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4 text-white">
                     <FadeInSection>
