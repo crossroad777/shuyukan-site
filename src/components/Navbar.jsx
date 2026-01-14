@@ -22,11 +22,11 @@ const Navbar = () => {
 
     return (
         <nav className="fixed w-full z-50 bg-gradient-to-r from-shuyukan-blue to-shuyukan-dark text-white border-b border-white/10 shadow-lg">
-            <div className="w-full px-1 sm:px-2 lg:px-4">
-                <div className="flex items-center justify-between h-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="flex items-center h-24 gap-4 lg:gap-8">
                     {/* Logo Section */}
-                    <Link to="/" className="flex items-center gap-1.5 group flex-shrink-0">
-                        <div className="w-11 h-11 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
+                    <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
+                        <div className="w-13 h-13 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
                             <img
                                 src="/assets/logo_shuyukan.jpg"
                                 alt="Shuyukan Logo"
@@ -34,40 +34,43 @@ const Navbar = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-lg font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
+                            <span className="text-xl lg:text-2xl font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
                                 修猷館
                             </span>
-                            <span className="text-[0.45rem] text-gray-400 uppercase tracking-[0.1em] font-light">
-                                Toyonaka
+                            <span className="text-[0.45rem] lg:text-[0.55rem] text-gray-400 uppercase tracking-[0.1em] font-light">
+                                Toyonaka Shuyukan
                             </span>
                         </div>
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center h-full">
-                        {navLinks.map((link, index) => (
-                            <Link
-                                key={link.name}
-                                to={link.path}
-                                className={`
-                                    group relative h-full flex flex-col justify-center items-center px-1 lg:px-1.5 transition-all duration-300
-                                    ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
-                                `}
-                            >
-                                <span className={`text-[0.68rem] lg:text-[0.72rem] font-serif font-bold tracking-tighter transition-colors whitespace-nowrap ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
-                                    {link.name}
-                                </span>
-                                <span className="text-[0.4rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
-                                    {link.en}
-                                </span>
+                    <div className="hidden md:flex items-center h-full flex-grow">
+                        <div className="flex h-full items-center">
+                            {navLinks.map((link, index) => (
+                                <Link
+                                    key={link.name}
+                                    to={link.path}
+                                    className={`
+                                        group relative h-full flex flex-col justify-center items-center px-1.5 lg:px-2.5 transition-all duration-300
+                                        ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
+                                    `}
+                                >
+                                    <span className={`text-[0.75rem] lg:text-[0.85rem] font-serif font-bold tracking-tighter transition-colors whitespace-nowrap ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
+                                        {link.name}
+                                    </span>
+                                    <span className="text-[0.4rem] lg:text-[0.5rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
+                                        {link.en}
+                                    </span>
 
-                                {/* Active Indicator */}
-                                <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-shuyukan-red transition-transform duration-300 origin-left ${location.pathname === link.path ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
-                            </Link>
-                        ))}
+                                    {/* Active Indicator */}
+                                    <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-shuyukan-red transition-transform duration-300 origin-left ${location.pathname === link.path ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+                                </Link>
+                            ))}
+                        </div>
 
-                        <div className="ml-1 pl-1 border-l border-white/10 h-10 flex items-center">
-                            <Link to="/login" className="px-2 py-1.5 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.65rem] font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
+                        {/* Login Button pushed to the far right */}
+                        <div className="ml-auto pl-2 border-l border-white/10 h-10 flex items-center">
+                            <Link to="/login" className="px-4 py-2 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.75rem] lg:text-xs font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
                                 ログイン
                             </Link>
                         </div>
