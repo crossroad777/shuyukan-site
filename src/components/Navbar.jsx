@@ -12,6 +12,7 @@ const Navbar = () => {
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
         { name: '入会案内', en: 'JOIN US', path: '/join' },
         { name: 'お知らせ', en: 'NEWS', path: '/news' },
+        { name: 'よくある質問', en: 'FAQ', path: '/faq' },
         { name: 'リンク集', en: 'LINKS', path: '/links' },
         { name: 'キャラクター', en: 'CHARACTER', path: '/character' },
         { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
