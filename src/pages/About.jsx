@@ -10,7 +10,7 @@ export default function About() {
             <div className="relative -mx-6 md:-mx-10 -mt-6 md:-mt-10 mb-16 overflow-hidden">
                 <div className="absolute inset-0 bg-shuyukan-blue/80 mix-blend-multiply z-10"></div>
                 <img
-                    src="/src/assets/zanshin/hero_bg.png"
+                    src="/assets/zanshin/hero_bg.png"
                     alt="Shuyukan Philosophy"
                     className="w-full h-[400px] object-cover object-top"
                 />

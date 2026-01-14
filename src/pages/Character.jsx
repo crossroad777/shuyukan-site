@@ -14,7 +14,7 @@ const Character = () => {
             {/* Hero Section */}
             <section className="pt-32 pb-16 relative overflow-hidden">
                 {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/src/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
+                <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
 
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                     {/* Page Title */}
@@ -39,7 +39,7 @@ const Character = () => {
                             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             <div className="relative p-6">
                                 <img
-                                    src="/src/assets/character_tetta.jpg"
+                                    src="/assets/character_tetta.jpg"
                                     alt="五十嵐 鉄太 (IGARASHI TETTA)"
                                     className="w-full rounded-xl shadow-lg transform group-hover:scale-[1.02] transition-transform duration-500"
                                 />
@@ -63,7 +63,7 @@ const Character = () => {
                             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             <div className="relative p-6">
                                 <img
-                                    src="/src/assets/character_yomo.jpg"
+                                    src="/assets/character_yomo.jpg"
                                     alt="ヨモ (YOMO)"
                                     className="w-full rounded-xl shadow-lg transform group-hover:scale-[1.02] transition-transform duration-500"
                                 />

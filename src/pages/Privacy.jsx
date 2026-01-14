@@ -13,7 +13,7 @@ const Privacy = () => {
 
             {/* Hero Section */}
             <section className="pt-32 pb-16 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/src/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
+                <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
 
                 <div className="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
                     {/* Page Title */}

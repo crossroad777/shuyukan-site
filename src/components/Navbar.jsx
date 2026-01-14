@@ -27,7 +27,7 @@ const Navbar = () => {
                     <Link to="/" className="flex items-center gap-4 group">
                         <div className="w-14 h-14 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
                             <img
-                                src="/src/assets/logo_shuyukan.jpg"
+                                src="/assets/logo_shuyukan.jpg"
                                 alt="Shuyukan Logo"
                                 className="w-full h-full object-cover rounded-full"
                             />

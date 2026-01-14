@@ -21,8 +21,8 @@ export default {
                 'serif': ['"Cinzel"', '"Noto Serif JP"', 'serif'],
             },
             backgroundImage: {
-                'bamboo-pattern': "url('/src/assets/pattern_bamboo.png')",
-                'hero-dojo': "url('/src/assets/hero_bg.png')",
+                'bamboo-pattern': "url('/assets/pattern_bamboo.png')",
+                'hero-dojo': "url('/assets/hero_bg.png')",
             }
         },
     },

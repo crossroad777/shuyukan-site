@@ -100,7 +100,7 @@ export default function Home() {
           <div className="w-full mb-32 relative group overflow-hidden rounded-lg shadow-2xl border border-shuyukan-blue/30">
             <div className="absolute inset-0 bg-shuyukan-blue/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
             <img
-              src="/src/assets/zanshin/concept_banner.png"
+              src="/assets/zanshin/concept_banner.png"
               alt="ZANSHIN Concept"
               className="w-full h-auto object-cover object-top transform group-hover:scale-105 transition-transform duration-1000 ease-out"
             />

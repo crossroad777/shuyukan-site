@@ -1,0 +1,282 @@
+/*
+  Base theme variables
+  These variables define the look and feel of the site. By using CSS variables
+  throughout the stylesheet it becomes easy to apply alternate colour schemes
+  (for example, a dark mode) from a single place. Colours have been chosen to
+  echo the deep blue and gold palette of traditional dojo banners while still
+  working well on screens. When the `data-theme` attribute on the root
+  element is set to `dark` the overrides below take effect.
+*/
+
+:root {
+  /* Typography */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  line-height: 1.5;
+
+  /* Colour scheme */
+  /* Colour palette derived from the "残心" concept.  
+     - 勝色 (Dark Indigo): used for primary surfaces such as the header and text.  
+     - 生成り (Ecru): warm off‑white background reminiscent of handmade washi paper.  
+     - 朱 (Vermilion): vibrant red accent used sparingly for calls to action. */
+  --primary-color: #181B26;        /* 勝色: dark indigo for header/nav and text */
+  --secondary-color: #C9382F;      /* 朱: vermilion accent for CTAs */
+  --bg-color: #F2F0EB;            /* 生成り: soft ecru background */
+  --card-bg: #F9F8F5;             /* slightly lighter ecru for panels */
+  --header-text-color: #F2F0EB;    /* light text on dark header */
+  --text-color: #181B26;          /* dark indigo for body text */
+  --footer-text-color: #78756F;   /* muted text in footer */
+  --muted-color: #8F8A83;         /* subtle information */
+  --border-color: rgba(24,27,38,0.1);
+  --shadow-color: rgba(0,0,0,0.02);
+}
+
+/* Dark theme overrides. When `data-theme="dark"` is present on the
+   `<html>` element these variables replace their light counterparts.
+   This allows the JavaScript in SiteFrame.jsx to toggle themes by
+   simply setting `document.documentElement.dataset.theme = 'dark'` or 'light'. */
+
+[data-theme="dark"] {
+  /* Dark mode palette retains the same accent hue but shifts the base values. */
+  --primary-color: #0C101A;
+  --secondary-color: #C9382F;
+  --bg-color: #181B26;
+  --card-bg: #202836;
+  --header-text-color: #E5E5E5;
+  --text-color: #F2F0EB;
+  --footer-text-color: #A5A1A0;
+  --muted-color: #888;
+  --border-color: rgba(255,255,255,0.15);
+  --shadow-color: rgba(0,0,0,0.4);
+}
+
+/* Reset & global styles */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+a { color: inherit; }
+
+/* Page layout */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero section. Placed below the header when provided via the `hero` prop on
+   SiteFrame. Constrains the content width and applies padding consistent with
+   the rest of the layout. */
+.hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  width: 100%;
+  position: relative;
+}
+.hero img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+}
+/* Container for hero image and overlay. Ensures the overlay is positioned
+   relative to the image. */
+.hero-img-container {
+  position: relative;
+}
+/* Overlay used for large vertical kanji on hero images */
+.hero-overlay {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  font-size: 220px;
+  font-family: "serif";
+  writing-mode: vertical-rl;
+  line-height: 0.8;
+  opacity: 0.08;
+  color: var(--primary-color);
+  pointer-events: none;
+}
+
+/* Header / Navigation */
+.header {
+  background: var(--primary-color);
+  color: var(--header-text-color);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+}
+.nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.nav-item {
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  opacity: .85;
+  transition: background 0.2s;
+}
+.nav-item:hover {
+  opacity: 1;
+  background: rgba(255,255,255,.1);
+}
+.nav-item--active {
+  opacity: 1;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.authbox {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.authtext {
+  font-size: 12px;
+  opacity: .9;
+  color: var(--header-text-color);
+}
+
+/* Container / cards */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  width: 100%;
+}
+.title {
+  margin: 12px 0 12px;
+  font-size: 20px;
+}
+.card {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 24px;
+  /* In the "残心" concept the content rests on the page rather than floating above it.
+     Remove heavy shadows and use a simple border to delineate sections. */
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+  padding: 16px;
+  color: var(--footer-text-color);
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.muted {
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+/* Buttons */
+.btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.btn:hover {
+  opacity: .9;
+}
+.btn--primary {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border-color: var(--secondary-color);
+}
+/* Buttons in header default to ghost style, invert colours */
+.header .btn--primary {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border-color: var(--secondary-color);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--header-text-color);
+  border-color: rgba(255,255,255,.25);
+}
+.link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #1a5;
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 360px;
+}
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.input {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+.h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.faq {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+.faq-body {
+  padding-top: 8px;
+  color: var(--text-color);
+}
+.placeholder {
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 10px;
+}
+.placeholder-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.placeholder-body {
+  color: #444;
+  font-size: 13px;
+}

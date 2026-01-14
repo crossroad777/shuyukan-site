@@ -21,8 +21,8 @@
   --font-sans: "Inter", "Noto Sans JP", sans-serif;
   --font-serif: "Cinzel", "Zen Old Mincho", "Noto Serif JP", serif;
 
-  --background-image-hero-dojo: url('/src/assets/zanshin/hero_bg.png');
-  --background-image-bamboo-pattern: url('/src/assets/pattern_bamboo.png');
+  --background-image-hero-dojo: url('/assets/zanshin/hero_bg.png');
+  --background-image-bamboo-pattern: url('/assets/pattern_bamboo.png');
 }
 
 @layer base {

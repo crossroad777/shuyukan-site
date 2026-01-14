@@ -7,7 +7,7 @@ const Footer = () => {
     return (
         <footer className="bg-shuyukan-blue text-white pt-24 pb-12 border-t-8 border-shuyukan-gold relative overflow-hidden">
             {/* Background Pattern for Texture */}
-            <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/src/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
+            <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url(/assets/pattern_bamboo.png)', backgroundSize: '200px' }}></div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                 <div className="flex flex-col md:flex-row gap-16 md:gap-8 justify-between mb-20">
@@ -18,7 +18,7 @@ const Footer = () => {
                         <div className="flex items-center gap-6">
                             <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-white p-1 filter drop-shadow-lg border-2 border-shuyukan-gold/50">
                                 <img
-                                    src="/src/assets/logo_shuyukan.jpg"
+                                    src="/assets/logo_shuyukan.jpg"
                                     alt="Shuyukan Logo"
                                     className="w-full h-full object-cover rounded-full"
                                 />
