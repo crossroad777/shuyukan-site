@@ -13,7 +13,7 @@ const Navbar = () => {
         { name: '入会', en: 'JOIN', path: '/join' },
         { name: 'ニュース', en: 'NEWS', path: '/news' },
         { name: 'FAQ', en: 'FAQ', path: '/faq' },
-        { name: 'リンク', en: 'LINKS', path: '/links' },
+        { name: 'リンク集', en: 'LINKS', path: '/links' },
         { name: 'キャラ', en: 'CHAR', path: '/character' },
         { name: '問合せ', en: 'CONTACT', path: '/contact' },
     ];
