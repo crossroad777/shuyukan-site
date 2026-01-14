@@ -7,29 +7,26 @@ const Navbar = () => {
 
     const navLinks = [
         { name: 'ホーム', en: 'HOME', path: '/' },
-        { name: '修猷館について', en: 'ABOUT', path: '/about' },
-        { name: '稽古日程', en: 'SCHEDULE', path: '/practice' },
+        { name: '修猷館', en: 'ABOUT', path: '/about' },
+        { name: '稽古', en: 'SCHEDULE', path: '/practice' },
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
-        { name: '入会案内', en: 'JOIN US', path: '/join' },
-        { name: 'お知らせ', en: 'NEWS', path: '/news' },
-        { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
-    ];
-
-    const secondaryLinks = [
-        { name: 'よくある質問', en: 'FAQ', path: '/faq' },
-        { name: 'リンク集', en: 'LINKS', path: '/links' },
-        { name: 'キャラクター', en: 'CHARACTER', path: '/character' },
+        { name: '入会', en: 'JOIN', path: '/join' },
+        { name: 'ニュース', en: 'NEWS', path: '/news' },
+        { name: 'FAQ', en: 'FAQ', path: '/faq' },
+        { name: 'リンク', en: 'LINKS', path: '/links' },
+        { name: 'キャラ', en: 'CHAR', path: '/character' },
+        { name: '問合せ', en: 'CONTACT', path: '/contact' },
     ];
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
         <nav className="fixed w-full z-50 bg-gradient-to-r from-shuyukan-blue to-shuyukan-dark text-white border-b border-white/10 shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
                 <div className="flex items-center justify-between h-24">
                     {/* Logo Section */}
-                    <Link to="/" className="flex items-center gap-4 group">
-                        <div className="w-14 h-14 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
+                    <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-white p-0.5 group-hover:scale-105 transition-transform duration-300 border-2 border-shuyukan-gold/30">
                             <img
                                 src="/assets/logo_shuyukan.jpg"
                                 alt="Shuyukan Logo"
@@ -37,11 +34,11 @@ const Navbar = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-2xl font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
+                            <span className="text-xl font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
                                 修猷館
                             </span>
-                            <span className="text-[0.6rem] text-gray-400 uppercase tracking-[0.2em] font-light">
-                                Shuyukan Kendo Club
+                            <span className="text-[0.5rem] text-gray-400 uppercase tracking-[0.1em] font-light">
+                                Toyonaka
                             </span>
                         </div>
                     </Link>
@@ -49,33 +46,28 @@ const Navbar = () => {
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center h-full">
                         {navLinks.map((link, index) => (
-                            <React.Fragment key={link.name}>
-                                <Link
-                                    to={link.path}
-                                    className={`
-                                        group relative h-full flex flex-col justify-center items-center px-3 transition-all duration-300
-                                        ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
-                                    `}
-                                >
-                                    <span className={`text-sm font-serif font-medium tracking-wide transition-colors ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-200 group-hover:text-white'}`}>
-                                        {link.name}
-                                    </span>
-                                    <span className="text-[0.55rem] uppercase tracking-wider text-gray-400 mt-1 font-sans group-hover:text-shuyukan-red/70 transition-colors">
-                                        {link.en}
-                                    </span>
+                            <Link
+                                key={link.name}
+                                to={link.path}
+                                className={`
+                                    group relative h-full flex flex-col justify-center items-center px-2 lg:px-2.5 transition-all duration-300
+                                    ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
+                                `}
+                            >
+                                <span className={`text-[0.8rem] font-serif font-bold tracking-tighter transition-colors ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
+                                    {link.name}
+                                </span>
+                                <span className="text-[0.45rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
+                                    {link.en}
+                                </span>
 
-                                    {/* Active Indicator */}
-                                    <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-shuyukan-red transition-transform duration-300 origin-left ${location.pathname === link.path ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
-                                </Link>
-                                {/* Vertical Divider */}
-                                {index < navLinks.length - 1 && (
-                                    <div className="h-4 w-[1px] bg-white/10"></div>
-                                )}
-                            </React.Fragment>
+                                {/* Active Indicator */}
+                                <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-shuyukan-red transition-transform duration-300 origin-left ${location.pathname === link.path ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+                            </Link>
                         ))}
 
-                        <div className="ml-3 pl-3 border-l border-white/10 h-10 flex items-center">
-                            <Link to="/login" className="px-4 py-2 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-xs font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
+                        <div className="ml-2 pl-2 border-l border-white/10 h-10 flex items-center">
+                            <Link to="/login" className="px-3 py-1.5 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.7rem] font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
                                 ログイン
                             </Link>
                         </div>
