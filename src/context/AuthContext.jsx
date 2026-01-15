@@ -1,44 +1,72 @@
 /**
- * Author: BaseLine Designs.com
- * Version: v0.1
- * Last Updated: 2026-01-10 JST
- * Changes: Simple localStorage auth for demo
+ * Firebase Authentication Context
+ * Google認証を使用した本物の認証システム
  */
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { auth, googleProvider, ADMIN_EMAILS } from '../services/firebase';
 
 const AuthContext = createContext(null);
 
-const LS_KEY = 'shuyukan_demo_user';
-
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (userData) => {
-    // userData should now include role, id, etc.
-    // e.g. { name: 'Taro', role: 'admin', id: 'M001' }
-    const next = userData || { name: 'Demo User', role: 'member' };
-    setUser(next);
-    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch { }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // 管理者かどうかをチェック
+        const isAdmin = ADMIN_EMAILS.includes(firebaseUser.email);
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          role: isAdmin ? 'admin' : 'member',
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const login = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const isAdmin = ADMIN_EMAILS.includes(result.user.email);
+
+      if (!isAdmin) {
+        // 管理者以外はログインを拒否
+        await signOut(auth);
+        throw new Error('このアカウントには管理者権限がありません。');
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: error.message };
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    try { localStorage.removeItem(LS_KEY); } catch { }
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const value = useMemo(() => ({
     user,
+    loading,
     isAuthed: !!user,
+    isAdmin: user?.role === 'admin',
     login,
     logout,
-  }), [user]);
+  }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
