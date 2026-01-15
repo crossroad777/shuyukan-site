@@ -37,17 +37,16 @@ export default function Home() {
                 <p>
                   <span className="text-xl sm:text-2xl font-bold block mb-4 text-shuyukan-blue">「知るとは、変わること」</span>
                   剣道は単なるスポーツではありません。
-                  竹刀を交えることで、己を知り、相手を知り、
-                  その瞬間に「変化」し続ける自己の探求です。
+                  竹刀を交えることで、己を知り、相手を知り、その瞬間に「変化」し続ける。<br className="sm:hidden" />
+                  自己への探求です。
                 </p>
               </FadeInSection>
               <FadeInSection delay={400}>
                 <p className="text-gray-700">
                   だからこそ、私たちは今日も汗を流し、大声で叫び、
                   理屈ではない「何か」を掴み取ろうとします。
-                  豊中修猷館は、そんな
-                  <span className="text-shuyukan-red font-bold inline-block mx-1">「生涯の剣道」</span>
-                  を志す人々のための場所です。
+                  豊中修猷館は、そんな<span className="text-shuyukan-red font-bold">「生涯の剣道」</span>を志す<br className="sm:hidden" />
+                  人々のための場所です。
                 </p>
               </FadeInSection>
             </div>
@@ -61,8 +60,7 @@ export default function Home() {
                 <h3 className="text-xl font-sans font-thin tracking-[0.3em] text-shuyukan-gold mb-2 uppercase group-hover:text-white transition-colors">Harmony</h3>
                 <h4 className="text-3xl font-serif font-bold text-white mb-6">心身の調和</h4>
                 <p className="text-sm text-gray-300 leading-relaxed font-serif">
-                  心と体を一つにする。<br />
-                  静寂の中で自らを見つめる。
+                  心と体を一つにする。静寂の中で自らを見つめる。
                 </p>
               </Link>
             </FadeInSection>

@@ -104,8 +104,8 @@ export default function About() {
                             <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-800 mt-2 mb-6">
                                 保護者の皆様へ
                             </h3>
-                            <p className="text-stone-600 font-medium max-w-2xl mx-auto">
-                                大切なお子様をお預かりする以上、私たちは何よりも<br />「安全」と「信頼」を最優先に考え、日々の稽古に取り組んでいます。
+                            <p className="text-stone-600 font-medium max-w-2xl mx-auto text-sm sm:text-base">
+                                大切なお子様をお預かりする以上、私たちは何よりも「安全」と「信頼」を最優先に考え、日々の稽古に取り組んでいます。
                             </p>
                         </div>
 
