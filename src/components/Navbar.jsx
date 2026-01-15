@@ -69,8 +69,8 @@ const Navbar = () => {
                         </div>
 
                         {/* Login Button pushed to the far right */}
-                        <div className="ml-10 pl-10 border-l border-white/10 h-12 flex items-center">
-                            <Link to="/login" className="px-10 py-3.5 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.75rem] lg:text-sm font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
+                        <div className="ml-4 pl-4 border-l border-white/10 h-12 flex items-center">
+                            <Link to="/login" className="px-6 py-3 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.75rem] lg:text-sm font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
                                 ログイン
                             </Link>
                         </div>

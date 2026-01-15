@@ -39,8 +39,8 @@ const Hero = () => {
                                 Essence of Kendo
                             </h2>
                             <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold leading-tight mb-8 tracking-wide text-shadow-lg">
-                                <span className="block text-white mb-4">知ることは、</span>
-                                <span className="block text-white pl-4 sm:pl-12">打つことなり。</span>
+                                <span className="block text-white mb-4 whitespace-nowrap">知ることは、</span>
+                                <span className="block text-white pl-4 sm:pl-12 whitespace-nowrap">打つことなり。</span>
                             </h1>
                             <p className="text-xl md:text-2xl text-stone-200 font-serif tracking-widest border-l-4 border-shuyukan-red pl-6 py-2 italic opacity-90">
                                 理屈はいらない。<br />
