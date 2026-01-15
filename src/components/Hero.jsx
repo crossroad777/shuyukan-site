@@ -9,7 +9,7 @@ const Hero = () => {
     }, []);
 
     return (
-        <div className="relative h-screen min-h-[800px] w-full overflow-hidden bg-shuyukan-dark text-white">
+        <div className="relative min-h-screen pt-28 sm:pt-24 w-full overflow-hidden bg-shuyukan-dark text-white">
             {/* Background Image with Overlay */}
             <div
                 className="absolute inset-0 z-0 bg-hero-dojo bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] ease-out opacity-40 filter grayscale contrast-125"
@@ -23,7 +23,7 @@ const Hero = () => {
             <div className="absolute inset-0 z-10 asanoha-pattern mix-blend-overlay pointer-events-none" />
 
             {/* Content Container */}
-            <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+            <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center py-12">
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                     {/* Left Column: Vertical Calligraphy & Title */}

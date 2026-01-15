@@ -35,7 +35,7 @@ export default function Home() {
             <div className="space-y-8 font-serif leading-loose text-lg text-gray-800">
               <FadeInSection delay={200}>
                 <p>
-                  <span className="text-2xl font-bold block mb-4 text-shuyukan-blue">「知るとは、変わること」。</span>
+                  <span className="text-xl sm:text-2xl font-bold block mb-4 text-shuyukan-blue">「知るとは、変わること」</span>
                   剣道は単なるスポーツではありません。
                   竹刀を交えることで、己を知り、相手を知り、
                   その瞬間に「変化」し続ける自己の探求です。

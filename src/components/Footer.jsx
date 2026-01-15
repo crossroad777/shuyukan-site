@@ -16,11 +16,11 @@ const Footer = () => {
                     <div className="md:w-1/2 space-y-8">
                         {/* Logo & Name */}
                         <div className="flex items-center gap-6">
-                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-white p-1 filter drop-shadow-lg border-2 border-shuyukan-gold/50">
+                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-white p-1 filter drop-shadow-lg border-2 border-shuyukan-gold/50 flex-shrink-0 aspect-square">
                                 <img
                                     src="/assets/logo_shuyukan.jpg"
                                     alt="Shuyukan Logo"
-                                    className="w-full h-full object-cover rounded-full"
+                                    className="w-full h-full object-contain rounded-full"
                                 />
                             </div>
                             <div className="flex flex-col">
