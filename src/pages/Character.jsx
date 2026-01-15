@@ -27,7 +27,7 @@ const Character = () => {
                         </p>
                         <div className="mt-6 w-24 h-1 bg-gradient-to-r from-transparent via-shuyukan-gold to-transparent mx-auto"></div>
                         <p className="mt-8 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                            修猷館のイメージキャラクターをご紹介します。<br />
+                            修猷館のイメージキャラクターをご紹介！<br />
                             彼らと一緒に剣道の道を楽しみましょう！
                         </p>
                     </div>
@@ -52,7 +52,7 @@ const Character = () => {
                                     </p>
                                     <p className="text-gray-300 text-sm leading-relaxed">
                                         修猷館の広報担当。<br />
-                                        穏やかでポジティブ、日々研鑽に取り組む剣士。
+                                        穏やかでポジティブ、研鑽に取り組む剣士。
                                     </p>
                                 </div>
                             </div>
@@ -86,8 +86,8 @@ const Character = () => {
                     {/* Message Section */}
                     <div className="mt-16 text-center">
                         <div className="inline-block bg-gradient-to-r from-shuyukan-gold/20 via-shuyukan-gold/10 to-shuyukan-gold/20 px-8 py-6 rounded-xl border border-shuyukan-gold/30">
-                            <p className="text-xl font-serif text-white leading-relaxed">
-                                「<span className="text-shuyukan-gold">生産性・集中力・判断力</span>の"土台"としての身体を整える」
+                            <p className="text-base sm:text-xl font-serif text-white leading-relaxed">
+                                「<span className="text-shuyukan-gold">生産性・集中力・判断力</span>の<br className="sm:hidden" />“土台”として身体を整える」
                             </p>
                         </div>
                     </div>

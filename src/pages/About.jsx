@@ -151,12 +151,12 @@ export default function About() {
                 <section className="text-center py-10">
                     <FadeInSection>
                         <h3 className="text-2xl font-serif font-bold text-shuyukan-blue mb-6">未来への約束</h3>
-                        <p className="text-gray-600 leading-loose mb-10 max-w-3xl mx-auto">
-                            修猷館のロゴにある「赤」は情熱を表し、<br />
+                        <p className="text-gray-600 leading-loose mb-10 max-w-3xl mx-auto text-left sm:text-center">
+                            修猷館のロゴにある「赤」は情熱を表し、
                             お子様が大人になった時、「修猷館で剣道をやっていてよかった」と思える場所であり続けます。
                         </p>
-                        <Link to="/join" className="group inline-flex items-center gap-3 px-10 py-5 bg-shuyukan-red text-white font-bold text-lg rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1 tracking-widest">
-                            <span>体験入会・見学の申し込み</span>
+                        <Link to="/join" className="group inline-flex items-center gap-3 px-8 py-4 bg-shuyukan-red text-white font-bold text-base rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1 tracking-wider">
+                            <span>体験入会・見学申込</span>
                             <span className="group-hover:translate-x-1 transition-transform">→</span>
                         </Link>
                     </FadeInSection>

@@ -49,11 +49,10 @@ export default function Teacher() {
 
                 {/* Message Section */}
                 <section className="bg-blue-50 p-8 rounded-lg text-center border border-blue-100">
-                    <h3 className="text-xl font-bold text-shuyukan-blue mb-4">入部を検討されている皆様へ</h3>
-                    <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
+                    <h3 className="text-xl font-bold text-shuyukan-blue mb-4">入部を検討されている皆様</h3>
+                    <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed text-left sm:text-center text-sm sm:text-base">
                         剣道は年齢や性別を問わず、誰もが始められる武道です。
-                        厳しさの中にも楽しさがあり、仲間と共に汗を流す時間は何事にも代えがたい財産となります。
-                        道場でお会いできることを楽しみにしています。
+                        厳しさの中にも楽しさがあり、仲間と共に汗を流す時間は何事にも代えがたい財産となります。道場でお会いできることを楽しみにしています。
                     </p>
                 </section>
             </div>
