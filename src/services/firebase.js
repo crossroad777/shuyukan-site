@@ -22,7 +22,8 @@ const googleProvider = new GoogleAuthProvider();
 
 // 管理者メールアドレスリスト
 const ADMIN_EMAILS = [
-    'shuyukan.info@gmail.com',
+    'kotani.tatsuhiro@gmail.com', // 開発者・構築担当
+    'shuyukan.info@gmail.com',    // 剣道部管理者
     // 追加の管理者があればここに追加
 ];
 
