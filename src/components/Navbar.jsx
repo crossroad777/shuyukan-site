@@ -11,7 +11,7 @@ const Navbar = () => {
         { name: '稽古日', en: 'SCHEDULE', path: '/practice' },
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
         { name: 'ご入会', en: 'JOIN', path: '/join' },
-        { name: 'ニュース', en: 'NEWS', path: '/news' },
+        { name: 'お知らせ', en: 'NEWS', path: '/news' },
         { name: 'よくある質問', en: 'FAQ', path: '/faq' },
         { name: 'リンク集', en: 'LINKS', path: '/links' },
         { name: 'キャラクター紹介', en: 'CHARACTER', path: '/character' },
