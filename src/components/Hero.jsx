@@ -38,9 +38,9 @@ const Hero = () => {
                                 <span className="w-12 h-[1px] bg-shuyukan-gold"></span>
                                 Essence of Kendo
                             </h2>
-                            <h1 className="text-5xl md:text-7xl font-serif font-bold leading-tight mb-8 tracking-wide text-shadow-lg whitespace-nowrap">
+                            <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold leading-tight mb-8 tracking-wide text-shadow-lg">
                                 <span className="block text-white mb-4">知ることは、</span>
-                                <span className="block text-white pl-12">打つことなり。</span>
+                                <span className="block text-white pl-4 sm:pl-12">打つことなり。</span>
                             </h1>
                             <p className="text-xl md:text-2xl text-stone-200 font-serif tracking-widest border-l-4 border-shuyukan-red pl-6 py-2 italic opacity-90">
                                 理屈はいらない。<br />
@@ -57,7 +57,7 @@ const Hero = () => {
                                     しなやかな心と体
                                 </span>
                             </h2>
-                            <p className="text-gray-200 mb-8 leading-relaxed font-sans font-light tracking-wide text-lg whitespace-nowrap">
+                            <p className="text-gray-200 mb-8 leading-relaxed font-sans font-light tracking-wide text-lg">
                                 基本を大切に、正しく美しい剣道を目指します。<br />
                                 初心者から経験者まで、それぞれの目標に向かって。
                             </p>

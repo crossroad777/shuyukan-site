@@ -36,17 +36,17 @@ export default function Home() {
               <FadeInSection delay={200}>
                 <p>
                   <span className="text-2xl font-bold block mb-4 text-shuyukan-blue">「知るとは、変わること」。</span>
-                  剣道は単なるスポーツではありません。<br />
-                  竹刀を交えることで、己を知り、相手を知り、<br />
+                  剣道は単なるスポーツではありません。
+                  竹刀を交えることで、己を知り、相手を知り、
                   その瞬間に「変化」し続ける自己の探求です。
                 </p>
               </FadeInSection>
               <FadeInSection delay={400}>
                 <p className="text-gray-700">
-                  だからこそ、私たちは今日も汗を流し、大声で叫び、<br />
-                  理屈ではない「何か」を掴み取ろうとします。<br />
-                  豊中修猷館は、そんな<br />
-                  <span className="text-shuyukan-red font-bold">「生涯の剣道」</span><br />
+                  だからこそ、私たちは今日も汗を流し、大声で叫び、
+                  理屈ではない「何か」を掴み取ろうとします。
+                  豊中修猷館は、そんな
+                  <span className="text-shuyukan-red font-bold inline-block mx-1">「生涯の剣道」</span>
                   を志す人々のための場所です。
                 </p>
               </FadeInSection>
