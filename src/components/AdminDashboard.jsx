@@ -53,18 +53,28 @@ export default function AdminDashboard({ user }) {
         await loadMembers();
     };
 
+    const isJunior = (type) => {
+        if (!type) return false;
+        return type.includes('少年') || type.includes('小') || type.includes('中') || type.includes('幼');
+    };
+
+    const isAdult = (type) => {
+        if (!type) return false;
+        return type.includes('一般') || type.includes('大') || type.includes('高');
+    };
+
     const filteredMembers = filter === 'all'
         ? members
         : members.filter(m => {
-            if (filter === '少年部') return m.memberType === '少年部' || m.memberType === '少年';
-            if (filter === '一般部') return m.memberType === '一般部' || m.memberType === '一般';
+            if (filter === '少年部') return isJunior(m.memberType);
+            if (filter === '一般部') return isAdult(m.memberType);
             return m.memberType === filter;
         });
 
     const stats = {
         total: members.length,
-        junior: members.filter(m => m.memberType === '少年部' || m.memberType === '少年').length,
-        adult: members.filter(m => m.memberType === '一般部' || m.memberType === '一般').length,
+        junior: members.filter(m => isJunior(m.memberType)).length,
+        adult: members.filter(m => isAdult(m.memberType)).length,
     };
 
     return (
@@ -171,9 +181,11 @@ export default function AdminDashboard({ user }) {
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{m.grade}</td>
                                         <td className="px-4 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${m.memberType === '少年部'
+                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${isJunior(m.memberType)
                                                 ? 'bg-green-100 text-green-800'
-                                                : 'bg-purple-100 text-purple-800'
+                                                : isAdult(m.memberType)
+                                                    ? 'bg-purple-100 text-purple-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {m.memberType}
                                             </span>
