@@ -2,6 +2,7 @@
  * DeleteConfirmModal - 削除確認ダイアログ
  */
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function DeleteConfirmModal({ member, onClose, onConfirm }) {
     const [deleting, setDeleting] = useState(false);
@@ -20,8 +21,8 @@ export default function DeleteConfirmModal({ member, onClose, onConfirm }) {
 
     if (!member) return null;
 
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    return createPortal(
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
                 <div className="p-6">
                     <div className="flex items-center gap-4 mb-4">
@@ -44,8 +45,8 @@ export default function DeleteConfirmModal({ member, onClose, onConfirm }) {
                             <div className="flex gap-2 mt-2">
                                 <span className="text-xs text-gray-400">ID: {member.id}</span>
                                 <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${member.memberType === '少年部'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-purple-100 text-purple-800'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-purple-100 text-purple-800'
                                     }`}>
                                     {member.memberType}
                                 </span>
@@ -73,6 +74,7 @@ export default function DeleteConfirmModal({ member, onClose, onConfirm }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

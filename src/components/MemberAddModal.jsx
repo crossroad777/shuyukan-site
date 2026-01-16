@@ -2,6 +2,7 @@
  * MemberAddModal - 新規会員登録モーダル
  */
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const gradeOptions = [
     '年少', '年中', '年長',
@@ -55,8 +56,8 @@ export default function MemberAddModal({ onClose, onAdd }) {
         }
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    return createPortal(
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-gray-200">
                     <h3 className="text-xl font-bold text-shuyukan-blue">新規会員登録</h3>
@@ -206,6 +207,7 @@ export default function MemberAddModal({ onClose, onAdd }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
