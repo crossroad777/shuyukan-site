@@ -155,6 +155,25 @@ export async function deleteNews(id) {
     }
 }
 
+/**
+ * 固定表示のお知らせのみ取得
+ * @returns {Promise<Array>} 固定表示のニュース配列
+ */
+export async function fetchPinnedNews() {
+    const news = await fetchNews();
+    return news.filter(item => item.isPinned);
+}
+
+/**
+ * カテゴリ別にお知らせを取得
+ * @param {string} category カテゴリ名
+ * @returns {Promise<Array>} フィルタされたニュース配列
+ */
+export async function fetchNewsByCategory(category) {
+    const news = await fetchNews();
+    return news.filter(item => item.category === category);
+}
+
 export default {
     fetchNews,
     fetchPinnedNews,
