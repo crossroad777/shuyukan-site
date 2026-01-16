@@ -44,21 +44,21 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center h-full flex-grow">
+                    <div className="hidden lg:flex items-center h-full flex-grow">
                         <div className="flex h-full items-center flex-grow justify-between">
                             {navLinks.map((link, index) => (
                                 <Link
                                     key={link.name}
                                     to={link.path}
                                     className={`
-                                        group relative h-full flex flex-col justify-center items-center px-2 lg:px-8 transition-all duration-300
+                                        group relative h-full flex flex-col justify-center items-center px-1 xl:px-2 2xl:px-4 transition-all duration-300
                                         ${location.pathname === link.path ? 'bg-white/5' : 'hover:bg-white/5'}
                                     `}
                                 >
-                                    <span className={`text-[0.75rem] lg:text-[1.05rem] font-serif font-bold tracking-tighter transition-colors whitespace-nowrap ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
+                                    <span className={`text-[0.6rem] xl:text-[0.75rem] 2xl:text-[0.9rem] font-serif font-bold tracking-tighter transition-colors whitespace-nowrap ${location.pathname === link.path ? 'text-shuyukan-red' : 'text-gray-100 group-hover:text-white'}`}>
                                         {link.name}
                                     </span>
-                                    <span className="text-[0.4rem] lg:text-[0.65rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
+                                    <span className="text-[0.3rem] xl:text-[0.4rem] 2xl:text-[0.55rem] uppercase tracking-tighter text-gray-400 mt-0.5 font-sans group-hover:text-shuyukan-red/70 transition-colors">
                                         {link.en}
                                     </span>
 
@@ -69,8 +69,8 @@ const Navbar = () => {
                         </div>
 
                         {/* Login Button pushed to the far right */}
-                        <div className="ml-4 pl-4 border-l border-white/10 h-12 flex items-center">
-                            <Link to="/login" className="px-6 py-3 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.75rem] lg:text-sm font-bold tracking-widest shadow-lg border border-white/10 whitespace-nowrap">
+                        <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-white/10 h-12 flex items-center flex-shrink-0">
+                            <Link to="/login" className="px-3 xl:px-5 py-2 xl:py-3 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.65rem] xl:text-xs 2xl:text-sm font-bold tracking-wider shadow-lg border border-white/10 whitespace-nowrap">
                                 ログイン
                             </Link>
                         </div>

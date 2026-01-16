@@ -3,13 +3,21 @@
  * Firebase認証済みの管理者のみアクセス可能
  */
 import React, { useEffect, useState } from 'react';
-import { fetchMembers, fetchActiveMembers } from '../services/memberService.js';
+import { fetchMembers, fetchActiveMembers, addMember, updateMember, deleteMember } from '../services/memberService.js';
+import MemberEditModal from './MemberEditModal.jsx';
+import MemberAddModal from './MemberAddModal.jsx';
+import DeleteConfirmModal from './DeleteConfirmModal.jsx';
 
 export default function AdminDashboard({ user }) {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
     const [statusFilter, setStatusFilter] = useState('active'); // all, active
+
+    // Modal states
+    const [editMember, setEditMember] = useState(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [deleteMemberTarget, setDeleteMemberTarget] = useState(null);
 
     useEffect(() => {
         loadMembers();
@@ -27,6 +35,22 @@ export default function AdminDashboard({ user }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    // CRUD Handlers
+    const handleAddMember = async (memberData) => {
+        await addMember(memberData);
+        await loadMembers();
+    };
+
+    const handleUpdateMember = async (memberId, memberData) => {
+        await updateMember(memberId, memberData);
+        await loadMembers();
+    };
+
+    const handleDeleteMember = async (memberId) => {
+        await deleteMember(memberId);
+        await loadMembers();
     };
 
     const filteredMembers = filter === 'all'
@@ -47,7 +71,10 @@ export default function AdminDashboard({ user }) {
                     <h2 className="text-2xl font-bold text-shuyukan-blue">会員管理</h2>
                     <p className="text-gray-500 text-sm">ログイン: {user?.email}</p>
                 </div>
-                <button className="bg-shuyukan-blue text-white px-4 py-2 rounded hover:bg-shuyukan-gold hover:text-shuyukan-blue transition">
+                <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="bg-shuyukan-blue text-white px-4 py-2 rounded hover:bg-shuyukan-gold hover:text-shuyukan-blue transition"
+                >
                     + 新規登録
                 </button>
             </div>
@@ -74,8 +101,8 @@ export default function AdminDashboard({ user }) {
                     <button
                         onClick={() => setFilter('all')}
                         className={`px-4 py-2 rounded text-sm font-bold transition ${filter === 'all'
-                                ? 'bg-shuyukan-blue text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-shuyukan-blue text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         全員
@@ -83,8 +110,8 @@ export default function AdminDashboard({ user }) {
                     <button
                         onClick={() => setFilter('少年部')}
                         className={`px-4 py-2 rounded text-sm font-bold transition ${filter === '少年部'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         少年部
@@ -92,8 +119,8 @@ export default function AdminDashboard({ user }) {
                     <button
                         onClick={() => setFilter('一般部')}
                         className={`px-4 py-2 rounded text-sm font-bold transition ${filter === '一般部'
-                                ? 'bg-purple-600 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         一般部
@@ -141,8 +168,8 @@ export default function AdminDashboard({ user }) {
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{m.grade}</td>
                                         <td className="px-4 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${m.memberType === '少年部'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-purple-100 text-purple-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-purple-100 text-purple-800'
                                                 }`}>
                                                 {m.memberType}
                                             </span>
@@ -150,17 +177,27 @@ export default function AdminDashboard({ user }) {
                                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{m.rank}</td>
                                         <td className="px-4 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${m.status === '在籍' || m.status === 'active'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : m.status === '休会'
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : 'bg-gray-100 text-gray-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : m.status === '休会'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                 }`}>
                                                 {m.status === 'active' ? '在籍' : m.status}
                                             </span>
                                         </td>
                                         <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                            <button className="text-shuyukan-blue hover:text-shuyukan-gold mr-3">編集</button>
-                                            <button className="text-gray-400 hover:text-red-500">削除</button>
+                                            <button
+                                                onClick={() => setEditMember(m)}
+                                                className="text-shuyukan-blue hover:text-shuyukan-gold mr-3"
+                                            >
+                                                編集
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteMemberTarget(m)}
+                                                className="text-gray-400 hover:text-red-500"
+                                            >
+                                                削除
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -175,6 +212,31 @@ export default function AdminDashboard({ user }) {
                     </div>
                 )}
             </div>
+
+            {/* Modals */}
+            {editMember && (
+                <MemberEditModal
+                    member={editMember}
+                    onClose={() => setEditMember(null)}
+                    onSave={handleUpdateMember}
+                />
+            )}
+
+            {isAddModalOpen && (
+                <MemberAddModal
+                    onClose={() => setIsAddModalOpen(false)}
+                    onAdd={handleAddMember}
+                />
+            )}
+
+            {deleteMemberTarget && (
+                <DeleteConfirmModal
+                    member={deleteMemberTarget}
+                    onClose={() => setDeleteMemberTarget(null)}
+                    onConfirm={handleDeleteMember}
+                />
+            )}
         </div>
     );
 }
+
