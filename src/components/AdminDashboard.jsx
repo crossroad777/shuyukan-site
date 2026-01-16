@@ -55,12 +55,16 @@ export default function AdminDashboard({ user }) {
 
     const filteredMembers = filter === 'all'
         ? members
-        : members.filter(m => m.memberType === filter);
+        : members.filter(m => {
+            if (filter === '少年部') return m.memberType === '少年部' || m.memberType === '少年';
+            if (filter === '一般部') return m.memberType === '一般部' || m.memberType === '一般';
+            return m.memberType === filter;
+        });
 
     const stats = {
         total: members.length,
-        junior: members.filter(m => m.memberType === '少年部').length,
-        adult: members.filter(m => m.memberType === '一般部').length,
+        junior: members.filter(m => m.memberType === '少年部' || m.memberType === '少年').length,
+        adult: members.filter(m => m.memberType === '一般部' || m.memberType === '一般').length,
     };
 
     return (
