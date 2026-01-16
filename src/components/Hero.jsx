@@ -53,7 +53,7 @@ const Hero = () => {
                     <div className="lg:col-span-7 flex flex-col lg:items-end space-y-8 mt-12 lg:mt-0">
                         <div className={`bg-white/10 backdrop-blur-md p-8 md:p-10 rounded-lg border-l-4 border-shuyukan-gold shadow-2xl max-w-lg transform transition-all hover:scale-105 duration-500 group ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-white flex items-baseline gap-4">
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-shuyukan-gold to-yellow-200">
+                                <span className="text-shuyukan-gold">
                                     しなやかな心と体
                                 </span>
                             </h2>
