@@ -137,10 +137,10 @@ export async function addMember(memberData) {
     }
 
     try {
-        const response = await fetch(`${MEMBER_API_URL}?action=add`, {
+        const response = await fetch(MEMBER_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(memberData)
+            body: JSON.stringify({ action: 'add', ...memberData })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -171,10 +171,10 @@ export async function updateMember(memberId, memberData) {
     }
 
     try {
-        const response = await fetch(`${MEMBER_API_URL}?action=update`, {
+        const response = await fetch(MEMBER_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: memberId, ...memberData })
+            body: JSON.stringify({ action: 'update', id: memberId, ...memberData })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -204,10 +204,10 @@ export async function deleteMember(memberId) {
     }
 
     try {
-        const response = await fetch(`${MEMBER_API_URL}?action=delete`, {
+        const response = await fetch(MEMBER_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: memberId })
+            body: JSON.stringify({ action: 'delete', id: memberId })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
