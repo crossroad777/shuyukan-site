@@ -64,26 +64,102 @@ export async function fetchNews() {
 }
 
 /**
- * 固定表示のお知らせのみ取得
- * @returns {Promise<Array>} 固定表示のニュース配列
+ * 新規ニュースを追加
+ * @param {Object} newsData - ニュースデータ
+ * @returns {Promise<Object>} 追加されたニュース
  */
-export async function fetchPinnedNews() {
-    const news = await fetchNews();
-    return news.filter(item => item.isPinned);
+export async function addNews(newsData) {
+    if (!NEWS_API_URL) {
+        const newNews = {
+            ...newsData,
+            id: fallbackNews.length + 1,
+            date: new Date().toLocaleDateString('ja-JP').replace(/\//g, '.')
+        };
+        fallbackNews.push(newNews);
+        console.log('ニュースを追加しました（モック）:', newNews);
+        return newNews;
+    }
+
+    try {
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'add', ...newsData })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('ニュース追加エラー:', error);
+        throw error;
+    }
 }
 
 /**
- * カテゴリ別にお知らせを取得
- * @param {string} category カテゴリ名
- * @returns {Promise<Array>} フィルタされたニュース配列
+ * ニュースを更新
+ * @param {number|string} id - ニュースID
+ * @param {Object} newsData - 更新データ
+ * @returns {Promise<Object>} 更新されたニュース
  */
-export async function fetchNewsByCategory(category) {
-    const news = await fetchNews();
-    return news.filter(item => item.category === category);
+export async function updateNews(id, newsData) {
+    if (!NEWS_API_URL) {
+        const index = fallbackNews.findIndex(n => n.id === id);
+        if (index === -1) throw new Error('ニュースが見つかりません');
+        fallbackNews[index] = { ...fallbackNews[index], ...newsData };
+        return fallbackNews[index];
+    }
+
+    try {
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update', id, ...newsData })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('ニュース更新エラー:', error);
+        throw error;
+    }
+}
+
+/**
+ * ニュースを削除
+ * @param {number|string} id - ニュースID
+ * @returns {Promise<boolean>} 成功/失敗
+ */
+export async function deleteNews(id) {
+    if (!NEWS_API_URL) {
+        const index = fallbackNews.findIndex(n => n.id === id);
+        if (index === -1) throw new Error('ニュースが見つかりません');
+        fallbackNews.splice(index, 1);
+        return true;
+    }
+
+    try {
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete', id })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return true;
+    } catch (error) {
+        console.error('ニュース削除エラー:', error);
+        throw error;
+    }
 }
 
 export default {
     fetchNews,
     fetchPinnedNews,
-    fetchNewsByCategory
+    fetchNewsByCategory,
+    addNews,
+    updateNews,
+    deleteNews
 };
