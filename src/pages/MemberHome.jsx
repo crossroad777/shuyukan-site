@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SiteFrame from '../components/SiteFrame.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import AdminDashboard from '../components/AdminDashboard.jsx';
+import AdminPortal from '../components/AdminPortal.jsx';
+import MemberPortal from '../components/MemberPortal.jsx';
 import { useState, useEffect } from 'react';
 import { fetchNews } from '../services/newsService';
 import { fetchDocuments } from '../services/documentService';
@@ -159,159 +160,11 @@ export default function MemberHome() {
                 </button>
             </div>
 
-            {isAdmin && <AdminDashboard user={user} />}
-
-            {isMember && (
-                <div className="space-y-8 animate-fade-in">
-                    {/* Member Notification Area */}
-                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 shadow-sm">
-                        <h3 className="font-bold text-lg text-shuyukan-blue mb-4 flex items-center gap-2">
-                            <span>📢</span> 部員専用のお知らせ
-                        </h3>
-                        {newsLoading ? (
-                            <div className="flex justify-center py-4">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-shuyukan-blue"></div>
-                            </div>
-                        ) : news.length > 0 ? (
-                            <ul className="space-y-3">
-                                {news.map((item) => (
-                                    <li key={item.id} className="flex items-start gap-3 bg-white/50 p-2 rounded hover:bg-white transition">
-                                        <span className="text-shuyukan-blue font-mono text-xs mt-1">{item.date}</span>
-                                        <div className="flex-1">
-                                            <p className="text-gray-800 font-bold text-sm leading-snug">
-                                                {item.isPinned && <span className="mr-1 text-shuyukan-gold">📌</span>}
-                                                {item.title}
-                                            </p>
-                                            {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-gray-500 text-sm">現在、新しいお知らせはありません。</p>
-                        )}
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="md:col-span-2 space-y-6">
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                                <h4 className="font-bold text-gray-800 mb-4 border-b pb-2">📂 部員用ドキュメント</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {docsLoading ? (
-                                        <div className="col-span-full py-8 text-center">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-shuyukan-blue mx-auto"></div>
-                                        </div>
-                                    ) : documents.length > 0 ? (
-                                        documents.map(doc => (
-                                            <a
-                                                key={doc.id}
-                                                href={doc.url}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 p-3 border rounded hover:border-shuyukan-blue hover:bg-blue-50 transition text-left group"
-                                            >
-                                                <span className="text-2xl group-hover:scale-110 transition">{getFileIcon(doc.mimeType)}</span>
-                                                <div className="overflow-hidden">
-                                                    <p className="text-sm font-bold truncate">{doc.name}</p>
-                                                    <p className="text-xs text-gray-400">{formatSize(doc.size)}</p>
-                                                </div>
-                                            </a>
-                                        ))
-                                    ) : (
-                                        <div className="col-span-full py-4 text-gray-400 text-sm italic text-center">
-                                            設定されたフォルダにファイルがありません。
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                                <div className="flex justify-between items-center mb-4 border-b pb-2">
-                                    <h4 className="font-bold text-gray-800">📅 稽古スケジュール</h4>
-                                    <a href="https://calendar.google.com" target="_blank" rel="noreferrer" className="text-xs text-shuyukan-blue hover:underline">Googleカレンダーで開く ↗</a>
-                                </div>
-                                <div className="aspect-video w-full bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden shadow-inner">
-                                    {isCalendarConfigured ? (
-                                        <iframe
-                                            src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CALENDAR_ID)}&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
-                                            style={{ border: 0 }}
-                                            width="100%"
-                                            height="100%"
-                                            frameBorder="0"
-                                            scrolling="no"
-                                            className="opacity-90"
-                                        ></iframe>
-                                    ) : (
-                                        <div className="text-center p-6">
-                                            <p className="text-gray-400 text-sm">
-                                                Googleカレンダーをここに埋め込みます。<br />
-                                                <span className="text-xs">（カレンダーIDを設定すると表示されます）</span>
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="mt-4 space-y-2">
-                                    <p className="text-sm font-bold text-gray-700">📌 直近の予定（手動入力分）</p>
-                                    <div className="flex items-center gap-4 p-3 bg-gray-50 rounded">
-                                        <div className="text-center bg-white px-3 py-1 rounded border min-w-[60px]">
-                                            <p className="text-xs text-gray-500">1/24</p>
-                                            <p className="font-bold">土</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-shuyukan-blue text-sm">15:00〜17:00 通常稽古</p>
-                                            <p className="text-xs text-gray-500 line-clamp-1">場所：分館 / 鍵当番：田中様</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
-                                <div className="w-20 h-20 bg-shuyukan-blue/10 text-shuyukan-blue rounded-full mx-auto mb-4 flex items-center justify-center text-3xl">
-                                    {isJunior(user.memberData?.memberType) ? '🥋' : '👤'}
-                                </div>
-                                <h4 className="font-bold text-gray-800 text-lg">{user.memberData?.name || user.name}</h4>
-                                <p className="text-sm text-gray-500 mb-4">{user.memberData?.memberType || (isAdmin ? '管理者' : '一般')}</p>
-
-                                <div className="space-y-2 text-sm text-left">
-                                    <div className="bg-gray-50 p-2 rounded flex justify-between">
-                                        <span className="text-gray-400 text-xs">会員番号</span>
-                                        <span className="font-bold font-mono">{user.memberData?.id || '-'}</span>
-                                    </div>
-                                    <div className="bg-gray-50 p-2 rounded flex justify-between">
-                                        <span className="text-gray-400 text-xs">段級位</span>
-                                        <span className="font-bold">{user.memberData?.rank || '未設定'}</span>
-                                    </div>
-                                    <div className="bg-gray-50 p-2 rounded flex justify-between">
-                                        <span className="text-gray-400 text-xs">入会日</span>
-                                        <span className="font-bold">{user.memberData?.joinDate || '-'}</span>
-                                    </div>
-                                </div>
-
-                                {isAdmin && (
-                                    <button
-                                        onClick={() => navigate('/member')} // 実際は管理タブへ
-                                        className="w-full mt-4 py-2 border border-shuyukan-blue text-shuyukan-blue rounded text-xs font-bold hover:bg-shuyukan-blue hover:text-white transition"
-                                    >
-                                        管理画面へ
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                                <h4 className="font-bold text-gray-800 mb-4 border-b pb-2">🔑 鍵当番のお知らせ</h4>
-                                <div className="p-3 bg-shuyukan-gold/10 border border-shuyukan-gold/20 rounded text-sm">
-                                    <p className="font-bold text-shuyukan-blue mb-1">今週の担当</p>
-                                    <p className="text-gray-800">1月19日(月)〜1月25日(日)</p>
-                                    <p className="text-lg font-bold text-gray-900 mt-1">田中・佐藤 様（少年部）</p>
-                                </div>
-                                <p className="text-[10px] text-gray-400 mt-2">※当番の交代を希望される場合は、早めに事務局までご連絡ください。</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {isAdmin ? (
+                <AdminPortal user={user} />
+            ) : isMember ? (
+                <MemberPortal user={user} />
+            ) : null}
 
             {isPending && (
                 <div className="max-w-xl mx-auto py-12 text-center animate-fade-in">

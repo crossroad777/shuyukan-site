@@ -30,6 +30,17 @@ export default function AdminDashboard({ user }) {
     const [isAddNewsModalOpen, setIsAddNewsModalOpen] = useState(false);
     const [deleteNewsTarget, setDeleteNewsTarget] = useState(null);
 
+    // Notification state
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    // 3秒後にメッセージを消すタイマー
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
     useEffect(() => {
         if (activeTab === 'members') {
             loadMembers();
@@ -68,13 +79,24 @@ export default function AdminDashboard({ user }) {
 
     // CRUD Handlers
     const handleAddMember = async (memberData) => {
-        await addMember(memberData);
-        await loadMembers();
+        try {
+            await addMember(memberData);
+            setSuccessMessage(`${memberData.name}様を新規登録しました。「承認待ち」として追加されたため、全件表示に切り替えます。`);
+            setStatusFilter('all'); // 全表示に切り替え
+            await loadMembers();
+        } catch (error) {
+            setError(`登録に失敗しました: ${error.message}`);
+        }
     };
 
     const handleUpdateMember = async (memberId, memberData) => {
-        await updateMember(memberId, memberData);
-        await loadMembers();
+        try {
+            await updateMember(memberId, memberData);
+            setSuccessMessage(`${memberData.name || '会員'}の情報を更新しました。`);
+            await loadMembers();
+        } catch (error) {
+            setError(`更新に失敗しました: ${error.message}`);
+        }
     };
 
     const handleDeleteMember = async (memberId) => {
@@ -148,6 +170,15 @@ export default function AdminDashboard({ user }) {
 
             {activeTab === 'members' ? (
                 <div className="space-y-6">
+                    {successMessage && (
+                        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md animate-bounce">
+                            <div className="flex items-center">
+                                <span className="text-xl mr-2">✅</span>
+                                <p className="font-bold">{successMessage}</p>
+                            </div>
+                        </div>
+                    )}
+
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm mb-6">
                             <strong>⚠️ エラーが発生しました:</strong> {error}

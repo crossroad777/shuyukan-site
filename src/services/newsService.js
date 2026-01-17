@@ -52,11 +52,16 @@ export async function fetchNews() {
     try {
         const url = new URL(NEWS_API_URL);
         url.searchParams.append('action', 'getNews');
+        console.log('[NewsService] リクエスト URL:', url.toString());
+
         const response = await fetch(url.toString());
+        console.log('[NewsService] レスポンスステータス:', response.status, response.statusText);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('[NewsService] 受信データ:', data);
 
         // GAS側からエラーオブジェクト（{success: false, error: "..."}）が返ってきた場合
         if (data && data.success === false) {
@@ -66,9 +71,16 @@ export async function fetchNews() {
         }
 
         const news = data.data || (Array.isArray(data) ? data : null);
+        console.log('[NewsService] 解析されたニュース:', news);
 
         if (!Array.isArray(news)) {
             console.error('[NewsService] Unexpected data format:', data);
+            return fallbackNews;
+        }
+
+        // データが空の場合の警告
+        if (news.length === 0) {
+            console.warn('[NewsService] お知らせデータが空です。フォールバックデータを使用します。');
             return fallbackNews;
         }
 
@@ -98,15 +110,26 @@ export async function addNews(newsData) {
     }
 
     try {
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'addNews', ...newsData })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'addNews');
+        url.searchParams.append('newsData', JSON.stringify(newsData));
+
+        console.log('[NewsService] Adding news via GET workaround');
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || 'ニュースの追加に失敗しました');
+        }
+        console.log('[NewsService] News added successfully:', data);
+        return data;
     } catch (error) {
         console.error('ニュース追加エラー:', error);
         throw error;
@@ -128,15 +151,27 @@ export async function updateNews(id, newsData) {
     }
 
     try {
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'updateNews', id, ...newsData })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'updateNews');
+        url.searchParams.append('id', id);
+        url.searchParams.append('newsData', JSON.stringify(newsData));
+
+        console.log('[NewsService] Updating news via GET workaround:', id);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || 'ニュースの更新に失敗しました');
+        }
+        console.log('[NewsService] News updated successfully:', data);
+        return data;
     } catch (error) {
         console.error('ニュース更新エラー:', error);
         throw error;
@@ -157,14 +192,22 @@ export async function deleteNews(id) {
     }
 
     try {
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'deleteNews', id })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'deleteNews');
+        url.searchParams.append('id', id);
+
+        console.log('[NewsService] Deleting news via GET workaround:', id);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || 'ニュースの削除に失敗しました');
         }
+        console.log('[NewsService] News deleted successfully');
         return true;
     } catch (error) {
         console.error('ニュース削除エラー:', error);

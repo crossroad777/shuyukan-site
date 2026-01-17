@@ -149,15 +149,26 @@ export async function addMember(memberData) {
     }
 
     try {
-        const response = await fetch(MEMBER_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add', ...memberData })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'add');
+        url.searchParams.append('data', JSON.stringify(memberData));
+
+        console.log('[MemberService] Adding member via GET workaround');
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || '会員の追加に失敗しました');
+        }
+        console.log('[MemberService] Member added successfully:', data);
+        return data;
     } catch (error) {
         console.error('会員追加エラー:', error);
         throw error;
@@ -197,15 +208,27 @@ export async function updateMember(memberId, memberData) {
     }
 
     try {
-        const response = await fetch(MEMBER_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update', id: memberId, ...memberData })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'update');
+        url.searchParams.append('id', memberId);
+        url.searchParams.append('data', JSON.stringify(memberData));
+
+        console.log('[MemberService] Updating member via GET workaround:', memberId);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || '会員の更新に失敗しました');
+        }
+        console.log('[MemberService] Member updated successfully:', data);
+        return data;
     } catch (error) {
         console.error('会員更新エラー:', error);
         throw error;
@@ -230,14 +253,22 @@ export async function deleteMember(memberId) {
     }
 
     try {
-        const response = await fetch(MEMBER_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', id: memberId })
+        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'delete');
+        url.searchParams.append('id', memberId);
+
+        console.log('[MemberService] Deleting member via GET workaround:', memberId);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || '会員の削除に失敗しました');
         }
+        console.log('[MemberService] Member deleted successfully');
         return true;
     } catch (error) {
         console.error('会員削除エラー:', error);
