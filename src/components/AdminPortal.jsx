@@ -3,6 +3,7 @@ import PortalButton from './PortalButton';
 import AdminDashboard from './AdminDashboard';
 import DocumentManager from './DocumentManager';
 import NewsAddModal from './NewsAddModal';
+import AttendanceDashboard from './AttendanceDashboard';
 import { addNews } from '../services/newsService';
 
 export default function AdminPortal({ user }) {
@@ -102,12 +103,8 @@ export default function AdminPortal({ user }) {
                             </div>
                         </div>
                     ) : activeView === 'attendance' ? (
-                        <DocumentManager
-                            initialFolderId="1zDslg3Ps6RdmNOpjMIalcl_VlczirFzX"
-                            title="出欠管理"
-                            userRole="admin"
-                            readOnly={false}
-                        />
+                        <AttendanceDashboard />
+
                     ) : activeView === 'accounting' ? (
                         <DocumentManager
                             initialFolderId="1D9rUdo_OXBJJIQ9_CO705lhDtKJWxA_K"

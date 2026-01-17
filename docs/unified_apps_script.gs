@@ -145,21 +145,14 @@ function doGet(e) {
     return createJsonResponse(deleteNews({ id: newsId }));
   }
   
+  if (action === 'getAttendance') {
+    return createJsonResponse(getAttendance(params.date));
+  }
+  
   return createJsonResponse({ success: false, error: "Unknown action: " + action });
 }
 
-// スプレッドシート取得用共通関数 (ID指定に対応)
-function getSS(id) {
-  if (id) {
-    try {
-      return SpreadsheetApp.openById(id);
-    } catch (e) {
-      console.error("ID指定でのSS取得に失敗 (" + id + "): " + e.toString());
-      throw e; // エラーを投げて上位でキャッチさせる
-    }
-  }
-  return SpreadsheetApp.getActiveSpreadsheet();
-}
+// ... (getSS and other setup functions) ...
 
 function doPost(e) {
   try {
@@ -186,6 +179,8 @@ function doPost(e) {
       result = updateNews(params);
     } else if (action === 'deleteNews') {
       result = deleteNews(params);
+    } else if (action === 'updateAttendance') {
+      result = updateAttendance(params);
     }
 
     return createJsonResponse(result);
@@ -193,6 +188,119 @@ function doPost(e) {
     return createJsonResponse({ success: false, error: err.toString() });
   }
 }
+
+// ... existing code ...
+
+/* --- 出欠管理（出席管理シート連携） --- */
+
+const ATTENDANCE_SHEET_NAME = '出席管理';
+
+/**
+ * 指定日の出席データを取得
+ * @param {string} dateString - "yyyy-MM-dd" 形式
+ */
+function getAttendance(dateString) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(ATTENDANCE_SHEET_NAME);
+    if (!sheet) return { success: true, data: [] }; // シートがなければ空で返す
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return { success: true, data: [] };
+    
+    const headers = data[0];
+    const targetDate = dateString ? new Date(dateString) : new Date();
+    targetDate.setHours(0,0,0,0);
+    
+    const result = data.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        let val = row[i];
+        if (val instanceof Date && (h === '日付')) {
+          const rowDate = new Date(val);
+          rowDate.setHours(0,0,0,0);
+          if (rowDate.getTime() === targetDate.getTime()) {
+            obj[h] = val;
+          } else {
+            return null; // 日付不一致
+          }
+        } else {
+          obj[h] = val;
+        }
+      });
+      return obj;
+    }).filter(row => row !== null && Object.keys(row).length > 0);
+    
+    return { success: true, data: result };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+/**
+ * 出席データの追加・更新
+ */
+function updateAttendance(params) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    let sheet = ss.getSheetByName(ATTENDANCE_SHEET_NAME);
+    if (!sheet) {
+      // シートがない場合は作成
+      sheet = ss.insertSheet(ATTENDANCE_SHEET_NAME);
+      sheet.appendRow(['日付', '曜日', '会員番号', '氏名', '出席時刻', '備考']);
+    }
+    
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const dateIndex = headers.indexOf('日付');
+    const idIndex = headers.indexOf('会員番号');
+    
+    const targetDate = new Date(params.date || new Date());
+    targetDate.setHours(0,0,0,0);
+    
+    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+    const dayName = dayNames[targetDate.getDay()];
+    
+    // 既存レコードの確認
+    let rowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      const rowDate = new Date(data[i][dateIndex]);
+      rowDate.setHours(0,0,0,0);
+      if (rowDate.getTime() === targetDate.getTime() && data[i][idIndex] == params.memberId) {
+        rowIndex = i + 1;
+        break;
+      }
+    }
+    
+    const timeStr = params.time || Utilities.formatDate(new Date(), "JST", "HH:mm");
+    
+    if (rowIndex > 0) {
+      // 更新
+      headers.forEach((h, i) => {
+        if (h === '出席時刻') sheet.getRange(rowIndex, i + 1).setValue(timeStr);
+        if (h === '備考') sheet.getRange(rowIndex, i + 1).setValue(params.status || '出席');
+      });
+    } else {
+      // 新規追加
+      const newRow = headers.map(h => {
+        if (h === '日付') return targetDate;
+        if (h === '曜日') return dayName;
+        if (h === '会員番号') return params.memberId;
+        if (h === '氏名') return params.memberName;
+        if (h === '出席時刻') return timeStr;
+        if (h === '備考') return params.status || '出席';
+        return "";
+      });
+      sheet.appendRow(newRow);
+    }
+    
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+// ... existing code ...
 
 function doOptions(e) {
   return createJsonResponse({ success: true, method: "OPTIONS" });
