@@ -37,7 +37,8 @@ export default function About() {
                         </h3>
                         <div className="w-20 h-1 bg-shuyukan-gold mx-auto rounded-full"></div>
                         <p className="mt-6 text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                            私たちが大切にしている3つの理念。これらは剣道の技術向上だけでなく、人生を豊かにするための指針です。
+                            私たちが大切にしている3つの理念。<br />
+                            これらは剣道の技術向上だけでなく、人生を豊かにするための指針です。
                         </p>
                     </div>
 
@@ -152,8 +153,8 @@ export default function About() {
                     <FadeInSection>
                         <h3 className="text-2xl font-serif font-bold text-shuyukan-blue mb-6">未来への約束</h3>
                         <p className="text-gray-600 leading-loose mb-10 max-w-3xl mx-auto text-left sm:text-center">
-                            修猷館のロゴにある「赤」は情熱を表し、
-                            お子様が大人になった時、「修猷館で剣道をやっていてよかった」と思える場所であり続けます。
+                            お子様が大人になった時、<br />
+                            「修猷館で剣道をやっていてよかった」と思える場所であり続けます。
                         </p>
                         <Link to="/join" className="group inline-flex items-center gap-3 px-8 py-4 bg-shuyukan-red text-white font-bold text-base rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1 tracking-wider">
                             <span>体験入会・見学申込</span>

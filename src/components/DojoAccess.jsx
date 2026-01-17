@@ -58,8 +58,8 @@ export default function DojoAccess() {
                             <h3 className="text-xl text-shuyukan-blue font-serif mb-2 border-b border-shuyukan-blue/10 pb-2 font-bold">連絡先</h3>
                             <p className="flex items-center gap-3">
                                 <span className="text-shuyukan-red">✉️</span>
-                                <a href="mailto:info@shuyukan-kendo.com" className="text-shuyukan-blue hover:text-shuyukan-gold transition-colors font-medium">
-                                    info@shuyukan-kendo.com
+                                <a href="mailto:shuyukan.info@gmail.com" className="text-shuyukan-blue hover:text-shuyukan-gold transition-colors font-medium">
+                                    shuyukan.info@gmail.com
                                 </a>
                             </p>
                         </div>

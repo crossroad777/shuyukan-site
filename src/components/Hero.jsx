@@ -58,7 +58,7 @@ const Hero = () => {
                                 </span>
                             </h2>
                             <p className="text-gray-200 mb-8 leading-relaxed font-sans font-light tracking-wide text-lg">
-                                基本を大切に、正しく美しい剣道を目指します。<br />
+                                基本を大切に、正しく美しい剣道を目指す。<br />
                                 初心者から経験者まで、それぞれの目標に向かって。
                             </p>
                             <div className="flex gap-4">

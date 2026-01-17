@@ -25,7 +25,7 @@ export default function Home() {
             <span className="font-serif text-[20rem] text-shuyukan-blue/30 leading-none">心</span>
           </div>
 
-          <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <div className="max-w-4xl mx-auto relative z-10 text-left">
             <FadeInSection>
               <h2 className="text-4xl md:text-5xl font-bold font-serif mb-12 tracking-widest text-shuyukan-blue">
                 道場紹介
@@ -60,7 +60,8 @@ export default function Home() {
                 <h3 className="text-xl font-sans font-thin tracking-[0.3em] text-shuyukan-gold mb-2 uppercase group-hover:text-white transition-colors">Harmony</h3>
                 <h4 className="text-3xl font-serif font-bold text-white mb-6">心身の調和</h4>
                 <p className="text-sm text-gray-300 leading-relaxed font-serif">
-                  心と体を一つにする。静寂の中で自らを見つめる。
+                  心と体を一つにする。<br />
+                  静寂の中で自らを見つめる。
                 </p>
               </Link>
             </FadeInSection>

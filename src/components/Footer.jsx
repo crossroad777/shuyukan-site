@@ -59,7 +59,7 @@ const Footer = () => {
                                 <li><Link to="/Teacher" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">指導者紹介</Link></li>
                                 <li><Link to="/join" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">入会案内</Link></li>
                                 <li><Link to="/news" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">お知らせ</Link></li>
-                                <li><Link to="/faq" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">よくある質問 (FAQ)</Link></li>
+                                <li><Link to="/faq" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">よくある質問</Link></li>
                                 <li><Link to="/links" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">リンク集</Link></li>
                                 <li><Link to="/character" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">キャラクター紹介</Link></li>
                             </ul>
@@ -78,8 +78,8 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <span className="block text-white/50 mb-1 font-serif text-xs tracking-widest">連絡先</span>
-                                    <a href="mailto:info@shuyukan-kendo.com" className="font-sans text-white hover:text-shuyukan-gold transition-colors text-base">
-                                        info@shuyukan-kendo.com
+                                    <a href="mailto:shuyukan.info@gmail.com" className="font-sans text-white hover:text-shuyukan-gold transition-colors text-base">
+                                        shuyukan.info@gmail.com
                                     </a>
                                 </li>
                                 <li>
