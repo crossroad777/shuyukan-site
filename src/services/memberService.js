@@ -11,6 +11,7 @@ let mockMembers = [
         id: 'S001',
         familyId: 'F001',
         name: '鈴木 健太',
+        email: 'suzuki.test@example.com',
         furigana: 'すずき けんた',
         birthDate: '2015-08-20',
         gender: '男',
@@ -22,37 +23,10 @@ let mockMembers = [
         notes: ''
     },
     {
-        id: 'S002',
-        familyId: 'F001',
-        name: '鈴木 美咲',
-        furigana: 'すずき みさき',
-        birthDate: '2017-03-15',
-        gender: '女',
-        grade: '小学2年',
-        memberType: '少年部',
-        rank: '5級',
-        joinDate: '2024-04-01',
-        status: '在籍',
-        notes: ''
-    },
-    {
-        id: 'S003',
-        familyId: 'F002',
-        name: '田中 翔太',
-        furigana: 'たなか しょうた',
-        birthDate: '2014-11-05',
-        gender: '男',
-        grade: '小学5年',
-        memberType: '少年部',
-        rank: '1級',
-        joinDate: '2022-04-01',
-        status: '在籍',
-        notes: ''
-    },
-    {
         id: 'A001',
         familyId: 'F003',
         name: '山田 太郎',
+        email: 'shuyukan.info@gmail.com', // 管理者テスター用
         furigana: 'やまだ たろう',
         birthDate: '1985-05-10',
         gender: '男',
@@ -76,14 +50,26 @@ export async function fetchMembers() {
     }
 
     try {
-        const response = await fetch(MEMBER_API_URL);
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'getMembers');
+        console.log('[MemberService] Fetching from:', url.toString());
+
+        const response = await fetch(url.toString());
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
+        // GAS側からエラーオブジェクト（{error: "..."}）が返ってきた場合
+        if (data && data.error) {
+            console.error('[MemberService] API Error:', data.error);
+            return [...mockMembers];
+        }
+
+        console.log('[MemberService] Data loaded successfully');
         return data;
     } catch (error) {
-        console.error('会員データ取得エラー:', error);
+        console.error('[MemberService] Fetch Error:', error);
         return [...mockMembers];
     }
 }
@@ -108,13 +94,13 @@ export async function fetchMembersByType(type) {
 }
 
 /**
- * 会員番号で1件取得
- * @param {string} memberId - 会員番号 (例: S001)
+ * メールアドレスで会員を検索
+ * @param {string} email - メールアドレス
  * @returns {Promise<Object|null>} 会員オブジェクト
  */
-export async function fetchMemberById(memberId) {
+export async function fetchMemberByEmail(email) {
     const members = await fetchMembers();
-    return members.find(m => m.id === memberId) || null;
+    return members.find(m => m.email === email) || null;
 }
 
 /**
@@ -150,6 +136,20 @@ export async function addMember(memberData) {
         console.error('会員追加エラー:', error);
         throw error;
     }
+}
+
+/**
+ * 利用申請を送信
+ * @param {Object} requestData - 申請データ (name, furigana, role)
+ * @returns {Promise<Object>} 結果
+ */
+export async function requestJoin(requestData) {
+    return addMember({
+        ...requestData,
+        status: '承認待ち',
+        joinDate: new Date().toISOString().split('T')[0],
+        notes: 'ポータルからの申請'
+    });
 }
 
 /**

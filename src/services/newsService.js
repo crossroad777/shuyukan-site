@@ -50,7 +50,9 @@ export async function fetchNews() {
     }
 
     try {
-        const response = await fetch(NEWS_API_URL);
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'getNews');
+        const response = await fetch(url.toString());
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -84,7 +86,7 @@ export async function addNews(newsData) {
         const response = await fetch(NEWS_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add', ...newsData })
+            body: JSON.stringify({ action: 'addNews', ...newsData })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -114,7 +116,7 @@ export async function updateNews(id, newsData) {
         const response = await fetch(NEWS_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'update', id, ...newsData })
+            body: JSON.stringify({ action: 'updateNews', id, ...newsData })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -143,7 +145,7 @@ export async function deleteNews(id) {
         const response = await fetch(NEWS_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', id })
+            body: JSON.stringify({ action: 'deleteNews', id })
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

@@ -25,7 +25,32 @@ const Hero = () => {
             {/* Content Container */}
             <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center py-12">
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                {/* Header Section - Moved above grid for full width alignment */}
+                <div className={`transition-all duration-1000 delay-300 mb-8 ${loaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                    <h2 className="text-shuyukan-gold font-bold tracking-[0.3em] uppercase mb-6 flex items-center gap-4">
+                        <span className="w-12 h-[1px] bg-shuyukan-gold"></span>
+                        Essence of Kendo
+                    </h2>
+
+                    {/* Wide Banner Image - Now spans wider area */}
+                    <div className="mb-12 rounded-lg overflow-hidden border border-white/10 shadow-2xl w-full aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] group bg-shuyukan-dark relative">
+                        <img
+                            src="/assets/kendo_banner_essence.png"
+                            alt="Kendo Essence"
+                            className="w-full h-full object-cover transition-opacity duration-700 object-center"
+                        />
+                        {/* Shuyukan Branding Overlay - Fitted to the dark curtain area */}
+                        <div className="absolute right-[3%] top-1/2 -translate-y-1/2 pointer-events-none select-none text-right">
+                            <span className="text-shuyukan-gold/60 font-serif text-[10vw] md:text-7xl lg:text-9xl font-bold tracking-[0.2em] leading-none block" style={{
+                                textShadow: '4px 4px 10px rgba(0,0,0,0.9)'
+                            }}>
+                                修猷館
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                     {/* Left Column: Vertical Calligraphy & Title */}
                     <div className="lg:col-span-5 flex flex-col items-start relative lg:pl-16">
                         {/* Dynamic Vertical Text Entry */}
@@ -33,11 +58,7 @@ const Hero = () => {
                             知行合一
                         </div>
 
-                        <div className={`transition-all duration-1000 delay-300 ${loaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                            <h2 className="text-shuyukan-gold font-bold tracking-[0.3em] uppercase mb-6 flex items-center gap-4">
-                                <span className="w-12 h-[1px] bg-shuyukan-gold"></span>
-                                Essence of Kendo
-                            </h2>
+                        <div className={`transition-all duration-1000 delay-500 ${loaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
                             <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold leading-tight mb-8 tracking-wide text-shadow-lg">
                                 <span className="block text-white mb-4 whitespace-nowrap">知ることは、</span>
                                 <span className="block text-white pl-4 sm:pl-12 whitespace-nowrap">打つことなり。</span>
@@ -50,7 +71,7 @@ const Hero = () => {
                     </div>
 
                     {/* Right Column: CTA & Info Cards (Bento Grid) */}
-                    <div className="lg:col-span-7 flex flex-col lg:items-end space-y-8 mt-12 lg:mt-0">
+                    <div className="lg:col-span-7 flex flex-col lg:items-end space-y-8 mt-12 lg:mt-0 pt-2">
                         <div className={`bg-white/10 backdrop-blur-md p-8 md:p-10 rounded-lg border-l-4 border-shuyukan-gold shadow-2xl max-w-lg transform transition-all hover:scale-105 duration-500 group ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-white flex items-baseline gap-4">
                                 <span className="text-shuyukan-gold">

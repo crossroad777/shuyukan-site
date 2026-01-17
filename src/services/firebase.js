@@ -19,6 +19,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+// 常にアカウント選択画面を表示させる設定
+googleProvider.setCustomParameters({
+    prompt: 'select_account'
+});
 
 // 管理者メールアドレスリスト
 const ADMIN_EMAILS = [

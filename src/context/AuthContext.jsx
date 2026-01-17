@@ -1,10 +1,7 @@
-/**
- * Firebase Authentication Context
- * Google認証を使用した本物の認証システム
- */
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider, ADMIN_EMAILS } from '../services/firebase';
+import { fetchMemberByEmail } from '../services/memberService';
 
 const AuthContext = createContext(null);
 
@@ -12,18 +9,54 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        // 管理者かどうかをチェック
-        const isAdmin = ADMIN_EMAILS.includes(firebaseUser.email);
-        setUser({
+  const determineUserRole = async (firebaseUser) => {
+    if (!firebaseUser) return null;
+
+    // 1. 管理者チェック（メールアドレスリスト）
+    if (ADMIN_EMAILS.includes(firebaseUser.email)) {
+      return {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        role: 'admin',
+      };
+    }
+
+    // 2. データベース存在チェック
+    try {
+      const member = await fetchMemberByEmail(firebaseUser.email);
+      if (member) {
+        const isApproved = member.status === '在籍' || member.status === 'active';
+        return {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
-          role: isAdmin ? 'admin' : 'member',
-        });
+          role: isApproved ? 'member' : 'pending',
+          memberData: member
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching member role:', error);
+    }
+
+    // 3. ゲスト（未登録）
+    return {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: firebaseUser.displayName,
+      photoURL: firebaseUser.photoURL,
+      role: 'guest',
+    };
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
+      if (firebaseUser) {
+        const userData = await determineUserRole(firebaseUser);
+        setUser(userData);
       } else {
         setUser(null);
       }
@@ -35,25 +68,23 @@ export function AuthProvider({ children }) {
 
   const login = async () => {
     try {
+      setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
-      const isAdmin = ADMIN_EMAILS.includes(result.user.email);
-
-      if (!isAdmin) {
-        // 管理者以外はログインを拒否
-        await signOut(auth);
-        throw new Error('このアカウントには管理者権限がありません。');
-      }
-
-      return { success: true };
+      const userData = await determineUserRole(result.user);
+      setUser(userData);
+      return { success: true, role: userData.role };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
       await signOut(auth);
+      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -64,6 +95,9 @@ export function AuthProvider({ children }) {
     loading,
     isAuthed: !!user,
     isAdmin: user?.role === 'admin',
+    isMember: user?.role === 'member',
+    isPending: user?.role === 'pending',
+    isGuest: user?.role === 'guest',
     login,
     logout,
   }), [user, loading]);

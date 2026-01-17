@@ -46,16 +46,17 @@ export default function Login() {
   }
 
   return (
-    <SiteFrame title="管理者ログイン">
+    <SiteFrame title="会員ログイン">
       <div className="max-w-md mx-auto">
         <div className="bg-white border border-gray-200 p-8 rounded-lg shadow-sm text-center">
           <div className="mb-6">
-            <span className="text-5xl">🔐</span>
+            <span className="text-5xl">🥋</span>
           </div>
 
-          <h3 className="font-bold text-xl text-shuyukan-blue mb-2">管理者専用</h3>
+          <h3 className="font-bold text-xl text-shuyukan-blue mb-2">部員・関係者専用</h3>
           <p className="text-sm text-gray-600 mb-6">
-            許可されたGoogleアカウントでログインしてください。
+            Googleアカウントでログインしてください。<br />
+            初めての方はログイン後に利用申請を行えます。
           </p>
 
           {error && (
@@ -82,7 +83,7 @@ export default function Login() {
         </div>
 
         <div className="mt-6 text-center text-gray-400 text-sm">
-          <p>※ 管理者として登録されたアカウントのみログイン可能です</p>
+          <p>※ 管理者の承認後、部員専用コンテンツが閲覧可能になります</p>
         </div>
       </div>
     </SiteFrame>
