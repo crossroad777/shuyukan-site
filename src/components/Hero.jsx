@@ -40,8 +40,8 @@ const Hero = () => {
                             className="w-full h-full object-cover transition-opacity duration-700 object-center"
                         />
                         {/* Shuyukan Branding Overlay - Fitted to the dark curtain area */}
-                        <div className="absolute right-[3%] top-1/2 -translate-y-1/2 pointer-events-none select-none text-right">
-                            <span className="text-shuyukan-gold/60 font-serif text-[10vw] md:text-7xl lg:text-9xl font-bold tracking-[0.2em] leading-none block" style={{
+                        <div className="absolute right-[2%] top-1/2 -translate-y-1/2 pointer-events-none select-none text-right">
+                            <span className="text-[#8B0000]/80 font-serif text-4xl md:text-6xl lg:text-7xl font-bold tracking-[0.2em] leading-none block" style={{
                                 textShadow: '4px 4px 10px rgba(0,0,0,0.9)'
                             }}>
                                 修猷館
