@@ -59,7 +59,7 @@ const Hero = () => {
                             </h2>
                             <p className="text-gray-200 mb-8 leading-relaxed font-sans font-light tracking-wide text-lg">
                                 基本を大切に、正しく美しい剣道を目指す。<br />
-                                初心者から経験者まで、それぞれの目標に向かって。
+                                初心者から経験者まで、各自の目標に向かって。
                             </p>
                             <div className="flex gap-4">
                                 <Link to="/about" className="px-8 py-3 bg-shuyukan-red text-white font-bold rounded-full hover:bg-red-700 transition-all shadow-lg hover:shadow-red-900/50 flex items-center gap-2 group-hover:pl-10">
