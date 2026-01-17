@@ -57,7 +57,22 @@ export async function fetchNews() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        return data;
+
+        // GAS側からエラーオブジェクト（{success: false, error: "..."}）が返ってきた場合
+        if (data && data.success === false) {
+            console.error('[NewsService] API Error:', data.error);
+            // エラー時はフォールバックを使用すべきだが、一旦空配列かフォールバックを返す
+            return fallbackNews;
+        }
+
+        const news = data.data || (Array.isArray(data) ? data : null);
+
+        if (!Array.isArray(news)) {
+            console.error('[NewsService] Unexpected data format:', data);
+            return fallbackNews;
+        }
+
+        return news;
     } catch (error) {
         console.error('[NewsService] データ取得エラー:', error);
         // エラー時はフォールバックデータを返す

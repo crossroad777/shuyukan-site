@@ -58,18 +58,41 @@ export async function fetchMembers() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
 
-        // GAS側からエラーオブジェクト（{error: "..."}）が返ってきた場合
-        if (data && data.error) {
-            console.error('[MemberService] API Error:', data.error);
-            return [...mockMembers];
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const text = await response.text();
+            console.error('[MemberService] Non-JSON response received:', text.substring(0, 200));
+            throw new Error('APIから正しくない形式の応答が返されました（App Scriptの権限設定を確認してください）');
         }
 
-        console.log('[MemberService] Data loaded successfully');
-        return data;
+        const data = await response.json();
+
+        // GAS側からエラーオブジェクト（{success: false, error: "..."}）が返ってきた場合
+        if (data && data.success === false) {
+            console.error('[MemberService] API Error:', data.error);
+            // エラー時はモックを返すのではなく、空配列またはエラーを投げる（今回は管理画面でエラー表示させたいので）
+            throw new Error(data.error || '不明なAPIエラー');
+        }
+
+        const members = data.data || (Array.isArray(data) ? data : null);
+
+        if (!Array.isArray(members)) {
+            console.error('[MemberService] Unexpected data format:', data);
+            throw new Error('データの形式が正しくありません');
+        }
+
+        console.log('[MemberService] Data loaded successfully:', members.length, 'members');
+        return members;
     } catch (error) {
-        console.error('[MemberService] Fetch Error:', error);
+        console.error('[MemberService] Fetch Error Details:', {
+            message: error.message,
+            stack: error.stack,
+            url: MEMBER_API_URL
+        });
+        // ネットワークエラーなどの致命的なエラー時のみモックを返す、
+        // またはAPIが設定されていない場合のみにするのが安全だが、
+        // 既存の挙動を尊重してモックを返す（ただしコンソールにエラーは出す）
         return [...mockMembers];
     }
 }
@@ -80,6 +103,7 @@ export async function fetchMembers() {
  */
 export async function fetchActiveMembers() {
     const members = await fetchMembers();
+    if (!Array.isArray(members)) return [];
     return members.filter(m => m.status === '在籍' || m.status === 'active');
 }
 
@@ -90,6 +114,7 @@ export async function fetchActiveMembers() {
  */
 export async function fetchMembersByType(type) {
     const members = await fetchMembers();
+    if (!Array.isArray(members)) return [];
     return members.filter(m => m.memberType === type);
 }
 
@@ -100,6 +125,7 @@ export async function fetchMembersByType(type) {
  */
 export async function fetchMemberByEmail(email) {
     const members = await fetchMembers();
+    if (!Array.isArray(members)) return null;
     return members.find(m => m.email === email) || null;
 }
 

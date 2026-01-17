@@ -5,9 +5,19 @@ import { useAuth } from '../context/AuthContext.jsx';
 import AdminDashboard from '../components/AdminDashboard.jsx';
 import { useState, useEffect } from 'react';
 import { fetchNews } from '../services/newsService';
+import { fetchDocuments } from '../services/documentService';
 
 export default function MemberHome() {
     const { user, logout, isAdmin, isMember, isPending, isGuest, loading } = useAuth();
+
+    useEffect(() => {
+        console.log('[MemberHome] User State:', { user, isAdmin, isMember, isPending, isGuest });
+    }, [user, isAdmin, isMember, isPending, isGuest]);
+
+    const isJunior = (type) => {
+        if (!type) return false;
+        return type.includes('少年') || type.includes('小') || type.includes('中') || type.includes('幼');
+    };
     const navigate = useNavigate();
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -19,10 +29,16 @@ export default function MemberHome() {
 
     const [news, setNews] = useState([]);
     const [newsLoading, setNewsLoading] = useState(false);
+    const [documents, setDocuments] = useState([]);
+    const [docsLoading, setDocsLoading] = useState(false);
+
+    const CALENDAR_ID = import.meta.env.VITE_GOOGLE_CALENDAR_ID;
+    const isCalendarConfigured = CALENDAR_ID && CALENDAR_ID !== 'YOUR_CALENDAR_ID_HERE';
 
     useEffect(() => {
         if (isMember || isAdmin) {
             loadMemberNews();
+            loadDocuments();
         }
     }, [isMember, isAdmin]);
 
@@ -40,6 +56,34 @@ export default function MemberHome() {
         } finally {
             setNewsLoading(false);
         }
+    };
+
+    const loadDocuments = async () => {
+        setDocsLoading(true);
+        try {
+            const data = await fetchDocuments();
+            setDocuments(data);
+        } catch (error) {
+            console.error('Failed to load documents:', error);
+        } finally {
+            setDocsLoading(false);
+        }
+    };
+
+    const formatSize = (bytes) => {
+        if (!bytes) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    };
+
+    const getFileIcon = (mimeType) => {
+        if (mimeType.includes('pdf')) return '📄';
+        if (mimeType.includes('image')) return '🖼️';
+        if (mimeType.includes('word') || mimeType.includes('text')) return '📝';
+        if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return '📊';
+        return '📁';
     };
 
     const handleLogout = () => {
@@ -153,27 +197,31 @@ export default function MemberHome() {
                             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                                 <h4 className="font-bold text-gray-800 mb-4 border-b pb-2">📂 部員用ドキュメント</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <button className="flex items-center gap-3 p-3 border rounded hover:border-shuyukan-blue hover:bg-blue-50 transition text-left group">
-                                        <span className="text-2xl group-hover:scale-110 transition">📄</span>
-                                        <div>
-                                            <p className="text-sm font-bold">部員用マニュアル</p>
-                                            <p className="text-xs text-gray-400">PDF / 1.2MB</p>
+                                    {docsLoading ? (
+                                        <div className="col-span-full py-8 text-center">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-shuyukan-blue mx-auto"></div>
                                         </div>
-                                    </button>
-                                    <button className="flex items-center gap-3 p-3 border rounded hover:border-shuyukan-blue hover:bg-blue-50 transition text-left group">
-                                        <span className="text-2xl group-hover:scale-110 transition">📄</span>
-                                        <div>
-                                            <p className="text-sm font-bold">施設利用時の注意点</p>
-                                            <p className="text-xs text-gray-400">PDF / 0.8MB</p>
+                                    ) : documents.length > 0 ? (
+                                        documents.map(doc => (
+                                            <a
+                                                key={doc.id}
+                                                href={doc.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="flex items-center gap-3 p-3 border rounded hover:border-shuyukan-blue hover:bg-blue-50 transition text-left group"
+                                            >
+                                                <span className="text-2xl group-hover:scale-110 transition">{getFileIcon(doc.mimeType)}</span>
+                                                <div className="overflow-hidden">
+                                                    <p className="text-sm font-bold truncate">{doc.name}</p>
+                                                    <p className="text-xs text-gray-400">{formatSize(doc.size)}</p>
+                                                </div>
+                                            </a>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full py-4 text-gray-400 text-sm italic text-center">
+                                            設定されたフォルダにファイルがありません。
                                         </div>
-                                    </button>
-                                    <button className="flex items-center gap-3 p-3 border rounded hover:border-shuyukan-blue hover:bg-blue-50 transition text-left group">
-                                        <span className="text-2xl group-hover:scale-110 transition">📄</span>
-                                        <div>
-                                            <p className="text-sm font-bold">昇段・昇級審査申込書</p>
-                                            <p className="text-xs text-gray-400">Word / 0.5MB</p>
-                                        </div>
-                                    </button>
+                                    )}
                                 </div>
                             </div>
 
@@ -182,22 +230,25 @@ export default function MemberHome() {
                                     <h4 className="font-bold text-gray-800">📅 稽古スケジュール</h4>
                                     <a href="https://calendar.google.com" target="_blank" rel="noreferrer" className="text-xs text-shuyukan-blue hover:underline">Googleカレンダーで開く ↗</a>
                                 </div>
-                                <div className="aspect-video w-full bg-gray-50 rounded border border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                                    {/* Google Calendar Iframe Placeholder */}
-                                    <p className="text-gray-400 text-sm p-4 text-center">
-                                        Googleカレンダーをここに埋め込みます。<br />
-                                        <span className="text-xs">（カレンダーIDを設定すると表示されます）</span>
-                                    </p>
-                                    {/* 
-                                    <iframe 
-                                        src="https://calendar.google.com/calendar/embed?src=YOUR_CALENDAR_ID&ctz=Asia%2FTokyo" 
-                                        style={{border: 0}} 
-                                        width="100%" 
-                                        height="100%" 
-                                        frameBorder="0" 
-                                        scrolling="no"
-                                    ></iframe> 
-                                    */}
+                                <div className="aspect-video w-full bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden shadow-inner">
+                                    {isCalendarConfigured ? (
+                                        <iframe
+                                            src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CALENDAR_ID)}&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0`}
+                                            style={{ border: 0 }}
+                                            width="100%"
+                                            height="100%"
+                                            frameBorder="0"
+                                            scrolling="no"
+                                            className="opacity-90"
+                                        ></iframe>
+                                    ) : (
+                                        <div className="text-center p-6">
+                                            <p className="text-gray-400 text-sm">
+                                                Googleカレンダーをここに埋め込みます。<br />
+                                                <span className="text-xs">（カレンダーIDを設定すると表示されます）</span>
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="mt-4 space-y-2">
                                     <p className="text-sm font-bold text-gray-700">📌 直近の予定（手動入力分）</p>

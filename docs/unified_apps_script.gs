@@ -1,7 +1,14 @@
 /**
  * 豊中修猷館 統合API & ユーティリティ (Apps Script)
- * 会員管理（会員マスター対応）、お知らせ管理、CORSエラー修正対応、フォルダ作成
+ * 2026-01-17 改訂版: アカウント跨ぎのパーミッション対応、ID指定対応
  */
+
+// --- 設定エリア ---
+// 会員マスターが入っているスプレッドシートのID
+const MEMBER_SPREADSHEET_ID = "1zL1AS5c4kaC5shYz0RVDy3M8ZvX6Zqk_KtbrjVPQc_E"; 
+
+// お知らせが入っているスプレッドシートのID
+const NEWS_SPREADSHEET_ID = "1ERZDlFWtFl6R-bp04M1WtSqLiORxUGJAn-BaSlZWW5A";
 
 // 1. 基本設定とルーティング
 function doGet(e) {
@@ -9,11 +16,67 @@ function doGet(e) {
   const action = params.action;
   
   if (action === 'debug') {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const debugInfo = {
+      timestamp: new Date().toISOString(),
+      connected: {},
+      sheets: {}
+    };
+
+    // Member SS Check
+    try {
+      const ssMember = getSS(MEMBER_SPREADSHEET_ID);
+      debugInfo.connected.member = ssMember ? "Yes" : "No";
+      if (ssMember) {
+        debugInfo.memberSSName = ssMember.getName();
+        const sheet = ssMember.getSheetByName(MEMBER_SHEET_NAME);
+        if (sheet) {
+          debugInfo.sheets.member = {
+            name: MEMBER_SHEET_NAME,
+            rowCount: sheet.getLastRow(),
+            lastColumn: sheet.getLastColumn(),
+            headers: sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0]
+          };
+        } else {
+          debugInfo.sheets.member = "Sheet '" + MEMBER_SHEET_NAME + "' not found. Available sheets: " + ssMember.getSheets().map(s => s.getName()).join(", ");
+        }
+      }
+    } catch (err) {
+      debugInfo.connected.member = "Error: " + err.toString();
+    }
+
+    // News SS Check
+    try {
+      const ssNews = getSS(NEWS_SPREADSHEET_ID);
+      debugInfo.connected.news = ssNews ? "Yes" : "No";
+      if (ssNews) {
+        debugInfo.newsSSName = ssNews.getName();
+        const sheet = ssNews.getSheetByName('お知らせ');
+        if (sheet) {
+          debugInfo.sheets.news = {
+            name: 'お知らせ',
+            rowCount: sheet.getLastRow(),
+            headers: sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0]
+          };
+        } else {
+          debugInfo.sheets.news = "Sheet 'お知らせ' not found. Available: " + ssNews.getSheets().map(s => s.getName()).join(", ");
+        }
+      }
+    } catch (err) {
+      debugInfo.connected.news = "Error: " + err.toString();
+    }
+
+    return createJsonResponse(debugInfo);
+  }
+
+  if (action === 'diagnose') {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
+    if (!sheet) return createJsonResponse({ success: false, error: "Sheet not found" });
+    const rawData = sheet.getRange(1, 1, Math.min(6, sheet.getLastRow()), sheet.getLastColumn()).getValues();
     return createJsonResponse({
-      connected: ss ? "Yes" : "No (Standalone Script)",
-      spreadsheetName: ss ? ss.getName() : "None",
-      sheets: ss ? ss.getSheets().map(s => s.getName()) : []
+      success: true,
+      headers: rawData[0],
+      sampleRows: rawData.slice(1)
     });
   }
 
@@ -21,9 +84,25 @@ function doGet(e) {
     return createJsonResponse(getMembers());
   } else if (action === 'getNews') {
     return createJsonResponse(getNews());
+  } else if (action === 'getDocuments') {
+    const folderId = params.folderId;
+    return createJsonResponse(getDocuments(folderId));
   }
   
-  return createJsonResponse(getMembers());
+  return createJsonResponse({ success: false, error: "Unknown action: " + action });
+}
+
+// スプレッドシート取得用共通関数 (ID指定に対応)
+function getSS(id) {
+  if (id) {
+    try {
+      return SpreadsheetApp.openById(id);
+    } catch (e) {
+      console.error("ID指定でのSS取得に失敗 (" + id + "): " + e.toString());
+      throw e; // エラーを投げて上位でキャッチさせる
+    }
+  }
+  return SpreadsheetApp.getActiveSpreadsheet();
 }
 
 function doPost(e) {
@@ -53,8 +132,7 @@ function doPost(e) {
 }
 
 function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setMimeType(ContentService.MimeType.TEXT);
+  return createJsonResponse({ success: true, method: "OPTIONS" });
 }
 
 function createJsonResponse(data) {
@@ -67,176 +145,300 @@ function createJsonResponse(data) {
 const MEMBER_SHEET_NAME = '会員マスター';
 const MEMBER_KEY_MAP = {
   '会員番号': 'id',
+  'ID': 'id',
+  'MemberID': 'id',
+  'No': 'id',
   '世帯ID': 'familyId',
+  'FamilyID': 'familyId',
   '氏名': 'name',
+  'Name': 'name',
+  '名前': 'name',
   'ふりがな': 'furigana',
+  'フリガナ': 'furigana',
+  'Furigana': 'furigana',
   '生年月日': 'birthDate',
+  'BirthDate': 'birthDate',
+  'Birthday': 'birthDate',
   '性別': 'gender',
+  'Gender': 'gender',
   '会員種別': 'memberType',
+  'Type': 'memberType',
+  'MemberType': 'memberType',
   '段級位': 'rank',
+  'Rank': 'rank',
   '入会日': 'joinDate',
+  'JoinDate': 'joinDate',
   'ステータス': 'status',
+  'Status': 'status',
   '備考': 'notes',
+  'Notes': 'notes',
+  'Note': 'notes',
   '年齢': 'age',
-  '主保護者': 'guardian'
+  'Age': 'age',
+  '主保護者': 'guardian',
+  'Guardian': 'guardian',
+  'メールアドレス': 'email',
+  'アドレス': 'email',
+  'Email': 'email',
+  'E-mail': 'email'
 };
 
 function getMembers() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
-  if (!sheet) return { error: MEMBER_SHEET_NAME + "シートが見つかりません" };
-  
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  
-  return data.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((header, index) => {
-      const key = MEMBER_KEY_MAP[header] || header;
-      obj[key] = row[index];
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
+    if (!sheet) return { success: false, error: MEMBER_SHEET_NAME + "シートが見つかりません" };
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return { success: true, data: [] }; // ヘッダーのみ
+
+    const headers = data[0];
+    
+    const result = data.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((header, index) => {
+        const key = MEMBER_KEY_MAP[header] || header;
+        // 日付オブジェクトなどの処理（JSONで崩れないように文字列化）
+        let val = row[index];
+        if (val instanceof Date) {
+          val = Utilities.formatDate(val, "JST", "yyyy-MM-dd");
+        }
+        obj[key] = val;
+      });
+      return obj;
+    }).filter(row => {
+      // 完全に空の行を除外（ID または 名前 があれば有効）
+      return (row.id || row.name || row.furigana);
     });
-    return obj;
-  }).filter(row => row.id);
+    
+    return { success: true, data: result };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
 }
 
 function addMember(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  
-  // ID自動生成 (もしparams.idがなければ)
-  let nextId = params.id;
-  if (!nextId) {
-    const prefix = params.memberType === '少年部' ? 'S' : 'A';
-    const idIndex = headers.indexOf('会員番号');
-    const existingIds = data.slice(1)
-      .map(row => row[idIndex])
-      .filter(id => typeof id === 'string' && id.startsWith(prefix))
-      .map(id => parseInt(id.slice(1), 10));
-    const nextIdNum = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-    nextId = prefix + String(nextIdNum).padStart(3, '0');
-  }
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
+    if (!sheet) return { success: false, error: "シート名 '" + MEMBER_SHEET_NAME + "' が見つかりません" };
 
-  // 逆マッピング（日本語ヘッダーに合わせて行を作成）
-  const newRow = headers.map(header => {
-    const key = MEMBER_KEY_MAP[header];
-    if (header === '会員番号') return nextId;
-    if (header === 'ステータス') return params.status || '承認待ち';
-    if (header === '入会日') return params.joinDate || Utilities.formatDate(new Date(), "JST", "yyyy-MM-dd");
-    return params[key] || "";
-  });
-  
-  sheet.appendRow(newRow);
-  return { success: true, id: nextId };
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    // ID自動生成 (もしparams.idがなければ)
+    let nextId = params.id;
+    if (!nextId) {
+      const prefix = params.memberType === '少年部' ? 'S' : 'A';
+      const idIndex = headers.indexOf('会員番号');
+      if (idIndex !== -1) {
+        const existingIds = data.slice(1)
+          .map(row => row[idIndex])
+          .filter(id => typeof id === 'string' && id.startsWith(prefix))
+          .map(id => {
+            const num = parseInt(id.slice(1), 10);
+            return isNaN(num) ? 0 : num;
+          });
+        const nextIdNum = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+        nextId = prefix + String(nextIdNum).padStart(3, '0');
+      }
+    }
+
+    // 逆マッピング（日本語ヘッダーに合わせて行を作成）
+    const newRow = headers.map(header => {
+      const key = MEMBER_KEY_MAP[header];
+      if (header === '会員番号') return nextId;
+      if (header === 'ステータス') return params.status || '承認待ち';
+      if (header === '入会日') return params.joinDate || Utilities.formatDate(new Date(), "JST", "yyyy-MM-dd");
+      return params[key] || "";
+    });
+    
+    sheet.appendRow(newRow);
+    return { success: true, id: nextId };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
 }
 
 function updateMember(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idIndex = headers.indexOf('会員番号');
-  
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][idIndex] == params.id) {
-      headers.forEach((header, index) => {
-        const key = MEMBER_KEY_MAP[header];
-        if (key && params[key] !== undefined && header !== '会員番号') {
-          sheet.getRange(i + 1, index + 1).setValue(params[key]);
-        }
-      });
-      return { success: true };
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const idIndex = headers.indexOf('会員番号');
+    
+    if (idIndex === -1) return { success: false, error: "会員番号カラムが見つかりません" };
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idIndex] == params.id) {
+        headers.forEach((header, index) => {
+          const key = MEMBER_KEY_MAP[header];
+          if (key && params[key] !== undefined && header !== '会員番号') {
+            sheet.getRange(i + 1, index + 1).setValue(params[key]);
+          }
+        });
+        return { success: true };
+      }
     }
+    return { success: false, error: "Member not found: " + params.id };
+  } catch (err) {
+    return { success: false, error: err.toString() };
   }
-  return { success: false, error: "Member not found" };
 }
 
 function deleteMember(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
-  const idIndex = headers.indexOf('会員番号');
-  
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][idIndex] == params.id) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(MEMBER_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const idIndex = headers.indexOf('会員番号');
+    
+    if (idIndex === -1) return { success: false, error: "会員番号カラムが見つかりません" };
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][idIndex] == params.id) {
+        sheet.deleteRow(i + 1);
+        return { success: true };
+      }
     }
+    return { success: false, error: "Member not found" };
+  } catch (err) {
+    return { success: false, error: err.toString() };
   }
-  return { success: false };
 }
 
 /* --- お知らせ管理（お知らせシート必須） --- */
 
 function getNews() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('お知らせ');
-  if (!sheet) return []; // お知らせシートがない場合は空を返す
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  return data.slice(1).map(row => {
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = row[i]);
-    return obj;
-  });
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('お知らせ');
+    if (!sheet) {
+      console.warn("お知らせシートが見つかりません");
+      return { success: true, data: [] };
+    }
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return { success: true, data: [] }; // ヘッダーのみの場合
+    
+    const headers = data[0];
+    const result = data.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        if (h) {
+          let val = row[i];
+          if (val instanceof Date) {
+            val = Utilities.formatDate(val, "JST", "yyyy.MM.dd");
+          }
+          obj[h] = val;
+        }
+      });
+      // 互換性のためのキー変換（ある場合）
+      if (obj['固定'] !== undefined) obj.isPinned = (obj['固定'] === true || obj['固定'] === "TRUE");
+      return obj;
+    });
+    return { success: true, data: result };
+  } catch (e) {
+    console.error("getNews Error: " + e.toString());
+    return { success: false, error: e.toString() };
+  }
 }
 
 function addNews(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('お知らせ');
-  if (!sheet) return { success: false, error: "お知らせシートがありません" };
-  const data = sheet.getDataRange().getValues();
-  const nextId = data.length > 1 ? Math.max(...data.slice(1).map(r => r[0])) + 1 : 1;
-  const newRow = [
-    nextId,
-    params.date || Utilities.formatDate(new Date(), "JST", "yyyy.MM.dd"),
-    params.category,
-    params.title,
-    params.isPinned ? "TRUE" : "FALSE",
-    params.image || "",
-    params.link || "",
-    params.content || ""
-  ];
-  sheet.appendRow(newRow);
-  return { success: true, id: nextId };
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('お知らせ');
+    if (!sheet) return { success: false, error: "お知らせシートがありません" };
+    const data = sheet.getDataRange().getValues();
+    const nextId = data.length > 1 ? Math.max(...data.slice(1).map(r => {
+      const id = parseInt(r[0]);
+      return isNaN(id) ? 0 : id;
+    })) + 1 : 1;
+    const newRow = [
+      nextId,
+      params.date || Utilities.formatDate(new Date(), "JST", "yyyy.MM.dd"),
+      params.category,
+      params.title,
+      params.isPinned ? "TRUE" : "FALSE",
+      params.image || "",
+      params.link || "",
+      params.content || ""
+    ];
+    sheet.appendRow(newRow);
+    return { success: true, id: nextId };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
 }
 
 function updateNews(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('お知らせ');
-  if (!sheet) return { success: false };
-  const data = sheet.getRange("A:A").getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == params.id) {
-      if (params.date) sheet.getRange(i + 1, 2).setValue(params.date);
-      if (params.category) sheet.getRange(i + 1, 3).setValue(params.category);
-      if (params.title) sheet.getRange(i + 1, 4).setValue(params.title);
-      sheet.getRange(i + 1, 5).setValue(params.isPinned ? "TRUE" : "FALSE");
-      if (params.image !== undefined) sheet.getRange(i + 1, 6).setValue(params.image);
-      if (params.link !== undefined) sheet.getRange(i + 1, 7).setValue(params.link);
-      if (params.content !== undefined) sheet.getRange(i + 1, 8).setValue(params.content);
-      return { success: true };
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('お知らせ');
+    if (!sheet) return { success: false, error: "お知らせシートが見つかりません" };
+    const data = sheet.getRange("A:A").getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] == params.id) {
+        if (params.date) sheet.getRange(i + 1, 2).setValue(params.date);
+        if (params.category) sheet.getRange(i + 1, 3).setValue(params.category);
+        if (params.title) sheet.getRange(i + 1, 4).setValue(params.title);
+        sheet.getRange(i + 1, 5).setValue(params.isPinned ? "TRUE" : "FALSE");
+        if (params.image !== undefined) sheet.getRange(i + 1, 6).setValue(params.image);
+        if (params.link !== undefined) sheet.getRange(i + 1, 7).setValue(params.link);
+        if (params.content !== undefined) sheet.getRange(i + 1, 8).setValue(params.content);
+        return { success: true };
+      }
     }
+    return { success: false, error: "News not found" };
+  } catch (err) {
+    return { success: false, error: err.toString() };
   }
-  return { success: false };
 }
 
 function deleteNews(params) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('お知らせ');
-  if (!sheet) return { success: false };
-  const data = sheet.getRange("A:A").getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == params.id) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('お知らせ');
+    if (!sheet) return { success: false };
+    const data = sheet.getRange("A:A").getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] == params.id) {
+        sheet.deleteRow(i + 1);
+        return { success: true };
+      }
     }
+    return { success: false };
+  } catch (err) {
+    return { success: false, error: err.toString() };
   }
-  return { success: false };
 }
 
-/* --- ユーティリティ: フォルダ作成 --- */
+/* --- ドキュメント管理（Google Drive連携） --- */
+
+function getDocuments(folderId) {
+  if (!folderId) return { error: "フォルダIDが指定されていません" };
+  try {
+    const folder = DriveApp.getFolderById(folderId);
+    const files = folder.getFiles();
+    const result = [];
+    while (files.hasNext()) {
+      const file = files.next();
+      result.push({
+        id: file.getId(),
+        name: file.getName(),
+        mimeType: file.getMimeType(),
+        size: file.getSize(),
+        url: file.getUrl(),
+        downloadUrl: file.getDownloadUrl(),
+        updated: file.getLastUpdated()
+      });
+    }
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: false, error: error.toString(), data: [] };
+  }
+}
 
 function createKendoFolders() {
   const rootFolderName = "剣道部_運用（2026-）";

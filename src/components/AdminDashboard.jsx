@@ -15,6 +15,7 @@ export default function AdminDashboard({ user }) {
     const [members, setMembers] = useState([]);
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('members'); // members, news
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
     const [statusFilter, setStatusFilter] = useState('active'); // all, active
@@ -44,8 +45,10 @@ export default function AdminDashboard({ user }) {
                 ? await fetchActiveMembers()
                 : await fetchMembers();
             setMembers(data);
+            setError(null);
         } catch (error) {
             console.error('会員データ取得エラー:', error);
+            setError(`会員データの取得に失敗しました: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -145,6 +148,13 @@ export default function AdminDashboard({ user }) {
 
             {activeTab === 'members' ? (
                 <div className="space-y-6">
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm mb-6">
+                            <strong>⚠️ エラーが発生しました:</strong> {error}
+                            <p className="mt-1 text-xs opacity-75">APIのURL設定やSpreadsheetの権限をご確認ください。</p>
+                        </div>
+                    )}
+
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -290,7 +300,8 @@ export default function AdminDashboard({ user }) {
 
                         {!loading && filteredMembers.length === 0 && (
                             <div className="text-center py-12 text-gray-400">
-                                該当する会員がいません
+                                <p>該当する会員がいません</p>
+                                <p className="text-xs mt-2">(取得済みデータ総数: {members.length})</p>
                             </div>
                         )}
                     </div>
