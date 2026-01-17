@@ -330,23 +330,81 @@ function updateMember(params) {
     const data = sheet.getDataRange().getValues();
     const headers = data[0];
     const idIndex = headers.indexOf('会員番号');
+    const statusIndex = headers.indexOf('ステータス');
+    const emailIndex = headers.findIndex(h => MEMBER_KEY_MAP[h] === 'email');
+    const nameIndex = headers.findIndex(h => MEMBER_KEY_MAP[h] === 'name');
     
     if (idIndex === -1) return { success: false, error: "会員番号カラムが見つかりません" };
 
     for (let i = 1; i < data.length; i++) {
       if (data[i][idIndex] == params.id) {
+        // 承認チェック（ステータスが「承認待ち」から「在籍」に変わった場合）
+        const oldStatus = data[i][statusIndex];
+        const newStatus = params.status;
+        const isApproval = (oldStatus === '承認待ち' || oldStatus === 'pending') && 
+                           (newStatus === '在籍' || newStatus === 'active' || newStatus === '在籍中');
+        
+        // データ更新
         headers.forEach((header, index) => {
           const key = MEMBER_KEY_MAP[header];
           if (key && params[key] !== undefined && header !== '会員番号') {
             sheet.getRange(i + 1, index + 1).setValue(params[key]);
           }
         });
-        return { success: true };
+        
+        // 承認の場合はメール通知
+        if (isApproval && emailIndex !== -1 && data[i][emailIndex]) {
+          const memberEmail = data[i][emailIndex];
+          const memberName = nameIndex !== -1 ? data[i][nameIndex] : '';
+          sendApprovalEmail(memberEmail, memberName);
+        }
+        
+        return { success: true, approvalSent: isApproval };
       }
     }
     return { success: false, error: "Member not found: " + params.id };
   } catch (err) {
     return { success: false, error: err.toString() };
+  }
+}
+
+/**
+ * 会員承認時に送信するメール
+ * @param {string} email - 送信先メールアドレス
+ * @param {string} name - 会員名
+ */
+function sendApprovalEmail(email, name) {
+  try {
+    const subject = '【修猷館剣道部】会員登録が承認されました';
+    const body = `
+${name || '会員'} 様
+
+豊中修猷館剣道部へのご入会ありがとうございます。
+
+このたび、会員登録が承認されましたのでお知らせいたします。
+部員ポータルにログインすると、稽古日程やお知らせ、各種ドキュメントを閲覧できます。
+
+▼ 部員ポータル
+https://shuyukan-kendo.vercel.app/login
+
+ご不明な点がございましたら、お気軽にお問い合わせください。
+
+---
+豊中修猷館剣道部
+https://shuyukan-kendo.vercel.app
+`.trim();
+
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      body: body
+    });
+    
+    console.log('承認メール送信完了: ' + email);
+    return true;
+  } catch (err) {
+    console.error('承認メール送信エラー: ' + err.toString());
+    return false;
   }
 }
 
