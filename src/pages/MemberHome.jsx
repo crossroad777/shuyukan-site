@@ -15,6 +15,7 @@ export default function MemberHome() {
         console.log('[MemberHome] User State:', { user, isAdmin, isMember, isPending, isGuest });
     }, [user, isAdmin, isMember, isPending, isGuest]);
 
+
     const isJunior = (type) => {
         if (!type) return false;
         return type.includes('少年') || type.includes('小') || type.includes('中') || type.includes('幼');
