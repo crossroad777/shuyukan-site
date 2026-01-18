@@ -184,91 +184,110 @@ function addMember(data) {
  * 承認完了後、メールで通知
  */
 function approveMember(id) {
-  const ss = getSS(MEMBER_SPREADSHEET_ID);
-  const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
-  const values = sheet.getDataRange().getValues();
-  
-  // 列のインデックスを探す
-  const headers = values[0];
-  const statusCol = headers.indexOf('ステータス') + 1;
-  const idCol = headers.indexOf('会員番号');
-  const emailCol = headers.indexOf('メールアドレス');
-  const nameCol = headers.indexOf('氏名');
-  const guardianCol = headers.indexOf('保護者');
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
+    if (!sheet) throw new Error("Member sheet not found");
+    const values = sheet.getDataRange().getValues();
+    
+    // 列のインデックスを探す
+    const headers = values[0];
+    const statusCol = headers.indexOf('ステータス') + 1;
+    const idCol = headers.indexOf('会員番号');
+    const emailCol = headers.indexOf('メールアドレス');
+    const nameCol = headers.indexOf('氏名');
+    const guardianCol = headers.indexOf('保護者');
 
-  // IDが行番号形式（数字のみ）かどうかをチェック
-  const isRowBasedId = /^\d+$/.test(String(id));
-  
-  for (let i = 1; i < values.length; i++) {
-    const rowNumber = i + 1; // スプレッドシートの行番号
-    let matched = false;
+    if (statusCol <= 0) throw new Error("Status column not found");
+
+    // IDを安全に文字列化
+    const targetId = String(id).trim();
+    const isRowBasedId = /^\d+$/.test(targetId);
     
-    if (isRowBasedId && String(rowNumber) === String(id)) {
-      // 行番号ベースのID
-      matched = true;
-    } else if (idCol >= 0 && String(values[i][idCol]) === String(id)) {
-      // 会員番号列ベースのID
-      matched = true;
-    }
-    
-    if (matched) {
-      sheet.getRange(rowNumber, statusCol).setValue('在籍');
+    for (let i = 1; i < values.length; i++) {
+      const rowNumber = i + 1;
+      let matched = false;
       
-      // 承認完了メールを送信
-      const email = emailCol >= 0 ? values[i][emailCol] : null;
-      const name = nameCol >= 0 ? values[i][nameCol] : null;
-      const guardian = guardianCol >= 0 ? values[i][guardianCol] : null;
-      
-      if (email) {
-        try {
-          sendApprovalNotification(email, name || guardian || '会員');
-        } catch (e) {
-          console.error("承認完了メール送信エラー:", e);
-        }
+      if (isRowBasedId && String(rowNumber) === targetId) {
+        matched = true;
+      } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
+        matched = true;
       }
       
-      return { success: true };
+      if (matched) {
+        sheet.getRange(rowNumber, statusCol).setValue('在籍');
+        
+        // 承認完了メールを送信
+        const email = emailCol >= 0 ? values[i][emailCol] : null;
+        const name = nameCol >= 0 ? values[i][nameCol] : null;
+        const guardian = guardianCol >= 0 ? values[i][guardianCol] : null;
+        
+        if (email) {
+          try {
+            sendApprovalNotification(email, name || guardian || '会員');
+          } catch (e) {
+            console.error("承認完了メール送信エラー:", e.toString());
+          }
+        }
+        
+        return { success: true };
+      }
     }
+    return { success: false, error: "Member not found: " + targetId };
+  } catch (err) {
+    console.error("approveMember error:", err.toString());
+    return { success: false, error: err.toString() };
   }
-  return { success: false, error: "Member not found: " + id };
 }
+
 
 
 function updateMember(id, data) {
-  const ss = getSS(MEMBER_SPREADSHEET_ID);
-  const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
-  const values = sheet.getDataRange().getValues();
-  const headers = values[0];
-  const idCol = headers.indexOf('会員番号');
-  
-  // IDが行番号形式（数字のみ）かどうかをチェック
-  const isRowBasedId = /^\d+$/.test(String(id));
-  
-  for (let i = 1; i < values.length; i++) {
-    const rowNumber = i + 1;
-    let matched = false;
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
+    if (!sheet) throw new Error("Member sheet not found");
+    const values = sheet.getDataRange().getValues();
+    const headers = values[0];
+    const idCol = headers.indexOf('会員番号');
     
-    if (isRowBasedId && String(rowNumber) === String(id)) {
-      matched = true;
-    } else if (idCol >= 0 && String(values[i][idCol]) === String(id)) {
-      matched = true;
-    } else if (String(values[i][0]) === String(id)) {
-      // 最初の列がIDの場合のフォールバック
-      matched = true;
-    }
+    const targetId = String(id).trim();
+    const isRowBasedId = /^\d+$/.test(targetId);
     
-    if (matched) {
-      headers.forEach((h, colIdx) => {
-        const key = MEMBER_KEY_MAP[h] || h;
-        if (data[key] !== undefined) {
-          sheet.getRange(rowNumber, colIdx + 1).setValue(data[key]);
-        }
-      });
-      return { success: true };
+    for (let i = 1; i < values.length; i++) {
+      const rowNumber = i + 1;
+      let matched = false;
+      
+      if (isRowBasedId && String(rowNumber) === targetId) {
+        matched = true;
+      } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
+        matched = true;
+      } else if (String(values[i][0]).trim() === targetId) {
+        matched = true;
+      }
+      
+      if (matched) {
+        headers.forEach((h, colIdx) => {
+          const key = MEMBER_KEY_MAP[h] || h;
+          if (data[key] !== undefined) {
+            let value = data[key];
+            // 日付文字列をDate型に変換（GASのセルに適切に設定するため）
+            if (h.includes('日') && typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              value = new Date(value);
+            }
+            sheet.getRange(rowNumber, colIdx + 1).setValue(value);
+          }
+        });
+        return { success: true };
+      }
     }
+    return { success: false, error: "Member not found: " + targetId };
+  } catch (err) {
+    console.error("updateMember error:", err.toString());
+    return { success: false, error: err.toString() };
   }
-  return { success: false, error: "Member not found: " + id };
 }
+
 
 
 function deleteMember(id) {

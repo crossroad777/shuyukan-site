@@ -15,6 +15,8 @@ export default function AdminPortal({ user }) {
     const [activeView, setActiveView] = useState('menu');
     const [isQuickNewsModalOpen, setIsQuickNewsModalOpen] = useState(false);
     const [summary, setSummary] = useState({ pendingMembers: 0, newInquiries: 0 });
+    const [dashboardFilter, setDashboardFilter] = useState('all');
+
 
     useEffect(() => {
         const loadSummary = async () => {
@@ -56,7 +58,13 @@ export default function AdminPortal({ user }) {
         setIsQuickNewsModalOpen(false);
     };
 
+    const navigateToMembers = (filter = 'all') => {
+        setDashboardFilter(filter);
+        setActiveView('members');
+    };
+
     if (activeView !== 'menu') {
+
         return (
             <div className="space-y-6 animate-fade-in">
                 <button
@@ -67,8 +75,9 @@ export default function AdminPortal({ user }) {
                 </button>
 
                 <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100 min-h-[400px]">
-                    {activeView === 'members' ? (
-                        <AdminDashboard user={user} />
+                    {activeView === 'members' || activeView === 'new_requests' ? (
+                        <AdminDashboard user={user} initialStatusFilter={dashboardFilter} />
+
                     ) : activeView === 'manual' ? (
                         <DocumentManager
                             initialFolderId={FOLDER_IDS.MANUAL}
@@ -90,13 +99,14 @@ export default function AdminPortal({ user }) {
                             userRole="admin"
                             readOnly={false}
                         />
-                    ) : activeView === 'new_requests' || activeView === 'inquiries' ? (
+                    ) : activeView === 'inquiries' ? (
                         <DocumentManager
                             initialFolderId={FOLDER_IDS.INQUIRIES}
-                            title={activeView === 'new_requests' ? "📝 入会申込の承認" : "❓ お問い合わせ管理"}
+                            title="❓ お問い合わせ管理"
                             userRole="admin"
                             readOnly={false}
                         />
+
                     ) : activeView === 'admin_schedule' ? (
                         <div className="space-y-6">
                             <h2 className="text-2xl font-bold text-shuyukan-blue mb-6 border-b pb-4 flex justify-between items-center">
@@ -164,6 +174,29 @@ export default function AdminPortal({ user }) {
             </div>
 
             <div className="space-y-8">
+                {/* 承認待ちアラート - 最優先で表示 */}
+                {summary.pendingMembers > 0 && (
+                    <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-1 rounded-xl shadow-lg animate-pulse-subtle">
+                        <div className="bg-white p-6 rounded-lg flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <span className="text-4xl">📩</span>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800">
+                                        未処理の入会申請が <span className="text-amber-600 text-2xl">{summary.pendingMembers}件</span> あります
+                                    </h3>
+                                    <p className="text-gray-500">新しい部員候補が承認を待っています。内容を確認して承認を行ってください。</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => navigateToMembers('pending')}
+                                className="w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2"
+                            >
+                                ✏️ 申請を確認・承認する
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* クイックアクション - 最も使用頻度の高い機能 */}
                 <section className="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-xl border border-amber-200">
                     <h3 className="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2">
@@ -182,7 +215,7 @@ export default function AdminPortal({ user }) {
                             </div>
                         </button>
                         <button
-                            onClick={() => setActiveView('members')}
+                            onClick={() => navigateToMembers('all')}
                             className="flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group"
                         >
                             <span className="text-3xl group-hover:scale-110 transition-transform">👥</span>
@@ -191,6 +224,7 @@ export default function AdminPortal({ user }) {
                                 <div className="text-sm text-gray-500">会員情報の編集・承認作業</div>
                             </div>
                         </button>
+
                     </div>
                 </section>
 
@@ -225,10 +259,17 @@ export default function AdminPortal({ user }) {
                                 key={item.id}
                                 icon={item.icon}
                                 label={item.label}
-                                onClick={() => setActiveView(item.id)}
+                                onClick={() => {
+                                    if (item.id === 'new_requests') {
+                                        navigateToMembers('pending');
+                                    } else {
+                                        setActiveView(item.id);
+                                    }
+                                }}
                                 badgeCount={item.badgeCount}
                             />
                         ))}
+
                     </div>
                 </section>
             </div>

@@ -11,14 +11,15 @@ import DeleteConfirmModal from './DeleteConfirmModal.jsx';
 import NewsAddModal from './NewsAddModal.jsx';
 import NewsEditModal from './NewsEditModal.jsx';
 
-export default function AdminDashboard({ user }) {
+export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
     const [members, setMembers] = useState([]);
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('members'); // members, news
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
-    const [statusFilter, setStatusFilter] = useState('all'); // アラートを見逃さないようデフォルトを 'all' に
+    const [statusFilter, setStatusFilter] = useState(initialStatusFilter); // 初期表示フィルター
+
 
     // Modal states
     const [editMember, setEditMember] = useState(null);
@@ -148,13 +149,21 @@ export default function AdminDashboard({ user }) {
         return type.includes('一般') || type.includes('大') || type.includes('高');
     };
 
-    const filteredMembers = filter === 'all'
-        ? members
-        : members.filter(m => {
-            if (filter === '少年部') return isJunior(m.memberType);
-            if (filter === '一般部') return isAdult(m.memberType);
-            return m.memberType === filter;
-        });
+    const filteredMembers = members.filter(m => {
+        // 1. ステータスによるフィルタリング
+        if (statusFilter === 'active') {
+            if (!(m.status === '在籍' || m.status === 'active')) return false;
+        } else if (statusFilter === 'pending') {
+            if (!(m.status === '承認待ち' || m.status === 'pending')) return false;
+        }
+
+        // 2. 所属（少年部・一般部等）によるフィルタリング
+        if (filter === 'all') return true;
+        if (filter === '少年部') return isJunior(m.memberType);
+        if (filter === '一般部') return isAdult(m.memberType);
+        return m.memberType === filter;
+    });
+
 
     const stats = {
         total: members.length,
@@ -206,7 +215,7 @@ export default function AdminDashboard({ user }) {
 
                     {/* Pending Requests Alert */}
                     {pendingCount > 0 && (
-                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse-subtle">
+                        <div id="pending-alert" className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse-subtle">
                             <div className="flex items-center gap-4 text-left">
                                 <span className="text-4xl">🔔</span>
                                 <div>
@@ -217,10 +226,9 @@ export default function AdminDashboard({ user }) {
                             <button
                                 onClick={() => {
                                     setFilter('all');
-                                    const firstPending = members.find(m => m.status === '承認待ち' || m.status === 'pending');
-                                    if (firstPending) {
-                                        // 該当箇所へスクロール等のUX（省略可）
-                                    }
+                                    setStatusFilter('pending');
+                                    // テーブルへスクロール
+                                    document.getElementById('member-table-section')?.scrollIntoView({ behavior: 'smooth' });
                                 }}
                                 className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-bold transition-all shadow-md shrink-0"
                             >
@@ -228,6 +236,7 @@ export default function AdminDashboard({ user }) {
                             </button>
                         </div>
                     )}
+
 
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -290,16 +299,44 @@ export default function AdminDashboard({ user }) {
                                 一般部
                             </button>
                         </div>
-                        <label className="flex items-center gap-2 text-sm text-gray-600">
+                    </div>
+
+                    <div id="member-table-section" className="mb-4 flex flex-wrap items-center gap-4 text-sm bg-gray-50 p-3 rounded-lg border">
+                        <span className="font-bold text-gray-700">表示対象:</span>
+                        <label className="flex items-center cursor-pointer">
                             <input
-                                type="checkbox"
-                                checked={statusFilter === 'active'}
-                                onChange={(e) => setStatusFilter(e.target.checked ? 'active' : 'all')}
-                                className="rounded"
+                                type="radio"
+                                name="statusFilter"
+                                className="mr-2"
+                                checked={statusFilter === 'all'}
+                                onChange={() => setStatusFilter('all')}
                             />
-                            在籍者のみ表示
+                            全件表示
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="statusFilter"
+                                className="mr-2"
+                                checked={statusFilter === 'active'}
+                                onChange={() => setStatusFilter('active')}
+                            />
+                            在籍者のみ
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="statusFilter"
+                                className="mr-2"
+                                checked={statusFilter === 'pending'}
+                                onChange={() => setStatusFilter('pending')}
+                            />
+                            <span className={pendingCount > 0 ? "text-amber-600 font-bold" : ""}>
+                                承認待ちのみ {pendingCount > 0 && `(${pendingCount})`}
+                            </span>
                         </label>
                     </div>
+
 
                     {/* Member Table */}
                     <div className="bg-white shadow rounded-lg overflow-hidden">
