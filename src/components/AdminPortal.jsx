@@ -7,7 +7,9 @@ import NewsAddModal from './NewsAddModal';
 import AttendanceDashboard from './AttendanceDashboard';
 import AccountingDashboard from './AccountingDashboard';
 import { fetchSummaryCounts } from '../services/memberService';
+import { addNews } from '../services/newsService';
 import { useEffect } from 'react';
+
 
 export default function AdminPortal({ user }) {
     const [activeView, setActiveView] = useState('menu');
