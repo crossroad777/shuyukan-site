@@ -35,8 +35,28 @@ const faqs = [
 ];
 
 export default function Faq() {
+  // JSON-LD構造化データを生成
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(item => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  };
+
   return (
     <SiteFrame title="よくある質問">
+      {/* JSON-LD構造化データ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       <div className="max-w-3xl mx-auto space-y-4">
         {faqs.map((item, index) => (
           <details key={index} className="group bg-white border border-gray-200 rounded-lg shadow-sm open:shadow-md transition-all duration-200">

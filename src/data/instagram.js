@@ -1,26 +1,26 @@
 export const instagramPosts = [
     {
         id: 1,
-        image: '/assets/instagram/post1.png',
-        caption: '修猷館のマスコットキャラクター（仮）。一緒に稽古に励みましょう！ #修猷館 #少年剣道 #剣道女子',
-        likes: 124,
+        image: '/assets/instagram/post5.png',
+        caption: '稽古前の静寂。道道具を整える時間もまた、大切な修行の一部です。 #修猷館 #剣道 #心身鍛錬',
+        likes: 156,
     },
     {
         id: 2,
-        image: '/assets/instagram/post2.png',
-        caption: '本日の合同稽古の様子。広い体育館で気合の入った声が響き渡ります。 #熊野田小学校 #稽古風景',
-        likes: 89,
+        image: '/assets/instagram/post6.png',
+        caption: '本日の合同稽古。小学校の体育館に、子供たちの元気な声と竹刀の音が響き渡ります。 #少年剣道 #豊中市 #熊野田',
+        likes: 203,
     },
     {
         id: 3,
-        image: '/assets/instagram/post3.png',
-        caption: '「剣は心なり」。道具を大切にすることは、心を整えること。 #剣道防具 #ModernBudo',
-        likes: 76,
+        image: '/assets/instagram/post2.png',
+        caption: '基本を大切に。一振り一振りに心を込めて。 #基本打ち #剣道女子 #生涯剣道',
+        likes: 128,
     },
     {
         id: 4,
         image: '/assets/instagram/post4.png',
-        caption: '正座をして先生のお話を聞く子供たち。礼儀作法も剣道の大切な学びです。 #心身鍛錬 #習い事',
-        likes: 95,
+        caption: '正座をして先生のお話を聞く。礼儀作法は一生の宝物になります。 #礼節 #豊かな心 #剣道教室',
+        likes: 184,
     },
 ];

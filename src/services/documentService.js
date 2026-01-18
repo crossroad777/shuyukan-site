@@ -6,12 +6,20 @@
 const API_URL = import.meta.env.VITE_MEMBER_API_URL;
 const FOLDER_ID = import.meta.env.VITE_DOCUMENTS_FOLDER_ID;
 
+export const FOLDER_IDS = {
+    MANUAL: import.meta.env.VITE_FOLDER_ID_MANUAL,
+    EVENTS: import.meta.env.VITE_FOLDER_ID_EVENTS,
+    KEY: import.meta.env.VITE_FOLDER_ID_KEY,
+    INQUIRIES: import.meta.env.VITE_FOLDER_ID_INQUIRIES,
+    DOCS: import.meta.env.VITE_DOCUMENTS_FOLDER_ID
+};
+
 /**
  * 指定されたフォルダ内のファイル一覧を取得します
  */
 export const fetchDocuments = async (folderId = null) => {
     // デフォルトのフォルダID（VITE_DOCUMENTS_FOLDER_ID）または明示的に指定されたID
-    const targetFolderId = folderId || FOLDER_ID;
+    const targetFolderId = folderId || FOLDER_IDS.DOCS;
 
     if (!targetFolderId || targetFolderId === 'YOUR_FOLDER_ID_HERE') {
         console.warn('Google Drive Folder ID is not configured.');

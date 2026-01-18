@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const API_URL = import.meta.env.VITE_MEMBER_API_URL;
 
 /**
@@ -8,16 +6,16 @@ const API_URL = import.meta.env.VITE_MEMBER_API_URL;
  */
 export const fetchAttendance = async (date) => {
     try {
-        const response = await axios.get(API_URL, {
-            params: {
-                action: 'getAttendance',
-                date: date
-            }
-        });
-        return response.data;
+        const url = new URL(API_URL);
+        url.searchParams.append('action', 'getAttendance');
+        if (date) url.searchParams.append('date', date);
+
+        const response = await fetch(url.toString());
+        const result = await response.json();
+        return result;
     } catch (error) {
         console.error('fetchAttendance error:', error);
-        throw error;
+        return { success: false, error: error.message };
     }
 };
 
@@ -26,17 +24,20 @@ export const fetchAttendance = async (date) => {
  */
 export const updateAttendance = async (attendanceData) => {
     try {
-        const response = await axios.post(API_URL, {
-            action: 'updateAttendance',
-            ...attendanceData
-        }, {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'updateAttendance',
+                ...attendanceData
+            }),
             headers: {
                 'Content-Type': 'text/plain' // CORS対策
             }
         });
-        return response.data;
+        const result = await response.json();
+        return result;
     } catch (error) {
         console.error('updateAttendance error:', error);
-        throw error;
+        return { success: false, error: error.message };
     }
 };

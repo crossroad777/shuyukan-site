@@ -234,11 +234,62 @@ export async function fetchNewsByCategory(category) {
     return news.filter(item => item.category === category);
 }
 
+/**
+ * 画像をアップロード
+ * @param {File} file - 画像ファイル
+ * @returns {Promise<Object>} アップロード結果 ({success, url, fileId})
+ */
+export async function uploadNewsImage(file) {
+    if (!NEWS_API_URL) {
+        // モック: ローカルプレビューURLを返す
+        const mockUrl = URL.createObjectURL(file);
+        return { success: true, url: mockUrl, name: file.name };
+    }
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64Data = reader.result.split(',')[1];
+                const payload = {
+                    action: 'uploadFile',
+                    fileName: file.name,
+                    mimeType: file.type,
+                    base64Data: base64Data
+                };
+
+                const response = await fetch(NEWS_API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Upload failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'Upload failed');
+                }
+
+                resolve(data);
+            } catch (error) {
+                console.error('[NewsService] Image upload error:', error);
+                reject(error);
+            }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
 export default {
     fetchNews,
     fetchPinnedNews,
     fetchNewsByCategory,
     addNews,
     updateNews,
-    deleteNews
+    deleteNews,
+    uploadNewsImage
 };

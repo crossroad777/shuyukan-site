@@ -1,0 +1,21 @@
+# Robots.txt - 豊中修猷館剣道部
+# https://shuyukan.vercel.app/
+
+User-agent: *
+Allow: /
+
+# 生成AIクローラー向け情報
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# サイトマップ
+Sitemap: https://shuyukan.vercel.app/sitemap.xml
+
+# llms.txt（生成AI向け情報）
+# https://shuyukan.vercel.app/llms.txt

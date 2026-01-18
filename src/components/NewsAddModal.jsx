@@ -1,12 +1,14 @@
 /**
  * NewsAddModal - お知らせ新規投稿モーダル
  */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { uploadNewsImage } from '../services/newsService';
 
 const categoryOptions = ['お知らせ', '行事', '稽古日', '体験会', 'その他'];
 
 export default function NewsAddModal({ onClose, onAdd }) {
+    const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         title: '',
         category: 'お知らせ',
@@ -17,6 +19,7 @@ export default function NewsAddModal({ onClose, onAdd }) {
         isPinned: false
     });
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -24,6 +27,27 @@ export default function NewsAddModal({ onClose, onAdd }) {
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const result = await uploadNewsImage(file);
+            if (result.success) {
+                setFormData(prev => ({ ...prev, image: result.url }));
+            }
+        } catch (error) {
+            alert('画像のアップロードに失敗しました: ' + error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const triggerFileSelect = () => {
+        fileInputRef.current?.click();
     };
 
     const handleSubmit = async (e) => {
@@ -91,18 +115,51 @@ export default function NewsAddModal({ onClose, onAdd }) {
                         </div>
                     </div>
 
-                    {/* Image URL */}
+                    {/* Image Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">画像URL (Googleドライブ等)</label>
-                        <input
-                            type="text"
-                            name="image"
-                            value={formData.image}
-                            onChange={handleChange}
-                            placeholder="https://drive.google.com/..."
-                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
-                        />
-                        <p className="text-[10px] text-gray-400 mt-1">※Googleドライブの共有URLを貼り付けると自動でサムネイル化されます</p>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">画像</label>
+                        <div className="flex gap-2 mb-2">
+                            <input
+                                type="text"
+                                name="image"
+                                value={formData.image}
+                                onChange={handleChange}
+                                placeholder="https://drive.google.com/..."
+                                className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue text-sm"
+                            />
+                            <button
+                                type="button"
+                                onClick={triggerFileSelect}
+                                disabled={uploading}
+                                className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium border border-gray-300 transition-colors whitespace-nowrap"
+                            >
+                                {uploading ? '中...' : '画像を選択'}
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                className="hidden"
+                            />
+                        </div>
+                        {formData.image && (
+                            <div className="relative w-full aspect-video bg-gray-50 rounded border border-dashed border-gray-300 overflow-hidden group">
+                                <img
+                                    src={formData.image}
+                                    alt="Preview"
+                                    className="w-full h-full object-contain"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        )}
+                        <p className="text-[10px] text-gray-400 mt-1">※ローカルから選択するか、Googleドライブの直接URLを指定してください</p>
                     </div>
 
                     {/* Link URL */}

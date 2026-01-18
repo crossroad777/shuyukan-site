@@ -3,7 +3,7 @@
  * Firebase認証済みの管理者のみアクセス可能
  */
 import React, { useEffect, useState } from 'react';
-import { fetchMembers, fetchActiveMembers, addMember, updateMember, deleteMember } from '../services/memberService.js';
+import { fetchMembers, fetchActiveMembers, addMember, updateMember, deleteMember, approveMember } from '../services/memberService.js';
 import { fetchNews, addNews, updateNews, deleteNews } from '../services/newsService.js';
 import MemberEditModal from './MemberEditModal.jsx';
 import MemberAddModal from './MemberAddModal.jsx';
@@ -18,7 +18,7 @@ export default function AdminDashboard({ user }) {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('members'); // members, news
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
-    const [statusFilter, setStatusFilter] = useState('active'); // all, active
+    const [statusFilter, setStatusFilter] = useState('all'); // アラートを見逃さないようデフォルトを 'all' に
 
     // Modal states
     const [editMember, setEditMember] = useState(null);
@@ -32,6 +32,9 @@ export default function AdminDashboard({ user }) {
 
     // Notification state
     const [successMessage, setSuccessMessage] = useState(null);
+
+    // 承認待ちの人数
+    const pendingCount = members.filter(m => m.status === '承認待ち' || m.status === 'pending').length;
 
     // 3秒後にメッセージを消すタイマー
     useEffect(() => {
@@ -96,6 +99,21 @@ export default function AdminDashboard({ user }) {
             await loadMembers();
         } catch (error) {
             setError(`更新に失敗しました: ${error.message}`);
+        }
+    };
+
+    const handleApproveMember = async (member) => {
+        try {
+            if (!window.confirm(`${member.name}様の入会申請を承認し、ポータルの利用を許可しますか？`)) return;
+
+            setLoading(true);
+            await approveMember(member.id);
+            setSuccessMessage(`${member.name}様の承認が完了しました。`);
+            await loadMembers();
+        } catch (error) {
+            setError(`承認に失敗しました: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -183,6 +201,31 @@ export default function AdminDashboard({ user }) {
                         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm mb-6">
                             <strong>⚠️ エラーが発生しました:</strong> {error}
                             <p className="mt-1 text-xs opacity-75">APIのURL設定やSpreadsheetの権限をご確認ください。</p>
+                        </div>
+                    )}
+
+                    {/* Pending Requests Alert */}
+                    {pendingCount > 0 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse-subtle">
+                            <div className="flex items-center gap-4 text-left">
+                                <span className="text-4xl">🔔</span>
+                                <div>
+                                    <h3 className="text-lg font-bold text-amber-800">未承認の入会申請があります ({pendingCount}件)</h3>
+                                    <p className="text-amber-700 text-sm">申請内容を確認し、利用を許可する場合は「承認」ボタンを押してください。</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setFilter('all');
+                                    const firstPending = members.find(m => m.status === '承認待ち' || m.status === 'pending');
+                                    if (firstPending) {
+                                        // 該当箇所へスクロール等のUX（省略可）
+                                    }
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-bold transition-all shadow-md shrink-0"
+                            >
+                                申請を確認する
+                            </button>
                         </div>
                     )}
 
@@ -309,6 +352,14 @@ export default function AdminDashboard({ user }) {
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                                    {(m.status === '承認待ち' || m.status === 'pending') && (
+                                                        <button
+                                                            onClick={() => handleApproveMember(m)}
+                                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold mr-3 shadow-sm transition-all animate-bounce-in"
+                                                        >
+                                                            承認
+                                                        </button>
+                                                    )}
                                                     <button
                                                         onClick={() => setEditMember(m)}
                                                         className="text-shuyukan-blue hover:text-shuyukan-gold mr-3"

@@ -236,6 +236,62 @@ export async function updateMember(memberId, memberData) {
 }
 
 /**
+ * 会員を承認（ステータスを「在籍」に変更）
+ * @param {string} memberId - 会員番号
+ * @returns {Promise<Object>} 結果
+ */
+export async function approveMember(memberId) {
+    if (!MEMBER_API_URL) {
+        return updateMember(memberId, { status: '在籍' });
+    }
+
+    try {
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'approveMember');
+        url.searchParams.append('id', memberId);
+
+        console.log('[MemberService] Approving member:', memberId);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
+        });
+
+        const data = await response.json();
+        if (data && data.success === false) {
+            throw new Error(data.error || '承認に失敗しました');
+        }
+        return data;
+    } catch (error) {
+        console.error('会員承認エラー:', error);
+        throw error;
+    }
+}
+
+/**
+ * 管理者向けサマリーカウントを取得
+ * @returns {Promise<Object>} {pendingMembers: number, newInquiries: number}
+ */
+export async function fetchSummaryCounts() {
+    if (!MEMBER_API_URL) {
+        const members = await fetchMembers();
+        const pendingCount = members.filter(m => m.status === '承認待ち').length;
+        return { pendingMembers: pendingCount, newInquiries: 0 };
+    }
+
+    try {
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'getSummaryCounts');
+
+        const response = await fetch(url.toString());
+        const data = await response.json();
+        return data.data || { pendingMembers: 0, newInquiries: 0 };
+    } catch (error) {
+        console.error('サマリーカウント取得エラー:', error);
+        return { pendingMembers: 0, newInquiries: 0 };
+    }
+}
+
+/**
  * 会員を削除
  * @param {string} memberId - 会員番号
  * @returns {Promise<boolean>} 成功/失敗

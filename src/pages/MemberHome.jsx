@@ -25,7 +25,10 @@ export default function MemberHome() {
     const [formData, setFormData] = useState({
         name: '',
         furigana: '',
-        relation: '本人'
+        relation: '本人',
+        guardianName: '',
+        memberName: '',
+        email: ''
     });
 
     const [news, setNews] = useState([]);
@@ -94,21 +97,32 @@ export default function MemberHome() {
 
     const handleRequestSubmit = async (e) => {
         e.preventDefault();
+
+        // メールアドレスのバリデーション
+        const emailToUse = formData.email || user.email;
+        if (!emailToUse) {
+            alert('メールアドレスを入力してください。');
+            return;
+        }
+
         setSubmitting(true);
         try {
-            // memberServiceのrequestJoinを呼ぶ
             const { requestJoin } = await import('../services/memberService');
-            await requestJoin({
-                name: formData.name,
+
+            // 保護者の場合は部員名をnameに、保護者名をguardianNameに
+            const submitData = {
+                name: formData.relation === '保護者' ? formData.memberName : formData.name,
                 furigana: formData.furigana,
-                email: user.email,
+                email: emailToUse,
+                guardianName: formData.relation === '保護者' ? formData.guardianName : '',
                 notes: `申請者区分: ${formData.relation}`,
-                memberType: formData.relation === '本人' ? '一般部' : '少年部' // 暫定
-            });
+                memberType: formData.relation === '保護者' ? '少年部' : '一般部'
+            };
+
+            await requestJoin(submitData);
             setSubmitted(true);
-            // 実際はここでリロードするか、Authの再取得が必要だが、pending表示にするためにモックならすぐに反映される
             setTimeout(() => {
-                window.location.reload(); // ステータス再取得のため
+                window.location.reload();
             }, 3000);
         } catch (error) {
             alert('申請の送信に失敗しました。');
@@ -203,30 +217,9 @@ export default function MemberHome() {
 
                             <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
                                 <form onSubmit={handleRequestSubmit} className="space-y-4">
+                                    {/* 部員との関係 - 最初に選択 */}
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">氏名 (フルネーム)</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full border rounded px-3 py-2 text-lg"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            placeholder="山田 太郎"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full border rounded px-3 py-2 text-lg"
-                                            value={formData.furigana}
-                                            onChange={(e) => setFormData({ ...formData, furigana: e.target.value })}
-                                            placeholder="やまだ たろう"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">部員との関係</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">部員との関係 *</label>
                                         <select
                                             className="w-full border rounded px-3 py-2 text-lg"
                                             value={formData.relation}
@@ -234,9 +227,90 @@ export default function MemberHome() {
                                         >
                                             <option>本人</option>
                                             <option>保護者</option>
-                                            <option>その他（指導者・OB等）</option>
+                                            <option>その他</option>
                                         </select>
                                     </div>
+
+                                    {/* 保護者の場合: 保護者名と部員名 */}
+                                    {formData.relation === '保護者' ? (
+                                        <>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">保護者氏名 (申請者) *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    value={formData.guardianName}
+                                                    onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                                                    placeholder="山田 花子"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">部員氏名 (お子様) *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    value={formData.memberName}
+                                                    onChange={(e) => setFormData({ ...formData, memberName: e.target.value })}
+                                                    placeholder="山田 太郎"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな (部員)</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    value={formData.furigana}
+                                                    onChange={(e) => setFormData({ ...formData, furigana: e.target.value })}
+                                                    placeholder="やまだ たろう"
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">氏名 (フルネーム) *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    value={formData.name}
+                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                    placeholder="山田 太郎"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    value={formData.furigana}
+                                                    onChange={(e) => setFormData({ ...formData, furigana: e.target.value })}
+                                                    placeholder="やまだ たろう"
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {/* メールアドレス - 全員必須 */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">
+                                            メールアドレス (Gmail推奨) *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            required
+                                            className="w-full border rounded px-3 py-2 text-lg"
+                                            value={formData.email || user?.email || ''}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            placeholder="example@gmail.com"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            ※ ポータルへのログインに使用します。Gmailを推奨します。
+                                        </p>
+                                    </div>
+
                                     <div className="pt-4">
                                         <button
                                             type="submit"

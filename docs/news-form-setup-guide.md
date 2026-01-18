@@ -13,7 +13,7 @@
 
 3. フォームのタイトルを設定：
 
-   ```
+   ```text
    【管理者用】お知らせ投稿フォーム
    ```
 
@@ -132,7 +132,7 @@ function formatDate(timestamp) {
 
 プロジェクトフォルダの `.env` ファイルに以下を追加：
 
-```
+```env
 VITE_NEWS_API_URL=https://script.google.com/macros/s/xxxxx/exec
 ```
 
