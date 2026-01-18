@@ -45,6 +45,14 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
         }
     }, [successMessage]);
 
+    // プロップスからの初期フィルター同期
+    useEffect(() => {
+        if (initialStatusFilter) {
+            setStatusFilter(initialStatusFilter);
+        }
+    }, [initialStatusFilter]);
+
+
     useEffect(() => {
         if (activeTab === 'members') {
             loadMembers();
@@ -83,25 +91,34 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
 
     // CRUD Handlers
     const handleAddMember = async (memberData) => {
+        setLoading(true);
         try {
             await addMember(memberData);
-            setSuccessMessage(`${memberData.name}様を新規登録しました。「承認待ち」として追加されたため、全件表示に切り替えます。`);
+            setSuccessMessage(`${memberData.name || '会員'}を新規登録しました。「承認待ち」として追加されたため、全件表示に切り替えます。`);
             setStatusFilter('all'); // 全表示に切り替え
             await loadMembers();
         } catch (error) {
             setError(`登録に失敗しました: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
+
     const handleUpdateMember = async (memberId, memberData) => {
+        setLoading(true);
         try {
             await updateMember(memberId, memberData);
             setSuccessMessage(`${memberData.name || '会員'}の情報を更新しました。`);
             await loadMembers();
         } catch (error) {
+            console.error('Update error:', error);
             setError(`更新に失敗しました: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
+
 
     const handleApproveMember = async (member) => {
         try {

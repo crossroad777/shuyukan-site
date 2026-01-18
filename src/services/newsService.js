@@ -110,14 +110,17 @@ export async function addNews(newsData) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
-        const url = new URL(NEWS_API_URL);
-        url.searchParams.append('action', 'addNews');
-        url.searchParams.append('newsData', JSON.stringify(newsData));
-
-        console.log('[NewsService] Adding news via GET workaround');
-        const response = await fetch(url.toString(), {
-            method: 'GET',
+        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
+        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+                action: 'addNews',
+                newsData: newsData
+            }),
             redirect: 'follow'
         });
 
@@ -125,6 +128,7 @@ export async function addNews(newsData) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの追加に失敗しました');
         }
@@ -151,15 +155,18 @@ export async function updateNews(id, newsData) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
-        const url = new URL(NEWS_API_URL);
-        url.searchParams.append('action', 'updateNews');
-        url.searchParams.append('id', id);
-        url.searchParams.append('newsData', JSON.stringify(newsData));
-
-        console.log('[NewsService] Updating news via GET workaround:', id);
-        const response = await fetch(url.toString(), {
-            method: 'GET',
+        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
+        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+                action: 'updateNews',
+                id: id,
+                newsData: newsData
+            }),
             redirect: 'follow'
         });
 
@@ -167,6 +174,7 @@ export async function updateNews(id, newsData) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの更新に失敗しました');
         }
@@ -192,17 +200,21 @@ export async function deleteNews(id) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
-        const url = new URL(NEWS_API_URL);
-        url.searchParams.append('action', 'deleteNews');
-        url.searchParams.append('id', id);
-
-        console.log('[NewsService] Deleting news via GET workaround:', id);
-        const response = await fetch(url.toString(), {
-            method: 'GET',
+        const response = await fetch(NEWS_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+                action: 'deleteNews',
+                id: id
+            }),
             redirect: 'follow'
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの削除に失敗しました');

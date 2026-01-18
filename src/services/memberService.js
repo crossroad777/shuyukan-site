@@ -149,14 +149,17 @@ export async function addMember(memberData) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
-        const url = new URL(MEMBER_API_URL);
-        url.searchParams.append('action', 'add');
-        url.searchParams.append('data', JSON.stringify(memberData));
-
-        console.log('[MemberService] Adding member via GET workaround');
-        const response = await fetch(url.toString(), {
-            method: 'GET',
+        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
+        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
+        const response = await fetch(MEMBER_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+                action: 'add',
+                data: memberData
+            }),
             redirect: 'follow'
         });
 
@@ -164,6 +167,7 @@ export async function addMember(memberData) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
         if (data && data.success === false) {
             throw new Error(data.error || '会員の追加に失敗しました');
         }
@@ -208,15 +212,18 @@ export async function updateMember(memberId, memberData) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
-        const url = new URL(MEMBER_API_URL);
-        url.searchParams.append('action', 'update');
-        url.searchParams.append('id', memberId);
-        url.searchParams.append('data', JSON.stringify(memberData));
-
-        console.log('[MemberService] Updating member via GET workaround:', memberId);
-        const response = await fetch(url.toString(), {
-            method: 'GET',
+        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
+        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
+        const response = await fetch(MEMBER_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+                action: 'update',
+                id: memberId,
+                data: memberData
+            }),
             redirect: 'follow'
         });
 
@@ -224,6 +231,7 @@ export async function updateMember(memberId, memberData) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+
         if (data && data.success === false) {
             throw new Error(data.error || '会員の更新に失敗しました');
         }
