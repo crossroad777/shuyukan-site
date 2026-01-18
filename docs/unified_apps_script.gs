@@ -96,12 +96,28 @@ function doPost(e) {
   const action = params.action;
   try {
     switch (action) {
+      // 会員管理
+      case 'getMembers': return createJsonResponse({ success: true, data: getMembers() });
+      case 'add': return createJsonResponse(addMember(params.data));
+      case 'update': return createJsonResponse(updateMember(params.id, params.data));
+      case 'approveMember': return createJsonResponse(approveMember(params.id));
+      case 'delete': return createJsonResponse(deleteMember(params.id));
+      
+      // ニュース管理
+      case 'getNews': return createJsonResponse({ success: true, data: getNews() });
+      case 'addNews': return createJsonResponse(addNews(params.newsData));
+      case 'updateNews': return createJsonResponse(updateNews(params.id, params.newsData));
+      case 'deleteNews': return createJsonResponse(deleteNews(params.id));
+      
+      // その他
       case 'updateAttendance': return createJsonResponse(updateAttendance(params));
       case 'updateAccounting': return createJsonResponse(updateAccounting(params));
       case 'uploadFile': return createJsonResponse(uploadFile(params));
+      
       default:
         return createJsonResponse({ success: false, error: "Unknown action: " + action });
     }
+
   } catch (err) {
     return createJsonResponse({ success: false, error: err.toString() });
   }
