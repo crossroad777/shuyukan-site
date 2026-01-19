@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const navLinks = [
     '/',
     '/about',
+    '/benefits',
     '/practice',
     '/Teacher',
     '/join',

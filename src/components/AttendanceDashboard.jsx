@@ -145,27 +145,65 @@ const AttendanceDashboard = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl shadow-sm border text-center">
-                    <div className="text-sm text-gray-500">本日対象者</div>
-                    <div className="text-2xl font-bold">{members.length}</div>
+                <div className="bg-white p-4 rounded-xl shadow-sm border text-center flex flex-col justify-center relative overflow-hidden group">
+                    <div className="text-sm text-gray-400 font-bold uppercase tracking-tighter mb-1">本日対象者</div>
+                    <div className="text-3xl font-black text-gray-800">{members.length}</div>
+                    <div className="absolute bottom-0 left-0 h-1 bg-gray-100 w-full"></div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-xl shadow-sm border border-green-100 text-center">
-                    <div className="text-sm text-green-600">出席済</div>
-                    <div className="text-2xl font-bold text-green-700">
+                <div className="bg-white p-4 rounded-xl shadow-sm border text-center flex flex-col justify-center relative overflow-hidden group">
+                    <div className="text-sm text-green-500 font-bold uppercase tracking-tighter mb-1">出席済</div>
+                    <div className="text-3xl font-black text-green-600">
                         {Object.values(attendance).filter(a => a['備考'] === '出席' || a['備考'] === '出席済').length}
                     </div>
+                    <div className="absolute bottom-0 left-0 h-1 bg-green-500 w-full" style={{ width: `${(Object.values(attendance).filter(a => a['備考'] === '出席' || a['備考'] === '出席済').length / Math.max(members.length, 1)) * 100}%` }}></div>
                 </div>
-                <div className="bg-orange-50 p-4 rounded-xl shadow-sm border border-orange-100 text-center">
-                    <div className="text-sm text-orange-600">遅刻・早退</div>
-                    <div className="text-2xl font-bold text-orange-700">
+                <div className="bg-white p-4 rounded-xl shadow-sm border text-center flex flex-col justify-center relative overflow-hidden group">
+                    <div className="text-sm text-orange-500 font-bold uppercase tracking-tighter mb-1">遅刻・早退</div>
+                    <div className="text-3xl font-black text-orange-600">
                         {Object.values(attendance).filter(a => a['備考'] === '遅刻' || a['備考'] === '早退').length}
                     </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl shadow-sm border text-center">
-                    <div className="text-sm text-gray-500">未記録</div>
-                    <div className="text-2xl font-bold">
-                        {members.length - Object.keys(attendance).length}
+                <div className="bg-white p-4 rounded-xl shadow-sm border text-center flex flex-col justify-center relative overflow-hidden group">
+                    <div className="text-sm text-gray-300 font-bold uppercase tracking-tighter mb-1">未記録 / 欠席</div>
+                    <div className="text-3xl font-black text-gray-300">
+                        {members.length - Object.values(attendance).filter(a => ['出席', '出席済', '遅刻', '早退'].includes(a['備考'])).length}
                     </div>
+                </div>
+            </div>
+
+            {/* Attendance Progress Ring (Visual enhancement) */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <h3 className="text-lg font-bold text-gray-800">本日の出席率</h3>
+                    <p className="text-sm text-gray-400">対象者数に対する出席報告済みの割合です</p>
+                </div>
+                <div className="relative w-20 h-20 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90">
+                        <circle
+                            cx="40"
+                            cy="40"
+                            r="34"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            className="text-gray-100"
+                        />
+                        <circle
+                            cx="40"
+                            cy="40"
+                            r="34"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeDasharray={2 * Math.PI * 34}
+                            strokeDashoffset={2 * Math.PI * 34 * (1 - (Object.values(attendance).filter(a => ['出席', '出席済', '遅刻', '早退'].includes(a['備考'])).length / Math.max(members.length, 1)))}
+                            className="text-red-500 transition-all duration-1000"
+                            strokeLinecap="round"
+                        />
+                    </svg>
+                    <span className="absolute text-sm font-black text-red-600">
+                        {Math.round((Object.values(attendance).filter(a => ['出席', '出席済', '遅刻', '早退'].includes(a['備考'])).length / Math.max(members.length, 1)) * 100)}%
+                    </span>
                 </div>
             </div>
 

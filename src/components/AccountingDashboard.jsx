@@ -191,50 +191,97 @@ export default function AccountingDashboard() {
             )}
 
             {/* 簡易月別グラフ (CSS/SVG) */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h3 className="text-lg font-bold text-gray-800 mb-6">月別収支推移</h3>
-                {sortedMonths.length > 0 ? (
-                    <div className="flex items-end gap-4 h-64 px-4 overflow-x-auto">
-                        {sortedMonths.map(d => (
-                            <div key={d.month} className="flex-1 min-w-[60px] flex flex-col items-center group">
-                                <div className="w-full flex items-end justify-center gap-1.5 h-full relative">
-                                    {/* 収入バー */}
-                                    <div
-                                        className="w-4 bg-emerald-400 rounded-t-sm hover:bg-emerald-500 transition-all relative group/bar"
-                                        style={{ height: `${(d.income / maxVal) * 100}%` }}
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            +{d.income.toLocaleString()}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <span>📈</span> 月別収支推移
+                    </h3>
+                    {sortedMonths.length > 0 ? (
+                        <div className="flex items-end gap-4 h-64 px-4 overflow-x-auto">
+                            {sortedMonths.map(d => (
+                                <div key={d.month} className="flex-1 min-w-[60px] flex flex-col items-center group">
+                                    <div className="w-full flex items-end justify-center gap-1.5 h-full relative">
+                                        <div
+                                            className="w-4 bg-emerald-400 rounded-t-sm hover:bg-emerald-500 transition-all relative group/bar"
+                                            style={{ height: `${(d.income / maxVal) * 100}%` }}
+                                        >
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-10 font-bold">
+                                                +{d.income.toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div
+                                            className="w-4 bg-rose-400 rounded-t-sm hover:bg-rose-500 transition-all relative group/bar2"
+                                            style={{ height: `${(d.expense / maxVal) * 100}%` }}
+                                        >
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar2:opacity-100 transition-opacity whitespace-nowrap z-10 font-bold">
+                                                -{d.expense.toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
-                                    {/* 支出バー */}
-                                    <div
-                                        className="w-4 bg-rose-400 rounded-t-sm hover:bg-rose-500 transition-all relative group/bar2"
-                                        style={{ height: `${(d.expense / maxVal) * 100}%` }}
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover/bar2:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            -{d.expense.toLocaleString()}
-                                        </div>
-                                    </div>
+                                    <div className="text-[10px] text-gray-400 mt-2 font-bold">{d.month}</div>
                                 </div>
-                                <div className="text-[10px] text-gray-400 mt-2 font-bold">{d.month}</div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="h-48 flex items-center justify-center text-gray-300 italic border-2 border-dashed border-gray-50 rounded-xl">
+                            データがありません
+                        </div>
+                    )}
+                    <div className="mt-6 flex justify-center gap-6 text-xs font-bold">
+                        <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>
+                            <span className="text-emerald-700">収入 (Income)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="w-3 h-3 bg-rose-400 rounded-full"></span>
+                            <span className="text-rose-700">支出 (Expense)</span>
+                        </div>
                     </div>
-                ) : (
-                    <div className="h-48 flex items-center justify-center text-gray-300 italic border-2 border-dashed border-gray-50 rounded-xl">
-                        データがありません
+                </div>
+
+                {/* カテゴリ別支出内訳 */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span>📊</span> 支出カテゴリ内訳
+                        </h3>
+                        <span className="text-xs text-shuyukan-gold font-bold bg-shuyukan-gold/10 px-2 py-1 rounded-full uppercase tracking-tighter">Total Expense</span>
                     </div>
-                )}
-                <div className="mt-6 flex justify-center gap-6 text-xs font-bold">
-                    <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>
-                        <span className="text-emerald-700">収入 (Income)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 bg-rose-400 rounded-full"></span>
-                        <span className="text-rose-700">支出 (Expense)</span>
-                    </div>
+
+                    {totalExpense > 0 ? (
+                        <div className="space-y-4">
+                            {Object.entries(
+                                records.filter(r => r.種別 === '支出').reduce((acc, r) => {
+                                    const cat = r.カテゴリ || 'その他';
+                                    acc[cat] = (acc[cat] || 0) + (Number(r.金額) || 0);
+                                    return acc;
+                                }, {})
+                            )
+                                .sort((a, b) => b[1] - a[1])
+                                .map(([cat, val], idx) => {
+                                    const percentage = (val / totalExpense) * 100;
+                                    const colors = ['bg-rose-500', 'bg-orange-400', 'bg-amber-400', 'bg-shuyukan-gold', 'bg-shuyukan-blue', 'bg-gray-400'];
+                                    return (
+                                        <div key={cat} className="group">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-sm font-bold text-gray-700">{cat}</span>
+                                                <span className="text-sm font-bold text-gray-400">¥{val.toLocaleString()} <span className="text-[10px] ml-1">({percentage.toFixed(0)}%)</span></span>
+                                            </div>
+                                            <div className="w-full bg-gray-50 h-2.5 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full ${colors[idx % colors.length]} rounded-full transition-all duration-1000 group-hover:brightness-110`}
+                                                    style={{ width: `${percentage}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    ) : (
+                        <div className="h-48 flex items-center justify-center text-gray-300 italic border-2 border-dashed border-gray-50 rounded-xl">
+                            支出データがありません
+                        </div>
+                    )}
                 </div>
             </div>
 

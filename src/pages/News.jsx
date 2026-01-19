@@ -9,7 +9,7 @@ import FadeInSection from '../components/FadeInSection.jsx';
 import { fetchNews } from '../services/newsService.js';
 
 /**
- * 日付文字列を月日のみの形式に変換
+ * 日付文字列を年月日の形式に変換
  */
 function formatDateOnly(dateStr) {
   if (!dateStr) return '';
@@ -17,12 +17,12 @@ function formatDateOnly(dateStr) {
   try {
     const date = new Date(originalStr);
     if (!isNaN(date.getTime())) {
-      return `${date.getMonth() + 1}/${date.getDate()}`;
+      return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
     }
     const dateOnly = originalStr.split(' ')[0];
     const match = dateOnly.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
     if (match) {
-      return `${parseInt(match[2], 10)}/${parseInt(match[3], 10)}`;
+      return `${parseInt(match[1], 10)}年${parseInt(match[2], 10)}月${parseInt(match[3], 10)}日`;
     }
   } catch (e) { }
   return originalStr;

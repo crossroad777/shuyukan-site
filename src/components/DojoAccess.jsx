@@ -42,14 +42,27 @@ export default function DojoAccess() {
 
                         <div>
                             <h3 className="text-xl text-shuyukan-blue font-serif mb-2 border-b border-shuyukan-blue/10 pb-2 font-bold">稽古時間</h3>
-                            <ul className="space-y-2">
-                                <li className="flex justify-between border-b border-gray-200 pb-1">
-                                    <span className="font-bold">土曜日</span>
-                                    <span>17:00 - 20:00</span>
+                            <ul className="space-y-2 text-sm">
+                                <li className="border-b border-gray-200 pb-2">
+                                    <span className="font-bold text-blue-600">土曜日</span>
+                                    <div className="flex justify-between mt-1">
+                                        <span className="text-gray-600">小学生</span>
+                                        <span>17:00 - 19:00</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-600">中学生以上</span>
+                                        <span>18:00 - 20:00</span>
+                                    </div>
                                 </li>
-                                <li className="flex justify-between border-b border-gray-200 pb-1">
-                                    <span className="font-bold">日曜日</span>
-                                    <span>14:00 - 16:00</span>
+                                <li className="border-b border-gray-200 pb-2">
+                                    <span className="font-bold text-shuyukan-red">日曜日</span>
+                                    <div className="flex justify-between mt-1">
+                                        <span className="text-gray-600">全学年</span>
+                                        <span>14:00 - 16:00</span>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 mt-1">
+                                        ※第3・5日曜 16:15～18:15
+                                    </p>
                                 </li>
                             </ul>
                         </div>

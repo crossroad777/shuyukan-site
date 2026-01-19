@@ -1,4 +1,5 @@
 import React from 'react';
+import { Instagram } from 'lucide-react';
 import { instagramPosts } from '../data/instagram';
 
 export default function InstagramFeed() {
@@ -7,7 +8,10 @@ export default function InstagramFeed() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-10">
                     <h2 className="text-2xl font-serif font-bold text-shuyukan-blue flex items-center justify-center gap-3">
-                        <span className="text-shuyukan-gold text-xl">📷</span> 公式Instagram
+                        <span className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                            <Instagram size={24} className="text-white" />
+                        </span>
+                        公式Instagram
                     </h2>
                     <p className="text-gray-500 mt-2 text-sm">道場の様子を日々発信しています</p>
                 </div>
@@ -39,9 +43,10 @@ export default function InstagramFeed() {
                         href="https://www.instagram.com/shuyukan.toyonaka.kumanoda/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-6 py-2 border-2 border-shuyukan-blue text-shuyukan-blue font-bold rounded-full hover:bg-shuyukan-blue hover:text-white transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-2 border-2 border-pink-500 text-pink-500 font-bold rounded-full hover:bg-gradient-to-r hover:from-purple-600 hover:via-pink-500 hover:to-orange-400 hover:text-white hover:border-transparent transition-all"
                     >
-                        公式アカウントをフォロー
+                        <Instagram size={20} />
+                        公式Instagramを見る
                     </a>
                 </div>
             </div>

@@ -20,7 +20,7 @@ const Schedule = () => {
                                 <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">稽古日程（令和7年度）</h4>
                                 <div className="space-y-4">
                                     <div className="bg-gray-50 p-4 rounded-lg">
-                                        <h5 className="font-bold text-shuyukan-red mb-2">土曜日</h5>
+                                        <h5 className="font-bold text-blue-600 mb-2">土曜日</h5>
                                         <ul className="space-y-1 text-slate-700 text-sm">
                                             <li className="flex justify-between">
                                                 <span>小学生低学年・高学年</span>
@@ -36,7 +36,11 @@ const Schedule = () => {
                                         <h5 className="font-bold text-shuyukan-red mb-2">日曜日</h5>
                                         <ul className="space-y-1 text-slate-700 text-sm">
                                             <li className="flex justify-between">
-                                                <span>全学年</span>
+                                                <span>小学生低学年・高学年</span>
+                                                <span className="font-medium">14:00 ～ 16:00</span>
+                                            </li>
+                                            <li className="flex justify-between">
+                                                <span>中学生以上</span>
                                                 <span className="font-medium">14:00 ～ 16:00</span>
                                             </li>
                                         </ul>
@@ -48,11 +52,31 @@ const Schedule = () => {
                                 </div>
                             </div>
                             <div>
-                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">場所・対象</h4>
+                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">場所・会費</h4>
                                 <p className="text-sm text-slate-600 mb-4">
                                     <strong>熊野田小学校体育館</strong><br />
                                     〒560-0015 豊中市赤阪1丁目5-1
                                 </p>
+                                <div className="bg-shuyukan-gold/10 p-4 rounded-lg mb-4">
+                                    <h5 className="font-bold text-shuyukan-blue text-sm mb-2">【会費】</h5>
+                                    <ul className="text-xs text-slate-700 space-y-1">
+                                        <li className="flex justify-between">
+                                            <span>入会金</span>
+                                            <span className="font-medium">2,000円</span>
+                                        </li>
+                                        <li className="flex justify-between">
+                                            <span>月謝（一般）</span>
+                                            <span className="font-medium">2,000円/月</span>
+                                        </li>
+                                        <li className="flex justify-between">
+                                            <span>月謝（中学生）</span>
+                                            <span className="font-medium">1,000円/月</span>
+                                        </li>
+                                    </ul>
+                                    <p className="text-[10px] text-gray-500 mt-2">
+                                        ※月謝は原則 3・6・9・12月末に3ヶ月分を納入
+                                    </p>
+                                </div>
                                 <p className="text-xs text-slate-500 bg-gray-50 p-2 rounded">
                                     対象：幼児、小学生、中学生、高校生、一般初心者<br />
                                     出稽古も歓迎いたします。

@@ -93,8 +93,8 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div className={`md:hidden absolute w-full bg-shuyukan-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                <div className="px-4 pt-4 pb-16 space-y-1">
+            <div className={`lg:hidden absolute top-full left-0 w-full bg-shuyukan-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[85vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                <div className="px-4 pt-4 pb-24 space-y-1">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
@@ -112,13 +112,15 @@ const Navbar = () => {
                             </div>
                         </Link>
                     ))}
-                    <Link
-                        to="/login"
-                        onClick={() => setIsOpen(false)}
-                        className="block w-full text-center mt-8 px-5 py-4 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all rounded-sm text-sm font-bold shadow-md tracking-widest"
-                    >
-                        会員ログイン
-                    </Link>
+                    <div className="pt-4 pb-8">
+                        <Link
+                            to="/login"
+                            onClick={() => setIsOpen(false)}
+                            className="block w-full text-center px-5 py-4 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all rounded-sm text-sm font-bold shadow-md tracking-widest"
+                        >
+                            会員ログイン
+                        </Link>
+                    </div>
                 </div>
             </div>
         </nav>

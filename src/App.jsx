@@ -23,6 +23,7 @@ import Links from './pages/Links.jsx';
 import About from './pages/About.jsx';
 import Character from './pages/Character.jsx';
 import Privacy from './pages/Privacy.jsx';
+import Benefits from './pages/Benefits.jsx';
 
 import Login from './pages/Login.jsx';
 import MemberHome from './pages/MemberHome.jsx';
@@ -56,6 +57,10 @@ function App() {
             <Route path="/philosophy/harmony" element={<PhilosophyHarmony />} />
             <Route path="/philosophy/etiquette" element={<PhilosophyEtiquette />} />
             <Route path="/philosophy/lifelong" element={<PhilosophyLifelong />} />
+
+            {/* Benefits page */}
+            <Route path="/benefits" element={<Benefits />} />
+            <Route path="/benefits/:section" element={<Benefits />} />
 
             {/* Member site routes */}
             <Route path="/login" element={<Login />} />

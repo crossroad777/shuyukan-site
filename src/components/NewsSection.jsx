@@ -4,9 +4,9 @@ import FadeInSection from './FadeInSection';
 import { fetchNews } from '../services/newsService';
 
 /**
- * 日付文字列を月日のみの形式に変換
- * "2026-01-13T15:41:20.960Z" → "1/13"
- * "2026.01.15 10:30:00" → "1/15"
+ * 日付文字列を年月日の形式に変換
+ * "2026-01-13T15:41:20.960Z" → "2026年1月13日"
+ * "2026.01.15 10:30:00" → "2026年1月15日"
  */
 function formatDateOnly(dateStr) {
     if (!dateStr) return '';
@@ -18,18 +18,20 @@ function formatDateOnly(dateStr) {
         // Date オブジェクトとして解析を試みる（ISO 8601 などに対応）
         const date = new Date(originalStr);
         if (!isNaN(date.getTime())) {
+            const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
-            return `${month}/${day}`;
+            return `${year}年${month}月${day}日`;
         }
 
         // 独自のパターンの抽出（YYYY.MM.DD など）
         const dateOnly = originalStr.split(' ')[0];
         const match = dateOnly.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
         if (match) {
+            const year = parseInt(match[1], 10);
             const month = parseInt(match[2], 10);
             const day = parseInt(match[3], 10);
-            return `${month}/${day}`;
+            return `${year}年${month}月${day}日`;
         }
     } catch (e) {
         console.error('Date parsing error:', e);
@@ -171,9 +173,17 @@ const NewsSection = () => {
                                         </div>
                                     )}
                                     <div className="p-4">
-                                        <span className="inline-block bg-shuyukan-blue/10 text-shuyukan-blue text-[10px] px-2 py-1 rounded mb-2 font-bold">
-                                            {item.category}
-                                        </span>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="inline-block bg-shuyukan-blue/10 text-shuyukan-blue text-[10px] px-2 py-1 rounded font-bold">
+                                                {item.category}
+                                            </span>
+                                            {/* 7日以内の投稿にNEWバッジを表示 */}
+                                            {item.date && (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7 && (
+                                                <span className="inline-block bg-shuyukan-red text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">
+                                                    NEW
+                                                </span>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-shuyukan-gold font-bold mb-1 font-mono">{formatDateOnly(item.date)}</p>
                                         <h3 className="text-sm font-bold text-gray-800 leading-relaxed group-hover:text-shuyukan-blue transition-colors line-clamp-2">
                                             {item.title}

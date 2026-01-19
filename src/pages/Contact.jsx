@@ -131,19 +131,62 @@ function ContactForm() {
 export default function Contact() {
     return (
         <SiteFrame title="お問い合わせ">
+            {/* 安心メッセージ */}
             <FadeInSection>
+                <div className="max-w-3xl mx-auto text-center mb-12">
+                    <p className="text-shuyukan-gold font-bold tracking-widest uppercase text-sm mb-2">Contact Us</p>
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-shuyukan-blue mb-4">
+                        些細なことでも、お気軽にどうぞ
+                    </h2>
+                    <p className="text-gray-600 leading-relaxed">
+                        「まだ入会するか決めていないけど、ちょっと聞きたい」<br />
+                        「子どもに合うか不安で…」<br />
+                        そんなご相談も大歓迎です。お気軽にお問い合わせください。
+                    </p>
+                </div>
+            </FadeInSection>
+
+            {/* よくあるご質問への誘導 */}
+            <FadeInSection delay={100}>
+                <div className="max-w-3xl mx-auto mb-12">
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col md:flex-row items-center gap-4">
+                        <div className="text-4xl">💡</div>
+                        <div className="flex-1 text-center md:text-left">
+                            <p className="font-bold text-shuyukan-blue mb-1">よくあるご質問をまとめています</p>
+                            <p className="text-sm text-gray-600">費用・持ち物・体験の流れなど、多くの方から頂くご質問への回答をご覧いただけます。</p>
+                        </div>
+                        <a
+                            href="/faq"
+                            className="inline-block bg-shuyukan-blue text-white font-bold py-2 px-6 rounded-full hover:bg-shuyukan-gold hover:text-shuyukan-blue transition-colors text-sm whitespace-nowrap"
+                        >
+                            FAQを見る →
+                        </a>
+                    </div>
+                </div>
+            </FadeInSection>
+
+            <FadeInSection delay={200}>
                 <div className="grid md:grid-cols-2 gap-12">
                     {/* Contact Form Section */}
                     <div className="space-y-6">
                         <div className="bg-white/60 backdrop-blur-md border-l-4 border-shuyukan-blue p-6 rounded-r-lg shadow-sm">
                             <h3 className="font-bold text-shuyukan-dark mb-2 text-lg">お問い合わせフォーム</h3>
                             <p className="text-sm text-gray-700 leading-relaxed">
-                                見学・体験のお申し込み、その他ご質問はこちらからお気軽にどうぞ。
+                                見学・体験のお申し込み、入会に関するご質問など<br />
+                                なんでもお気軽にどうぞ。
                             </p>
                         </div>
 
                         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
                             <ContactForm />
+                        </div>
+
+                        {/* 返信について */}
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                            <p className="text-sm text-green-700">
+                                <span className="font-bold">📧 通常2〜3日以内にご返信いたします</span><br />
+                                <span className="text-xs">※ 土日祝日を挟む場合はお時間をいただくことがあります</span>
+                            </p>
                         </div>
                     </div>
 

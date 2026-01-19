@@ -62,7 +62,7 @@ export default function Home() {
                 <h4 className="text-3xl font-serif font-bold text-white mb-6">心身の調和</h4>
                 <p className="text-sm text-gray-300 leading-relaxed font-serif text-center">
                   心と体を一つにする。<br />
-                  静寂の中で<br className="sm:hidden" />自らを見つめる。
+                  静寂の中で自らを見つめる。
                 </p>
               </Link>
             </FadeInSection>
@@ -95,21 +95,129 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ZANSHIN Concept Banner */}
-        <FadeInSection>
-          <div className="w-full mb-32 relative group overflow-hidden rounded-lg shadow-2xl border border-shuyukan-blue/30">
-            <div className="absolute inset-0 bg-shuyukan-blue/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-            <img
-              src="/assets/zanshin/concept_banner.png"
-              alt="ZANSHIN Concept"
-              className="w-full h-auto object-cover object-top transform group-hover:scale-105 transition-transform duration-1000 ease-out"
-            />
-            <div className="absolute bottom-8 right-8 z-20 text-right">
-              <p className="text-white/80 font-serif tracking-[0.5em] text-sm uppercase">The Beautiful Aftermath</p>
-              <h3 className="text-3xl font-bold text-white font-serif tracking-widest mt-2 text-shadow-lg">残心</h3>
+        {/* Parent Benefits Section - 保護者向けコンテンツ */}
+        <section className="py-20 px-6 md:px-12">
+          <FadeInSection>
+            <div className="text-center mb-12">
+              <span className="text-shuyukan-red font-bold tracking-widest uppercase text-sm">For Parents</span>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-shuyukan-blue mt-2 mb-4">
+                剣道で育つ、3つの「楽しい」
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base text-left sm:text-center">
+                子どもたちは「楽しい」から続けられる。<br className="hidden sm:inline" />
+                修猷館が大切にしている、剣道だからこそ育まれる力。
+              </p>
             </div>
+          </FadeInSection>
+
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1: 仲間といるのが楽しい */}
+            <FadeInSection delay={200}>
+              <Link to="/benefits" className="block group h-full">
+                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="text-5xl mb-4">🤝</div>
+                  <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">仲間といるのが楽しい</h3>
+                  <p className="text-shuyukan-gold text-sm font-bold mb-4">友情・礼</p>
+                  <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>あいさつができる</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>仲間を大切にする</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>勝っても負けても相手を敬う</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg italic text-left sm:text-center">
+                    剣道は一人で強くなる競技ではありません。仲間がいるから楽しい、続けられる。
+                  </p>
+                  <div className="mt-4 text-shuyukan-blue text-sm font-bold group-hover:text-shuyukan-gold transition-colors">
+                    詳しく見る →
+                  </div>
+                </div>
+              </Link>
+            </FadeInSection>
+
+            {/* Card 2: できるようになるのが楽しい */}
+            <FadeInSection delay={400}>
+              <Link to="/benefits" className="block group h-full">
+                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="text-5xl mb-4">🎯</div>
+                  <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">できるようになるのが楽しい</h3>
+                  <p className="text-shuyukan-gold text-sm font-bold mb-4">挑戦</p>
+                  <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>うまくいかなくてもやめない</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>少しずつ上達する喜びを知る</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>自分の成長を感じる</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg italic text-left sm:text-center">
+                    昨日より今日、今日より明日。成長そのものが楽しさになる剣道を大切にします。
+                  </p>
+                  <div className="mt-4 text-shuyukan-blue text-sm font-bold group-hover:text-shuyukan-gold transition-colors">
+                    詳しく見る →
+                  </div>
+                </div>
+              </Link>
+            </FadeInSection>
+
+            {/* Card 3: 体を動かすのが楽しい */}
+            <FadeInSection delay={600}>
+              <Link to="/benefits" className="block group h-full">
+                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="text-5xl mb-4">💪</div>
+                  <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">体を動かすのが楽しい</h3>
+                  <p className="text-shuyukan-gold text-sm font-bold mb-4">心と体</p>
+                  <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>思いきり動く</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>大きな声を出す</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-shuyukan-gold">✓</span>
+                      <span>心と体を元気にする</span>
+                    </li>
+                  </ul>
+                  <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg italic text-left sm:text-center">
+                    剣道は勉強のための我慢ではなく、心も体もスッキリする時間です。
+                  </p>
+                  <div className="mt-4 text-shuyukan-blue text-sm font-bold group-hover:text-shuyukan-gold transition-colors">
+                    詳しく見る →
+                  </div>
+                </div>
+              </Link>
+            </FadeInSection>
           </div>
-        </FadeInSection>
+
+          {/* CTA Button */}
+          <FadeInSection delay={800}>
+            <div className="text-center mt-12">
+              <Link
+                to="/join"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-shuyukan-red text-white font-bold rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1"
+              >
+                <span>まずは無料体験から</span>
+                <span>→</span>
+              </Link>
+            </div>
+          </FadeInSection>
+        </section>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mt-20">
