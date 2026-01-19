@@ -149,17 +149,14 @@ export async function addMember(memberData) {
     }
 
     try {
-        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
-        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
-        const response = await fetch(MEMBER_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify({
-                action: 'add',
-                data: memberData
-            }),
+        // GASのCORS制約を回避するため、確実なGETリクエストに切り替える
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'add');
+        url.searchParams.append('data', JSON.stringify(memberData));
+
+        console.log('[MemberService] Adding member via GET workaround');
+        const response = await fetch(url.toString(), {
+            method: 'GET',
             redirect: 'follow'
         });
 
@@ -171,7 +168,7 @@ export async function addMember(memberData) {
         if (data && data.success === false) {
             throw new Error(data.error || '会員の追加に失敗しました');
         }
-        console.log('[MemberService] Member added successfully:', data);
+        console.log('[MemberService] Member added successfully via GET');
         return data;
     } catch (error) {
         console.error('会員追加エラー:', error);
@@ -212,18 +209,17 @@ export async function updateMember(memberId, memberData) {
     }
 
     try {
-        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
-        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
-        const response = await fetch(MEMBER_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify({
-                action: 'update',
-                id: memberId,
-                data: memberData
-            }),
+        // GASのCORS制約とブラウザの挙動差を回避するため、
+        // 確実なGETリクエスト（クエリパラメータ経由）に切り替える
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'update');
+        url.searchParams.append('id', memberId);
+        // データをJSON文字列化してパラメータに含める
+        url.searchParams.append('data', JSON.stringify(memberData));
+
+        console.log('[MemberService] Updating member via GET workaround:', memberId);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
             redirect: 'follow'
         });
 
@@ -235,7 +231,7 @@ export async function updateMember(memberId, memberData) {
         if (data && data.success === false) {
             throw new Error(data.error || '会員の更新に失敗しました');
         }
-        console.log('[MemberService] Member updated successfully:', data);
+        console.log('[MemberService] Member updated successfully via GET');
         return data;
     } catch (error) {
         console.error('会員更新エラー:', error);

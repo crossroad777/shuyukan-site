@@ -17,22 +17,40 @@ const Schedule = () => {
                     <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 mb-8 max-w-4xl mx-auto">
                         <div className="grid md:grid-cols-2 gap-8">
                             <div>
-                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">基本稽古日程</h4>
-                                <ul className="space-y-4">
-                                    <li className="flex justify-between items-center text-slate-700">
-                                        <span className="font-bold w-12 text-shuyukan-red">土曜日</span>
-                                        <span className="font-medium">17:00 ～ 20:00</span>
-                                    </li>
-                                    <li className="flex justify-between items-center text-slate-700">
-                                        <span className="font-bold w-12 text-shuyukan-red">日曜日</span>
-                                        <span className="font-medium">14:00 ～ 16:00</span>
-                                    </li>
-                                </ul>
+                                <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">稽古日程（令和7年度）</h4>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <h5 className="font-bold text-shuyukan-red mb-2">土曜日</h5>
+                                        <ul className="space-y-1 text-slate-700 text-sm">
+                                            <li className="flex justify-between">
+                                                <span>小学生低学年・高学年</span>
+                                                <span className="font-medium">17:00 ～ 19:00</span>
+                                            </li>
+                                            <li className="flex justify-between">
+                                                <span>中学生以上</span>
+                                                <span className="font-medium">18:00 ～ 20:00</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <h5 className="font-bold text-shuyukan-red mb-2">日曜日</h5>
+                                        <ul className="space-y-1 text-slate-700 text-sm">
+                                            <li className="flex justify-between">
+                                                <span>全学年</span>
+                                                <span className="font-medium">14:00 ～ 16:00</span>
+                                            </li>
+                                        </ul>
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            ※第3・5日曜 16:15～18:15<br />
+                                            （他団体利用の為 18:45完全撤収）
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <h4 className="font-bold text-shuyukan-blue mb-4 border-b pb-2">場所・対象</h4>
                                 <p className="text-sm text-slate-600 mb-4">
-                                    <strong>豊中市立熊野田小学校</strong><br />
+                                    <strong>熊野田小学校体育館</strong><br />
                                     〒560-0015 豊中市赤阪1丁目5-1
                                 </p>
                                 <p className="text-xs text-slate-500 bg-gray-50 p-2 rounded">
@@ -49,14 +67,24 @@ const Schedule = () => {
                         <div className="relative w-full aspect-video md:aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden shadow-inner">
                             <iframe
                                 title="剣道部 練習予定（公開）"
-                                src="https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo"
+                                src="https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo&mode=MONTH"
                                 className="absolute top-0 left-0 w-full h-full border-0"
                                 frameBorder="0"
                                 scrolling="no"
                             />
                         </div>
-                        <div className="mt-4 text-center text-sm text-gray-400">
-                            <p>表示されない場合は、ブラウザの広告ブロック等を一度OFFにして確認してください。</p>
+                        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+                            <p className="text-sm text-gray-400">
+                                表示されない場合は、ブラウザの広告ブロック等を一度OFFにして確認してください。
+                            </p>
+                            <a
+                                href="https://calendar.google.com/calendar/u/0/r?cid=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b@group.calendar.google.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-shuyukan-blue hover:text-shuyukan-gold font-medium whitespace-nowrap"
+                            >
+                                Googleカレンダーで開く →
+                            </a>
                         </div>
                     </div>
                 </FadeInSection>

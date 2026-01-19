@@ -5,11 +5,11 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const gradeOptions = [
-    '年少', '年中', '年長',
+    '幼児',
     '小学1年', '小学2年', '小学3年', '小学4年', '小学5年', '小学6年',
     '中学1年', '中学2年', '中学3年',
     '高校1年', '高校2年', '高校3年',
-    '一般'
+    '大学生', '一般'
 ];
 
 const rankOptions = [
@@ -133,22 +133,11 @@ export default function MemberEditModal({ member, onClose, onSave }) {
                         </div>
                     </div>
 
-                    {/* MemberType & Grade */}
+
+                    {/* MemberType (auto-calculated) & Grade */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">区分</label>
-                            <select
-                                name="memberType"
-                                value={formData.memberType}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
-                            >
-                                <option value="少年部">少年部</option>
-                                <option value="一般部">一般部</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">学年</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">学年・区分</label>
                             <select
                                 name="grade"
                                 value={formData.grade}
@@ -157,7 +146,24 @@ export default function MemberEditModal({ member, onClose, onSave }) {
                             >
                                 <option value="">選択してください</option>
                                 {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                                {/* 既存データが選択肢にない場合に備えて動的に追加 */}
+                                {!gradeOptions.includes(formData.grade) && formData.grade && (
+                                    <option value={formData.grade}>{formData.grade}</option>
+                                )}
                             </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">所属（自動判定）</label>
+                            <div className="w-full border border-gray-200 bg-gray-50 rounded px-3 py-2 text-gray-600">
+                                {(() => {
+                                    const g = formData.grade || '';
+                                    if (g.includes('小') || g.includes('中') || g.includes('幼') ||
+                                        g.includes('年少') || g.includes('年中') || g.includes('年長')) {
+                                        return <span className="text-green-600 font-bold">少年部</span>;
+                                    }
+                                    return <span className="text-purple-600 font-bold">一般部</span>;
+                                })()}
+                            </div>
                         </div>
                     </div>
 

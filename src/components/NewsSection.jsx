@@ -4,6 +4,41 @@ import FadeInSection from './FadeInSection';
 import { fetchNews } from '../services/newsService';
 
 /**
+ * 日付文字列を月日のみの形式に変換
+ * "2026-01-13T15:41:20.960Z" → "1/13"
+ * "2026.01.15 10:30:00" → "1/15"
+ */
+function formatDateOnly(dateStr) {
+    if (!dateStr) return '';
+
+    // 文字列でない場合は文字列に変換して試行
+    const originalStr = String(dateStr);
+
+    try {
+        // Date オブジェクトとして解析を試みる（ISO 8601 などに対応）
+        const date = new Date(originalStr);
+        if (!isNaN(date.getTime())) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${month}/${day}`;
+        }
+
+        // 独自のパターンの抽出（YYYY.MM.DD など）
+        const dateOnly = originalStr.split(' ')[0];
+        const match = dateOnly.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+        if (match) {
+            const month = parseInt(match[2], 10);
+            const day = parseInt(match[3], 10);
+            return `${month}/${day}`;
+        }
+    } catch (e) {
+        console.error('Date parsing error:', e);
+    }
+
+    return originalStr;
+}
+
+/**
  * GoogleドライブのURLを直接表示可能なURLに変換
  */
 function convertDriveUrl(url) {
@@ -139,7 +174,7 @@ const NewsSection = () => {
                                         <span className="inline-block bg-shuyukan-blue/10 text-shuyukan-blue text-[10px] px-2 py-1 rounded mb-2 font-bold">
                                             {item.category}
                                         </span>
-                                        <p className="text-xs text-shuyukan-gold font-bold mb-1 font-mono">{item.date}</p>
+                                        <p className="text-xs text-shuyukan-gold font-bold mb-1 font-mono">{formatDateOnly(item.date)}</p>
                                         <h3 className="text-sm font-bold text-gray-800 leading-relaxed group-hover:text-shuyukan-blue transition-colors line-clamp-2">
                                             {item.title}
                                         </h3>

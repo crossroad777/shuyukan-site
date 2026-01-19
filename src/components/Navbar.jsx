@@ -93,9 +93,8 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
             <div className={`md:hidden absolute w-full bg-shuyukan-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                <div className="px-4 pt-4 pb-8 space-y-1">
+                <div className="px-4 pt-4 pb-16 space-y-1">
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}

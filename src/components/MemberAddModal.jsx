@@ -5,11 +5,11 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const gradeOptions = [
-    '年少', '年中', '年長',
+    '幼児',
     '小学1年', '小学2年', '小学3年', '小学4年', '小学5年', '小学6年',
     '中学1年', '中学2年', '中学3年',
     '高校1年', '高校2年', '高校3年',
-    '一般'
+    '大学生', '一般'
 ];
 
 const rankOptions = [
@@ -41,8 +41,8 @@ export default function MemberAddModal({ onClose, onAdd }) {
             alert('氏名は必須です');
             return;
         }
-        if (!formData.memberType) {
-            alert('区分を選択してください');
+        if (!formData.grade) {
+            alert('学年・区分を選択してください');
             return;
         }
         setSaving(true);
@@ -92,32 +92,36 @@ export default function MemberAddModal({ onClose, onAdd }) {
                         </div>
                     </div>
 
-                    {/* MemberType - Important first */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">区分 *</label>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="memberType"
-                                    value="少年部"
-                                    checked={formData.memberType === '少年部'}
-                                    onChange={handleChange}
-                                    className="text-shuyukan-blue"
-                                />
-                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">少年部</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="memberType"
-                                    value="一般部"
-                                    checked={formData.memberType === '一般部'}
-                                    onChange={handleChange}
-                                    className="text-shuyukan-blue"
-                                />
-                                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">一般部</span>
-                            </label>
+                    {/* Grade - Primary field for 会員種別 */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">学年・区分 *</label>
+                            <select
+                                name="grade"
+                                value={formData.grade}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
+                                required
+                            >
+                                <option value="">選択してください</option>
+                                {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">所属（自動判定）</label>
+                            <div className="w-full border border-gray-200 bg-gray-50 rounded px-3 py-2 text-gray-600">
+                                {(() => {
+                                    const g = formData.grade || '';
+                                    if (g.includes('小') || g.includes('中') || g.includes('幼') ||
+                                        g.includes('年少') || g.includes('年中') || g.includes('年長')) {
+                                        return <span className="text-green-600 font-bold">少年部</span>;
+                                    }
+                                    if (g) {
+                                        return <span className="text-purple-600 font-bold">一般部</span>;
+                                    }
+                                    return <span className="text-gray-400">学年を選択してください</span>;
+                                })()}
+                            </div>
                         </div>
                     </div>
 
@@ -147,32 +151,18 @@ export default function MemberAddModal({ onClose, onAdd }) {
                         </div>
                     </div>
 
-                    {/* Grade & Rank */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">学年</label>
-                            <select
-                                name="grade"
-                                value={formData.grade}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
-                            >
-                                <option value="">選択してください</option>
-                                {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">段級位</label>
-                            <select
-                                name="rank"
-                                value={formData.rank}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
-                            >
-                                <option value="">選択してください</option>
-                                {rankOptions.map(r => <option key={r} value={r}>{r}</option>)}
-                            </select>
-                        </div>
+                    {/* Rank */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">段級位</label>
+                        <select
+                            name="rank"
+                            value={formData.rank}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
+                        >
+                            <option value="">選択してください</option>
+                            {rankOptions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
                     </div>
 
                     {/* Notes */}

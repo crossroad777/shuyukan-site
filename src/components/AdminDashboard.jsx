@@ -11,6 +11,26 @@ import DeleteConfirmModal from './DeleteConfirmModal.jsx';
 import NewsAddModal from './NewsAddModal.jsx';
 import NewsEditModal from './NewsEditModal.jsx';
 
+/**
+ * 日付文字列を月日のみの形式に変換
+ */
+function formatDateOnly(dateStr) {
+    if (!dateStr) return '';
+    const originalStr = String(dateStr);
+    try {
+        const date = new Date(originalStr);
+        if (!isNaN(date.getTime())) {
+            return `${date.getMonth() + 1}/${date.getDate()}`;
+        }
+        const dateOnly = originalStr.split(' ')[0];
+        const match = dateOnly.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+        if (match) {
+            return `${parseInt(match[2], 10)}/${parseInt(match[3], 10)}`;
+        }
+    } catch (e) { }
+    return originalStr;
+}
+
 export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
     const [members, setMembers] = useState([]);
     const [news, setNews] = useState([]);
@@ -480,7 +500,7 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {news.map((item) => (
                                             <tr key={item.id} className="hover:bg-gray-50">
-                                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{item.date}</td>
+                                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{formatDateOnly(item.date)}</td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                                                         {item.category}

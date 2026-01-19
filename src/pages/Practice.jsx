@@ -10,7 +10,7 @@ import React from 'react';
 import SiteFrame from '../components/SiteFrame.jsx';
 
 const CALENDAR_SRC =
-    'https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo';
+    'https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo&mode=MONTH';
 
 export default function Practice() {
     return (

@@ -20,13 +20,8 @@ const LinkCard = ({ title, url, description, isOfficial }) => (
                 ↗
             </span>
         </div>
-        {url && (
-            <p className="text-xs text-shuyukan-gold font-mono mb-3 truncate opacity-70 group-hover:opacity-100 transition-opacity">
-                {url.replace('https://', '').replace('http://', '')}
-            </p>
-        )}
         {description && (
-            <p className="text-sm text-gray-600 leading-relaxed font-sans border-t border-gray-100 pt-3">
+            <p className="text-sm text-gray-600 leading-relaxed font-sans">
                 {description}
             </p>
         )}

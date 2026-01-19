@@ -29,13 +29,13 @@ export default function AdminPortal({ user }) {
         return () => clearInterval(timer);
     }, []);
 
-    // クイックアクション - 最も頻繁に使う機能
+    // 1. 📢 クイックアクション
     const quickActions = [
         { id: 'quick_news', label: 'お知らせ投稿', icon: '📢', highlight: true },
-        { id: 'members', label: '会員管理', icon: '👥', highlight: false, badgeCount: summary.pendingMembers },
+        { id: 'new_requests', label: '新規申込の承認', icon: '📝', badgeCount: summary.pendingMembers },
     ];
 
-    // 部員向けコンテンツ管理
+    // 2. 📋 部員向けコンテンツ
     const memberContentItems = [
         { id: 'manual', label: 'ガイドの編集', icon: '📖' },
         { id: 'events', label: '行事予定の管理', icon: '📅' },
@@ -44,9 +44,9 @@ export default function AdminPortal({ user }) {
         { id: 'docs', label: 'ファイル一括管理', icon: '📁' },
     ];
 
-    // 運営・事務管理
+    // 3. ⚙️ 運営・会員管理
     const operationalItems = [
-        { id: 'new_requests', label: '入会申込の承認', icon: '📝', badgeCount: summary.pendingMembers },
+        { id: 'members', label: '会員名簿の管理', icon: '👥' },
         { id: 'inquiries', label: 'お問い合わせ管理', icon: '❓', badgeCount: summary.newInquiries },
         { id: 'attendance', label: '全員の出欠管理', icon: '✅' },
         { id: 'accounting', label: '会計・予算管理', icon: '💰' },
@@ -197,42 +197,48 @@ export default function AdminPortal({ user }) {
                     </div>
                 )}
 
-                {/* クイックアクション - 最も使用頻度の高い機能 */}
-                <section className="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-xl border border-amber-200">
-                    <h3 className="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2">
-                        <span className="p-1.5 bg-amber-500 text-white rounded">⚡</span>
-                        管理用クイックアクション
+                {/* 1. 📢 クイックアクション */}
+                <section className="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl border border-red-200">
+                    <h3 className="text-lg font-bold text-red-700 mb-4 flex items-center gap-2">
+                        <span className="p-1.5 bg-red-600 text-white rounded">📢</span>
+                        クイックアクション
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <button
                             onClick={() => setIsQuickNewsModalOpen(true)}
-                            className="flex items-center gap-4 p-4 bg-white border-2 border-amber-400 rounded-xl hover:bg-amber-50 hover:border-amber-500 transition-all shadow-sm group"
+                            className="flex items-center gap-4 p-4 bg-white border-2 border-red-500 rounded-xl hover:bg-red-50 hover:border-red-600 transition-all shadow-sm group"
                         >
                             <span className="text-3xl group-hover:scale-110 transition-transform">📢</span>
                             <div className="text-left">
-                                <div className="font-bold text-gray-800">最新情報の発信</div>
-                                <div className="text-sm text-gray-500">部員へのお知らせを即時投稿</div>
+                                <div className="font-bold text-gray-800 text-lg">お知らせ投稿</div>
+                                <div className="text-sm text-gray-500">部員へのお知らせを即時投稿します</div>
                             </div>
                         </button>
                         <button
-                            onClick={() => navigateToMembers('all')}
-                            className="flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group"
+                            onClick={() => navigateToMembers('pending')}
+                            className={`flex items-center justify-between gap-4 p-4 bg-white border-2 rounded-xl transition-all shadow-sm group ${summary.pendingMembers > 0 ? 'border-amber-500 hover:bg-amber-50' : 'border-gray-200 hover:bg-gray-50'}`}
                         >
-                            <span className="text-3xl group-hover:scale-110 transition-transform">👥</span>
-                            <div className="text-left">
-                                <div className="font-bold text-gray-800">会員名簿の管理</div>
-                                <div className="text-sm text-gray-500">会員情報の編集・承認作業</div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-3xl group-hover:scale-110 transition-transform">📝</span>
+                                <div className="text-left">
+                                    <div className="font-bold text-gray-800 text-lg">新規申込の承認</div>
+                                    <div className="text-sm text-gray-500">入会希望者の承認・確認</div>
+                                </div>
                             </div>
+                            {summary.pendingMembers > 0 && (
+                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold animate-bounce">
+                                    {summary.pendingMembers}
+                                </span>
+                            )}
                         </button>
-
                     </div>
                 </section>
 
-                {/* 部員向けコンテンツ管理 */}
+                {/* 2. 📋 部員向けコンテンツ */}
                 <section className="bg-white p-6 rounded-xl border border-gray-200">
                     <h3 className="text-lg font-bold text-shuyukan-blue mb-4 flex items-center gap-2">
                         <span className="p-1 bg-shuyukan-blue text-white rounded">📋</span>
-                        部員用コンテンツの編集・反映
+                        部員向けコンテンツ
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {memberContentItems.map((item) => (
@@ -244,14 +250,13 @@ export default function AdminPortal({ user }) {
                             />
                         ))}
                     </div>
-                    <p className="mt-4 text-xs text-gray-400">※ ここでの変更は部員用ポータルへ即座に反映されます。</p>
                 </section>
 
-                {/* 運営・事務管理 */}
+                {/* 3. ⚙️ 運営・会員管理 */}
                 <section className="bg-gray-50 p-6 rounded-xl border border-gray-200">
                     <h3 className="text-lg font-bold text-gray-700 mb-4 flex items-center gap-2">
                         <span className="p-1 bg-gray-700 text-white rounded">⚙️</span>
-                        クラブ内部運営・事務管理
+                        運営・会員管理
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {operationalItems.map((item) => (
@@ -260,8 +265,8 @@ export default function AdminPortal({ user }) {
                                 icon={item.icon}
                                 label={item.label}
                                 onClick={() => {
-                                    if (item.id === 'new_requests') {
-                                        navigateToMembers('pending');
+                                    if (item.id === 'members') {
+                                        navigateToMembers('all');
                                     } else {
                                         setActiveView(item.id);
                                     }
@@ -269,7 +274,6 @@ export default function AdminPortal({ user }) {
                                 badgeCount={item.badgeCount}
                             />
                         ))}
-
                     </div>
                 </section>
             </div>

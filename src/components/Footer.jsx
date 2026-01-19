@@ -88,6 +88,12 @@ const Footer = () => {
                                         <span className="font-serif">Instagram</span>
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="https://www.facebook.com/people/%E8%B1%8A%E4%B8%AD%E4%BF%AE%E7%8C%B7%E9%A4%A8/100064393673892/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-4 py-2 border border-white/20 rounded-full hover:bg-white/10 transition-colors group">
+                                        <span className="text-xl group-hover:scale-110 transition-transform">📘</span>
+                                        <span className="font-serif">Facebook</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

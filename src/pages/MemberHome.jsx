@@ -8,6 +8,14 @@ import { useState, useEffect } from 'react';
 import { fetchNews } from '../services/newsService';
 import { fetchDocuments } from '../services/documentService';
 
+const gradeOptions = [
+    '幼児',
+    '小学1年', '小学2年', '小学3年', '小学4年', '小学5年', '小学6年',
+    '中学1年', '中学2年', '中学3年',
+    '高校1年', '高校2年', '高校3年',
+    '大学生', '一般'
+];
+
 export default function MemberHome() {
     const { user, logout, isAdmin, isMember, isPending, isGuest, loading } = useAuth();
 
@@ -27,6 +35,7 @@ export default function MemberHome() {
         name: '',
         furigana: '',
         relation: '本人',
+        grade: '',
         guardianName: '',
         memberName: '',
         email: ''
@@ -116,6 +125,7 @@ export default function MemberHome() {
                 furigana: formData.furigana,
                 email: emailToUse,
                 guardianName: formData.relation === '保護者' ? formData.guardianName : '',
+                grade: formData.grade,
                 notes: `申請者区分: ${formData.relation}`,
                 memberType: formData.relation === '保護者' ? '少年部' : '一般部'
             };
@@ -156,23 +166,32 @@ export default function MemberHome() {
 
     return (
         <SiteFrame title={`マイページ (${user.name})`}>
-            {/* 共通のトップバー */}
-            <div className="flex justify-between items-center mb-6 border-b pb-4">
-                <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${isAdmin ? 'bg-red-100 text-red-700' :
-                        isMember ? 'bg-green-100 text-green-700' :
-                            isPending ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                        {isAdmin ? '管理者' : isMember ? '正会員' : isPending ? '承認待ち' : '未登録'}
-                    </span>
-                    <span className="text-sm text-gray-500">{user.email}</span>
+            {/* ロール識別ヘッダー */}
+            <div className={`mb-8 p-1 rounded-xl shadow-sm border ${isAdmin ? 'bg-red-50 border-red-100' : isMember ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'}`}>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-6 py-4">
+                    <div className="flex items-center gap-4">
+                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl shadow-sm ${isAdmin ? 'bg-red-600 text-white' : isMember ? 'bg-blue-600 text-white' : 'bg-gray-500 text-white'}`}>
+                            <span className="text-2xl">{isAdmin ? '🛡️' : isMember ? '👤' : '⌛'}</span>
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-xl font-bold font-serif text-slate-800">{user.name} 様</h2>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${isAdmin ? 'bg-red-600 text-white shadow-sm' : isMember ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-500 text-white'}`}>
+                                    {isAdmin ? 'ADMINISTRATOR' : isMember ? 'REGULAR MEMBER' : 'PENDING'}
+                                </span>
+                            </div>
+                            <p className="text-xs text-slate-500">{user.email}</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleLogout}
+                            className="px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm"
+                        >
+                            <span>🚪</span> ログアウト
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-sm font-bold transition-colors"
-                >
-                    ログアウト
-                </button>
             </div>
 
             {isAdmin ? (
@@ -202,27 +221,27 @@ export default function MemberHome() {
                 <div className="max-w-xl mx-auto py-8 animate-fade-in">
                     {submitted ? (
                         <div className="text-center py-12 bg-green-50 rounded-xl border border-green-200">
-                            <div className="text-6xl mb-4">✅</div>
-                            <h3 className="text-2xl font-bold text-green-800 mb-2">送信完了</h3>
-                            <p className="text-green-700">利用申請を送信しました。承認をお待ちください。</p>
+                            <div className="text-6xl mb-4">✨</div>
+                            <h3 className="text-2xl font-bold text-shuyukan-blue mb-2">ご入会ありがとうございます。</h3>
+                            <p className="text-gray-700 font-medium">利用申請を送信しました。<br />管理者が承認するまで今しばらくお待ちください。</p>
                         </div>
                     ) : (
                         <>
                             <div className="text-center mb-8">
                                 <div className="mb-4">
-                                    <span className="text-6xl">📝</span>
+                                    <span className="text-6xl text-shuyukan-blue">📝</span>
                                 </div>
-                                <h3 className="text-2xl font-bold text-shuyukan-blue mb-2">利用申請</h3>
-                                <p className="text-gray-500">部員ポータルを利用するには申請が必要です</p>
+                                <h3 className="text-2xl font-bold text-shuyukan-blue mb-2">部員ポータル利用申請</h3>
+                                <p className="text-gray-500">部員専用ページを表示するため、情報を入力してください</p>
                             </div>
 
                             <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                                <form onSubmit={handleRequestSubmit} className="space-y-4">
-                                    {/* 部員との関係 - 最初に選択 */}
+                                <form onSubmit={handleRequestSubmit} className="space-y-6">
+                                    {/* 部員との関係 */}
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">部員との関係 *</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">部員との関係 *</label>
                                         <select
-                                            className="w-full border rounded px-3 py-2 text-lg"
+                                            className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue text-lg"
                                             value={formData.relation}
                                             onChange={(e) => setFormData({ ...formData, relation: e.target.value })}
                                         >
@@ -234,16 +253,16 @@ export default function MemberHome() {
 
                                     {/* 保護者の場合: 保護者名と部員名 */}
                                     {formData.relation === '保護者' ? (
-                                        <>
+                                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-700 mb-1">保護者氏名 (申請者) *</label>
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                                     value={formData.guardianName}
                                                     onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
-                                                    placeholder="山田 花子"
+                                                    placeholder="例：山田 花子"
                                                 />
                                             </div>
                                             <div>
@@ -251,50 +270,64 @@ export default function MemberHome() {
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                                     value={formData.memberName}
                                                     onChange={(e) => setFormData({ ...formData, memberName: e.target.value })}
-                                                    placeholder="山田 太郎"
+                                                    placeholder="例：山田 太郎"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな (部員)</label>
                                                 <input
                                                     type="text"
-                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                                     value={formData.furigana}
                                                     onChange={(e) => setFormData({ ...formData, furigana: e.target.value })}
-                                                    placeholder="やまだ たろう"
+                                                    placeholder="例：やまだ たろう"
                                                 />
                                             </div>
-                                        </>
+                                        </div>
                                     ) : (
-                                        <>
+                                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-700 mb-1">氏名 (フルネーム) *</label>
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                                     value={formData.name}
                                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    placeholder="山田 太郎"
+                                                    placeholder="例：山田 太郎"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな</label>
                                                 <input
                                                     type="text"
-                                                    className="w-full border rounded px-3 py-2 text-lg"
+                                                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                                     value={formData.furigana}
                                                     onChange={(e) => setFormData({ ...formData, furigana: e.target.value })}
-                                                    placeholder="やまだ たろう"
+                                                    placeholder="例：やまだ たろう"
                                                 />
                                             </div>
-                                        </>
+                                        </div>
                                     )}
 
-                                    {/* メールアドレス - 全員必須 */}
+                                    {/* 学年・区分 - 追加 */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">学年・区分 *</label>
+                                        <select
+                                            required
+                                            className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue text-lg"
+                                            value={formData.grade}
+                                            onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                                        >
+                                            <option value="">選択してください</option>
+                                            {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* メールアドレス */}
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">
                                             メールアドレス (Gmail推奨) *
@@ -302,13 +335,13 @@ export default function MemberHome() {
                                         <input
                                             type="email"
                                             required
-                                            className="w-full border rounded px-3 py-2 text-lg"
+                                            className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
                                             value={formData.email || user?.email || ''}
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             placeholder="example@gmail.com"
                                         />
                                         <p className="text-xs text-gray-500 mt-1">
-                                            ※ ポータルへのログインに使用します。Gmailを推奨します。
+                                            ※ ログインに使用するGoogleアカウントのアドレスを入力してください。
                                         </p>
                                     </div>
 

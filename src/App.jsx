@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import SwipeNavigation from './components/SwipeNavigation.jsx';
+import SwipeIndicators from './components/SwipeIndicators.jsx';
 
 import Home from './pages/Home.jsx';
 import Practice from './pages/Practice.jsx';
@@ -36,6 +37,7 @@ function App() {
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
         <SwipeNavigation>
+          <SwipeIndicators />
           <Routes>
             {/* Public site pages */}
             <Route path="/" element={<Home />} />

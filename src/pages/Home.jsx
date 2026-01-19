@@ -4,6 +4,7 @@ import SiteFrame from '../components/SiteFrame.jsx';
 import Hero from '../components/Hero.jsx';
 import Schedule from '../components/Schedule.jsx';
 import InstagramFeed from '../components/InstagramFeed.jsx';
+import FacebookFeed from '../components/FacebookFeed.jsx';
 import DojoAccess from '../components/DojoAccess.jsx';
 
 import FadeInSection from '../components/FadeInSection.jsx';
@@ -59,9 +60,9 @@ export default function Home() {
               <Link to="/philosophy/harmony" className="block group p-10 rounded-lg bg-shuyukan-blue shadow-lg border border-shuyukan-gold/20 hover:border-shuyukan-gold/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 cursor-pointer">
                 <h3 className="text-xl font-sans font-thin tracking-[0.3em] text-shuyukan-gold mb-2 uppercase group-hover:text-white transition-colors">Harmony</h3>
                 <h4 className="text-3xl font-serif font-bold text-white mb-6">心身の調和</h4>
-                <p className="text-sm text-gray-300 leading-relaxed font-serif">
+                <p className="text-sm text-gray-300 leading-relaxed font-serif text-center">
                   心と体を一つにする。<br />
-                  静寂の中で自らを見つめる。
+                  静寂の中で<br className="sm:hidden" />自らを見つめる。
                 </p>
               </Link>
             </FadeInSection>
@@ -111,12 +112,14 @@ export default function Home() {
         </FadeInSection>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeInSection>
-            <Schedule />
-          </FadeInSection>
           <div className="mt-20">
             <FadeInSection>
               <InstagramFeed />
+            </FadeInSection>
+          </div>
+          <div className="mt-20">
+            <FadeInSection>
+              <FacebookFeed />
             </FadeInSection>
           </div>
           <FadeInSection>

@@ -6,10 +6,127 @@
  * - Embed Google Form for Contact page
  */
 
-import React from "react";
+import React, { useState } from "react";
 import SiteFrame from "../components/SiteFrame.jsx";
 import FadeInSection from "../components/FadeInSection.jsx";
 import { GOOGLE } from "../config/google.js";
+import { submitInquiry } from "../services/inquiryService";
+
+function ContactForm() {
+    const [status, setStatus] = useState('idle'); // idle, submitting, success, error
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        type: '見学・体験について',
+        content: ''
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus('submitting');
+        try {
+            await submitInquiry(formData);
+            setStatus('success');
+        } catch (error) {
+            console.error(error);
+            setStatus('error');
+        }
+    };
+
+    if (status === 'success') {
+        return (
+            <div className="text-center py-12 animate-fade-in">
+                <div className="text-6xl mb-6">✉️</div>
+                <h3 className="text-2xl font-bold text-shuyukan-blue mb-4">お問い合わせありがとうございます。</h3>
+                <p className="text-gray-600 leading-relaxed">
+                    いただいた内容を確認し、担当者より折り返しご連絡させていただきます。<br />
+                    今しばらくお待ちください。
+                </p>
+                <button
+                    onClick={() => setStatus('idle')}
+                    className="mt-8 text-shuyukan-blue font-bold border-b-2 border-shuyukan-blue hover:text-shuyukan-gold hover:border-shuyukan-gold transition-colors"
+                >
+                    別の件で問い合わせる
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">お名前 *</label>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="例：豊中 太郎"
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">メールアドレス *</label>
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="例：example@mail.com"
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">お問い合わせ種別 *</label>
+                <select
+                    name="type"
+                    required
+                    value={formData.type}
+                    onChange={handleChange}
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
+                >
+                    <option value="見学・体験について">見学・体験について</option>
+                    <option value="入会について">入会について</option>
+                    <option value="その他">その他</option>
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">内容 *</label>
+                <textarea
+                    name="content"
+                    required
+                    rows="5"
+                    value={formData.content}
+                    onChange={handleChange}
+                    placeholder="お問い合わせ内容を詳しくご記入ください。"
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:border-shuyukan-blue focus:ring-shuyukan-blue"
+                ></textarea>
+            </div>
+
+            {status === 'error' && (
+                <p className="text-red-500 text-sm">エラーが発生しました。時間を置いて再度お試しください。</p>
+            )}
+
+            <button
+                type="submit"
+                disabled={status === 'submitting'}
+                className="w-full bg-shuyukan-blue text-white font-bold py-4 rounded-lg hover:bg-shuyukan-gold hover:text-shuyukan-blue transition-all shadow-md disabled:opacity-50"
+            >
+                {status === 'submitting' ? '送信中...' : '送信する'}
+            </button>
+        </form>
+    );
+}
 
 export default function Contact() {
     return (
@@ -21,21 +138,12 @@ export default function Contact() {
                         <div className="bg-white/60 backdrop-blur-md border-l-4 border-shuyukan-blue p-6 rounded-r-lg shadow-sm">
                             <h3 className="font-bold text-shuyukan-dark mb-2 text-lg">お問い合わせフォーム</h3>
                             <p className="text-sm text-gray-700 leading-relaxed">
-                                見学・体験のお申し込み、その他ご質問はこちらからお気軽にどうぞ。<br />
-                                下記フォームが表示されない場合は、ブラウザの再読み込みをお試しください。
+                                見学・体験のお申し込み、その他ご質問はこちらからお気軽にどうぞ。
                             </p>
                         </div>
-                        <div className="w-full aspect-[4/5] bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 relative">
-                            <iframe
-                                title="剣道部 お問い合わせフォーム"
-                                src={GOOGLE.contactFormSrc}
-                                className="w-full h-full border-0"
-                                frameBorder="0"
-                                marginHeight="0"
-                                marginWidth="0"
-                            >
-                                読み込んでいます…
-                            </iframe>
+
+                        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                            <ContactForm />
                         </div>
                     </div>
 
@@ -66,18 +174,21 @@ export default function Contact() {
 
                             <div>
                                 <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
-                                    稽古日時
+                                    稽古日時（令和7年度）
                                 </h3>
                                 <ul className="space-y-2 text-gray-700">
-                                    <li className="flex justify-between border-b border-gray-100 pb-1">
-                                        <span className="font-bold">土曜日</span>
-                                        <span>17:00 - 20:00</span>
+                                    <li className="border-b border-gray-100 pb-2">
+                                        <span className="font-bold block">土曜日</span>
+                                        <span className="text-sm">小学生 17:00-19:00 / 中学生以上 18:00-20:00</span>
                                     </li>
-                                    <li className="flex justify-between border-b border-gray-100 pb-1">
-                                        <span className="font-bold">日曜日</span>
-                                        <span>14:00 - 16:00</span>
+                                    <li className="border-b border-gray-100 pb-2">
+                                        <span className="font-bold block">日曜日</span>
+                                        <span className="text-sm">全学年 14:00-16:00</span>
                                     </li>
-                                    <li className="text-sm text-gray-500 mt-2">※ 学校行事や試験期間により変更になる場合があります。</li>
+                                    <li className="text-sm text-gray-500 mt-2">
+                                        ※第3・5日曜 16:15-18:15<br />
+                                        ※学校行事等により変更になる場合があります
+                                    </li>
                                 </ul>
                             </div>
                         </div>

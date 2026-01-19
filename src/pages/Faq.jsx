@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "費用はどのくらいかかりますか？",
-    a: "入会金3,000円、月会費は一般会員3,000円、学生2,000円です。その他、スポーツ保険（年間1,850円〜）への加入が必要です。防具一式は初心者用セットで4〜6万円程度が目安です。"
+    a: "入会金2,000円、月謝は一般2,000円、中学生1,000円です。スポーツ保険は子ども（中学生以下）年間800円～1,450円、大人（高校生以上）年間1,850円（65歳以上1,200円）への加入が必要です。※月謝は原則3・6・9・12月末に3ヶ月分を納めていただきます。防具一式は初心者用セットで4～6万円程度が目安です。"
   },
   {
     q: "保護者の当番はありますか？",
@@ -77,14 +77,16 @@ export default function Faq() {
         ))}
       </div>
 
-      <div className="mt-12 text-center bg-blue-50 p-8 rounded-lg border border-blue-100">
-        <p className="text-shuyukan-dark mb-4 font-bold">その他、ご不明な点はありますか？</p>
-        <a
-          href="/contact"
-          className="inline-block bg-shuyukan-blue text-white font-bold py-3 px-8 rounded hover:bg-shuyukan-gold hover:text-shuyukan-blue transition-colors"
-        >
-          お問い合わせフォームへ
-        </a>
+      <div className="mt-12 bg-blue-50 p-8 rounded-lg border border-blue-100">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-shuyukan-dark font-bold">その他、ご不明な点がございましたらお気軽にお問い合わせください。</p>
+          <a
+            href="/contact"
+            className="inline-block bg-shuyukan-blue text-white font-bold py-3 px-8 rounded hover:bg-shuyukan-gold hover:text-shuyukan-blue transition-colors whitespace-nowrap"
+          >
+            お問い合わせフォームへ
+          </a>
+        </div>
       </div>
     </SiteFrame>
   );

@@ -66,6 +66,8 @@ function doGet(e) {
       case 'getAccounting': return createJsonResponse(getAccounting());
       case 'getDocuments': return createJsonResponse(getDocuments(params.folderId));
       case 'getSummaryCounts': return createJsonResponse(getSummaryCounts());
+      case 'debugInquiry': return createJsonResponse(debugInquiry());
+      case 'submitInquiry': return createJsonResponse(submitInquiry(JSON.parse(params.data)));
       
       // GET経由の更新（CORS回避用ワークアラウンド）
       case 'add': return createJsonResponse(addMember(JSON.parse(params.data)));
@@ -113,6 +115,7 @@ function doPost(e) {
       case 'updateAttendance': return createJsonResponse(updateAttendance(params));
       case 'updateAccounting': return createJsonResponse(updateAccounting(params));
       case 'uploadFile': return createJsonResponse(uploadFile(params));
+      case 'submitInquiry': return createJsonResponse(submitInquiry(params.data));
       
       default:
         return createJsonResponse({ success: false, error: "Unknown action: " + action });
@@ -138,7 +141,7 @@ const MEMBER_KEY_MAP = {
   '生年月日': 'birthDate', '誕生日': 'birthDate', 'BirthDate': 'birthDate',
   '性別': 'gender', 'Gender': 'gender',
   '学年': 'grade', 'Grade': 'grade',
-  '会員種別': 'memberType', 'Type': 'memberType',
+  '会員種別': 'memberType', '区分': 'memberType', 'Type': 'memberType',
   '段位': 'rank', '段級位': 'rank', 'Rank': 'rank',
   '入会日': 'joinDate', 'JoinDate': 'joinDate',
   'ステータス': 'status', '状態': 'status', 'Status': 'status',
@@ -146,6 +149,31 @@ const MEMBER_KEY_MAP = {
   '年齢': 'age', 'Age': 'age',
   '保護者': 'guardianName', '主保護者': 'guardianName', 'GuardianName': 'guardianName'
 };
+
+const NEWS_KEY_MAP = {
+  '日付': 'date', 'Date': 'date', 'タイムスタンプ': 'date', 'Timestamp': 'date',
+  'タイトル': 'title', 'Title': 'title', '見出し': 'title',
+  'カテゴリ': 'category', 'Category': 'category', '分類': 'category',
+  '内容': 'content', '本文': 'content', 'Content': 'content', '詳細': 'content',
+  '画像': 'image', 'Image': 'image', '写真': 'image',
+  '固定': 'isPinned', '固定表示': 'isPinned', 'Pinned': 'isPinned',
+  'リンク': 'link', 'Link': 'link', 'URL': 'link'
+};
+
+/**
+ * 会員種別から少年部/一般部を判定するヘルパー関数
+ */
+function determineMemberCategory(value) {
+  if (!value) return '一般部';
+  const v = String(value);
+  // 少年部: 小, 中, 幼, 年少, 年中, 年長
+  if (v.includes('小') || v.includes('中') || v.includes('幼') || 
+      v.includes('年少') || v.includes('年中') || v.includes('年長')) {
+    return '少年部';
+  }
+  // 一般部: 高, 一般, 大学, その他
+  return '一般部';
+}
 
 function getMembers() {
   const ss = getSS(MEMBER_SPREADSHEET_ID);
@@ -168,6 +196,16 @@ function getMembers() {
     if (!obj.id) {
       obj.id = String(rowIndex + 2);
     }
+    
+    // 「会員種別」列の値を grade にコピーし、memberType を自動判定
+    // スプレッドシートの「会員種別」には学年データ（一般、高3、小6等）が入っている
+    if (obj.memberType && !obj.grade) {
+      obj.grade = obj.memberType; // 元の値を grade に保持
+    }
+    // memberType を「少年部」/「一般部」に正規化
+    const originalValue = obj.grade || obj.memberType;
+    obj.memberType = determineMemberCategory(originalValue);
+    
     return obj;
   });
 }
@@ -177,9 +215,17 @@ function addMember(data) {
   const ss = getSS(MEMBER_SPREADSHEET_ID);
   const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  
+  // フロントエンドから送信されたデータを調整
+  // 「会員種別」列には grade (学年データ) を書き込む
+  const adjustedData = { ...data };
+  if (adjustedData.grade) {
+    adjustedData.memberType = adjustedData.grade;
+  }
+  
   const newRow = headers.map(h => {
     const key = MEMBER_KEY_MAP[h] || h;
-    return data[key] || "";
+    return adjustedData[key] || "";
   });
   sheet.appendRow(newRow);
   
@@ -270,10 +316,20 @@ function updateMember(id, data) {
     const targetId = String(id).trim();
     const isRowBasedId = /^\d+$/.test(targetId);
     
+    // フロントエンドから送信されたデータを調整
+    // 「会員種別」列には grade (学年データ) を書き込む
+    // memberType (少年部/一般部) は自動計算なので無視
+    const adjustedData = { ...data };
+    if (adjustedData.grade) {
+      // grade の値を「会員種別」列に書き込むため memberType にコピー
+      adjustedData.memberType = adjustedData.grade;
+    }
+    
     for (let i = 1; i < values.length; i++) {
       const rowNumber = i + 1;
       let matched = false;
       
+      // IDマッチングロジック
       if (isRowBasedId && String(rowNumber) === targetId) {
         matched = true;
       } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
@@ -283,17 +339,23 @@ function updateMember(id, data) {
       }
       
       if (matched) {
-        headers.forEach((h, colIdx) => {
+        // 現在の行データを取得し、渡されたデータで上書き
+        const currentRow = values[i];
+        const newRow = headers.map((h, colIdx) => {
           const key = MEMBER_KEY_MAP[h] || h;
-          if (data[key] !== undefined) {
-            let value = data[key];
-            // 日付文字列をDate型に変換（GASのセルに適切に設定するため）
+          if (adjustedData[key] !== undefined) {
+            let value = adjustedData[key];
+            // 日付文字列をDate型に変換
             if (h.includes('日') && typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-              value = new Date(value);
+              return new Date(value);
             }
-            sheet.getRange(rowNumber, colIdx + 1).setValue(value);
+            return value;
           }
+          return currentRow[colIdx]; // 更新データにない場合は既存の値を保持
         });
+
+        // 1つの範囲（Range）に対して一度に書き込むことで高速化（タイムアウト・CORS対策）
+        sheet.getRange(rowNumber, 1, 1, newRow.length).setValues([newRow]);
         return { success: true };
       }
     }
@@ -326,24 +388,29 @@ function getNews() {
   const sheet = getSheetAllowAliases(ss, 'お知らせ');
   if (!sheet) return [];
   
-  const data = sheet.getDataRange().getValues();
-  const headers = data.shift();
+  const values = sheet.getDataRange().getValues();
+  const headers = values.shift();
   
-  return data.map((row, index) => {
-    const dateVal = row[0] instanceof Date 
-      ? Utilities.formatDate(row[0], "JST", "yyyy.MM.dd")
-      : row[0];
-      
-    return {
-      id: index + 1,
-      date: dateVal,
-      title: row[1],
-      category: row[2],
-      content: row[3],
-      image: row[4] || null,
-      isPinned: row[5] === 'はい、固定表示する' || row[5] === true,
-      link: row[6] || '#'
-    };
+  return values.map((row, index) => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      const key = NEWS_KEY_MAP[h] || h;
+      let val = row[i];
+      if (val instanceof Date) {
+        val = Utilities.formatDate(val, "JST", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      }
+      obj[key] = val;
+    });
+    
+    // IDがない場合はindexを使用
+    if (!obj.id) obj.id = index + 1;
+    
+    // 固定表示の判定
+    if (obj.isPinned !== undefined) {
+      obj.isPinned = (obj.isPinned === 'はい、固定表示する' || obj.isPinned === true || obj.isPinned === 'TRUE');
+    }
+    
+    return obj;
   }).reverse();
 }
 
@@ -594,28 +661,92 @@ function getSummaryCounts() {
       }
     }
 
-    // 2. 新着問い合わせ数（フォルダ内のファイル数）
-    const inquiryFolderId = "1p_v1Y4vY6X9_z8A7v7_8Y8Y8Y8Y8Y8Y8"; // 仮（実際は環境変数等のIDを使うべきだが一旦固定）
-    // 実際には getDocuments のロジックを流用。
-    // ここではVITE_FOLDER_ID_INQUIRIESに相当するIDを特定する必要がある。
-    // 親フォルダの ID から "05_入会申込・お問い合わせ" を探し、その中のファイル数をカウント。
-    const parentId = "1x9FIadqvK9XjAWx6iKtBkuMXfq9He8kh"; // 剣道部_運用ルート
-    const parentFolder = DriveApp.getFolderById(parentId);
-    const inqFolders = parentFolder.getFoldersByName("05_入会申込・お問い合わせ");
-    if (inqFolders.hasNext()) {
-      const inqFolder = inqFolders.next();
-      const files = inqFolder.getFiles();
-      while (files.hasNext()) {
-        files.next();
-        result.newInquiries++;
-      }
+    // 2. 新着問い合わせ数（スプレッドシートから取得）
+    // お問い合わせフォームの回答スプレッドシート
+    const INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+    console.log("Accessing Inquiry SS:", INQUIRY_SPREADSHEET_ID);
+    try {
+      const inquirySS = SpreadsheetApp.openById(INQUIRY_SPREADSHEET_ID);
+      const inquirySheet = inquirySS.getSheets()[0]; // 最初のシートを使用
+      console.log("Inquiry Sheet Name:", inquirySheet.getName());
+      const lastRow = inquirySheet.getLastRow();
+      console.log("Inquiry Last Row:", lastRow);
+      // ヘッダー行を除いた行数が問い合わせ件数
+      result.newInquiries = lastRow > 1 ? lastRow - 1 : 0;
+    } catch (e) {
+      console.error("問い合わせスプレッドシート取得エラー:", e.toString());
+      result.inquiryError = e.toString();
     }
 
   } catch (e) {
     console.error("Summary counts error:", e);
+    result.globalError = e.toString();
   }
 
   return { success: true, data: result };
+}
+
+/**
+ * お問い合わせスプレッドシートのデバッグ情報を返す
+ */
+function debugInquiry() {
+  const INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  const debugInfo = {
+    id: INQUIRY_SPREADSHEET_ID,
+    accessible: false,
+    sheetCount: 0,
+    sheets: [],
+    first5Rows: [],
+    error: null
+  };
+
+  try {
+    const ss = SpreadsheetApp.openById(INQUIRY_SPREADSHEET_ID);
+    debugInfo.accessible = true;
+    const sheets = ss.getSheets();
+    debugInfo.sheetCount = sheets.length;
+    debugInfo.sheets = sheets.map(s => s.getName());
+    
+    if (sheets.length > 0) {
+      const sheet = sheets[0];
+      const lastRow = sheet.getLastRow();
+      const lastCol = sheet.getLastColumn();
+      if (lastRow > 0 && lastCol > 0) {
+        const range = sheet.getRange(1, 1, Math.min(lastRow, 5), lastCol);
+        debugInfo.first5Rows = range.getValues();
+      }
+    }
+  } catch (e) {
+    debugInfo.error = e.toString();
+  }
+
+  return { success: true, data: debugInfo };
+}
+
+/**
+ * お問い合わせを登録
+ */
+function submitInquiry(data) {
+  const INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  try {
+    const ss = SpreadsheetApp.openById(INQUIRY_SPREADSHEET_ID);
+    const sheet = ss.getSheets()[0];
+    const now = new Date();
+    
+    // タイムスタンプ, お名前, メールアドレス, お問い合わせ種別, お問い合わせ内容
+    sheet.appendRow([
+      now,
+      data.name || "",
+      data.email || "",
+      data.type || "",
+      data.content || ""
+    ]);
+    
+    return { success: true };
+  } catch (e) {
+    console.error("submitInquiry error:", e.toString());
+    return { success: false, error: e.toString() };
+  }
 }
 
 function createKendoFolders() {

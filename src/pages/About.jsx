@@ -36,9 +36,10 @@ export default function About() {
                             修猷館の三つの柱
                         </h3>
                         <div className="w-20 h-1 bg-shuyukan-gold mx-auto rounded-full"></div>
-                        <p className="mt-6 text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                        <p className="mt-6 text-gray-600 leading-relaxed max-w-2xl mx-auto text-left">
                             私たちが大切にしている3つの理念。<br />
-                            これらは剣道の技術向上だけでなく、人生を豊かにするための指針です。
+                            これらは剣道の技術向上だけでなく、<br />
+                            人生を豊かにするための指針です。
                         </p>
                     </div>
 

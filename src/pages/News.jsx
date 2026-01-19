@@ -9,9 +9,27 @@ import FadeInSection from '../components/FadeInSection.jsx';
 import { fetchNews } from '../services/newsService.js';
 
 /**
+ * 日付文字列を月日のみの形式に変換
+ */
+function formatDateOnly(dateStr) {
+  if (!dateStr) return '';
+  const originalStr = String(dateStr);
+  try {
+    const date = new Date(originalStr);
+    if (!isNaN(date.getTime())) {
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    }
+    const dateOnly = originalStr.split(' ')[0];
+    const match = dateOnly.match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+    if (match) {
+      return `${parseInt(match[2], 10)}/${parseInt(match[3], 10)}`;
+    }
+  } catch (e) { }
+  return originalStr;
+}
+
+/**
  * GoogleドライブのURLを直接表示可能なURLに変換
- * @param {string} url - Googleドライブの共有URL
- * @returns {string|null} - 表示可能なURL
  */
 function convertDriveUrl(url) {
   if (!url) return null;
@@ -141,7 +159,7 @@ export default function News() {
                   {/* 日付 */}
                   <div className="md:w-24 flex-shrink-0">
                     <span className="text-sm font-mono text-shuyukan-gold font-bold">
-                      {item.date}
+                      {formatDateOnly(item.date)}
                     </span>
                   </div>
 
