@@ -160,13 +160,14 @@ const NewsSection = () => {
                                     className="group block bg-gray-50 rounded overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-shuyukan-gold/30"
                                 >
                                     {/* サムネイル画像 */}
-                                    {item.image && convertDriveUrl(item.image) && (
+                                    {item.image && (
                                         <div className="w-full bg-gray-100 overflow-hidden">
                                             <img
                                                 src={convertDriveUrl(item.image)}
                                                 alt={item.title}
                                                 className="w-full h-auto object-contain max-h-40 group-hover:scale-105 transition-transform duration-300"
                                                 onError={(e) => {
+                                                    // 画像読み込みエラー時はコンテナごと隠す
                                                     e.target.parentElement.style.display = 'none';
                                                 }}
                                             />
@@ -179,10 +180,14 @@ const NewsSection = () => {
                                             </span>
                                             {/* 7日以内の投稿にNEWバッジを表示 */}
                                             {item.date && (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7 && (
-                                                <span className="inline-block bg-shuyukan-red text-white text-[10px] px-2 py-1 rounded font-bold animate-pulse">
-                                                    NEW
+                                                <span className="relative inline-flex items-center justify-center">
+                                                    <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                                                    <span className="relative inline-flex items-center bg-gradient-to-r from-red-500 via-red-600 to-red-500 text-white text-[11px] px-2.5 py-1 rounded-full font-bold shadow-lg shadow-red-500/50 border border-white/30">
+                                                        ✨ NEW
+                                                    </span>
                                                 </span>
                                             )}
+
                                         </div>
                                         <p className="text-xs text-shuyukan-gold font-bold mb-1 font-mono">{formatDateOnly(item.date)}</p>
                                         <h3 className="text-sm font-bold text-gray-800 leading-relaxed group-hover:text-shuyukan-blue transition-colors line-clamp-2">

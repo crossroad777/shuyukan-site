@@ -62,12 +62,16 @@ function doGet(e) {
       case 'debug': return createJsonResponse(getDebugInfo());
       case 'getMembers': return createJsonResponse({ success: true, data: getMembers() });
       case 'getNews': return createJsonResponse({ success: true, data: getNews() });
-      case 'getAttendance': return createJsonResponse(getAttendance(params.date));
+      case 'getAttendance':
+        const attendDate = e.parameter.date || Utilities.formatDate(new Date(), "JST", "yyyy-MM-dd");
+        return createJsonResponse(getAttendance(attendDate));
       case 'getAccounting': return createJsonResponse(getAccounting());
       case 'getDocuments': return createJsonResponse(getDocuments(params.folderId));
-      case 'getSummaryCounts': return createJsonResponse(getSummaryCounts());
+      case 'getSummaryCounts': return createJsonResponse(getSummaryCountsEnhanced()); // Use enhanced version
       case 'debugInquiry': return createJsonResponse(debugInquiry());
       case 'submitInquiry': return createJsonResponse(submitInquiry(JSON.parse(params.data)));
+      case 'getDebugInfo': return createJsonResponse(getDebugInfo());
+      case 'getSheets': return createJsonResponse(getSheetsInfo()); // New debug action
       
       // GET経由の更新（CORS回避用ワークアラウンド）
       case 'add': return createJsonResponse(addMember(JSON.parse(params.data)));
@@ -637,53 +641,36 @@ function getDebugInfo() {
 /**
  * 管理者向けサマリーカウント取得
  * （承認待ち人数、未読問い合わせ件数など）
+ * getSummaryCountsEnhancedの内容をこちらに統合
  */
 function getSummaryCounts() {
-  const result = {
-    pendingMembers: 0,
-    newInquiries: 0
+  return getSummaryCountsEnhanced();
+}
+
+/**
+ * スプレッドシートのシート名一覧を取得（デバッグ用）
+ */
+function getSheetsInfo() {
+  const info = {
+    memberSS: { id: MEMBER_SPREADSHEET_ID, sheets: [] },
+    newsSS: { id: NEWS_SPREADSHEET_ID, sheets: [] }
   };
-
+  
   try {
-    // 1. 承認待ち会員数
-    const ss = getSS(MEMBER_SPREADSHEET_ID);
-    const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
-    const values = sheet.getDataRange().getValues();
-    const headers = values[0];
-    const statusIdx = headers.indexOf('ステータス');
-    
-    if (statusIdx !== -1) {
-      for (let i = 1; i < values.length; i++) {
-        const s = values[i][statusIdx];
-        if (s === '承認待ち' || s === 'pending') {
-          result.pendingMembers++;
-        }
-      }
-    }
-
-    // 2. 新着問い合わせ数（スプレッドシートから取得）
-    // お問い合わせフォームの回答スプレッドシート
-    const INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
-    console.log("Accessing Inquiry SS:", INQUIRY_SPREADSHEET_ID);
-    try {
-      const inquirySS = SpreadsheetApp.openById(INQUIRY_SPREADSHEET_ID);
-      const inquirySheet = inquirySS.getSheets()[0]; // 最初のシートを使用
-      console.log("Inquiry Sheet Name:", inquirySheet.getName());
-      const lastRow = inquirySheet.getLastRow();
-      console.log("Inquiry Last Row:", lastRow);
-      // ヘッダー行を除いた行数が問い合わせ件数
-      result.newInquiries = lastRow > 1 ? lastRow - 1 : 0;
-    } catch (e) {
-      console.error("問い合わせスプレッドシート取得エラー:", e.toString());
-      result.inquiryError = e.toString();
-    }
-
+    const mss = getSS(MEMBER_SPREADSHEET_ID);
+    info.memberSS.sheets = mss.getSheets().map(s => s.getName());
   } catch (e) {
-    console.error("Summary counts error:", e);
-    result.globalError = e.toString();
+    info.memberSS.error = e.toString();
   }
-
-  return { success: true, data: result };
+  
+  try {
+    const nss = getSS(NEWS_SPREADSHEET_ID);
+    info.newsSS.sheets = nss.getSheets().map(s => s.getName());
+  } catch (e) {
+    info.newsSS.error = e.toString();
+  }
+  
+  return { success: true, data: info };
 }
 
 /**
@@ -885,5 +872,148 @@ https://shuyukan.info
 
   GmailApp.sendEmail(email, subject, body);
   console.log("承認完了メール送信完了:", email);
+}
+
+// --- 9. 拡張メール通知機能（2026-01-21 パッチ統合） ---
+
+/**
+ * 管理者メールアドレス（複数可）
+ */
+var ADMIN_EMAILS = "shuyukan.info@gmail.com, kotani.tatsuhiro@gmail.com";
+
+/**
+ * 汎用メール送信関数
+ * @param {string} to - 送信先（カンマ区切りで複数可）
+ * @param {string} subject - 件名
+ * @param {string} body - 本文
+ */
+function sendMailNotification(to, subject, body) {
+  if (!to) return;
+  try {
+    MailApp.sendEmail({
+      to: to,
+      subject: "[修猷館ポータル] " + subject,
+      body: body + "\n\n---\n豊中修猷館剣道部 ポータルシステム"
+    });
+    console.log("Mail sent to:", to);
+  } catch (e) { 
+    console.error("Mail Error:", e); 
+  }
+}
+
+/**
+ * カラム名の揺れを吸収するマッピング関数
+ * スプレッドシートのヘッダー名を正規化されたキーに変換
+ */
+function normalizeKey(header) {
+  const h = String(header).trim().toLowerCase();
+  
+  // 共通
+  if (h.includes('タイム') || h.includes('日付') || h.includes('date')) return 'date';
+  if (h.includes('ステータス') || h.includes('状態') || h.includes('status')) return 'status';
+  if (h.includes('備考') || h.includes('メモ') || h.includes('notes')) return 'notes';
+
+  // 会員向け
+  if (h.includes('番号') || h.includes('id')) return 'id';
+  if (h.includes('氏名') || h.includes('名前') || h.includes('name')) return 'name';
+  if (h.includes('ふりがな') || h.includes('フリガナ')) return 'furigana';
+  if (h.includes('メール') || h.includes('アドレス') || h.includes('email')) return 'email';
+  if (h.includes('生年月日') || h.includes('誕生日')) return 'birthDate';
+  if (h.includes('学年') || h.includes('grade')) return 'grade';
+  if (h.includes('種別') || h.includes('区分') || h.includes('type')) return 'memberType';
+  if (h.includes('段位') || h.includes('段級位') || h.includes('rank')) return 'rank';
+  if (h.includes('保護者')) return 'guardianName';
+  if (h.includes('緊急連絡') || h.includes('emergency')) return 'emergencyContact';
+
+  // ニュース向け
+  if (h.includes('タイトル') || h.includes('題名') || h.includes('title')) return 'title';
+  if (h.includes('カテゴリ')) return 'category';
+  if (h.includes('本文') || h.includes('内容') || h.includes('content')) return 'content';
+  if (h.includes('画像') || h.includes('写真') || h.includes('image')) return 'image';
+  if (h.includes('固定') || h.includes('pin')) return 'isPinned';
+  if (h.includes('リンク') || h.includes('url')) return 'link';
+
+  return h;
+}
+
+/**
+ * 管理者への問い合わせ通知＋送信者への自動返信
+ * submitInquiry の拡張版
+ */
+function submitInquiryWithNotification(data) {
+  var INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  const ss = getSS(INQUIRY_SPREADSHEET_ID);
+  const sheet = getSheetAllowAliases(ss, '問い合わせ');
+  
+  // データ追加
+  sheet.appendRow([new Date(), data.name, data.email, data.type, data.content, "未対応"]);
+  
+  // 管理者通知
+  sendMailNotification(
+    ADMIN_EMAILS, 
+    "新しいお問い合わせ/体験申し込みがあります", 
+    "送信者: " + data.name + "\nメール: " + data.email + "\n種別: " + data.type + "\n\n内容:\n" + data.content
+  );
+  
+  // 送信者への自動返信
+  sendMailNotification(
+    data.email, 
+    "お問い合わせを受け付けました", 
+    data.name + " 様\n\nお問い合わせいただきありがとうございます。\n内容を確認の上、担当者よりご連絡いたします。\n\n【お問い合わせ内容】\n種別: " + data.type + "\n内容: " + data.content
+  );
+  
+  return { success: true };
+}
+
+/**
+ * 管理者への入会申請通知
+ * addMember から呼び出し可能
+ */
+function notifyAdminNewApplication(data) {
+  sendMailNotification(
+    ADMIN_EMAILS, 
+    "新規入会申請（承認依頼）があります", 
+    "名前: " + data.name + "\nメール: " + data.email + "\n\n管理者ポータルで承認操作をしてください。\nhttps://shuyukan.vercel.app/admin"
+  );
+}
+
+/**
+ * 未読カウント取得（問い合わせ対応状況込み）
+ * getSummaryCounts の拡張版
+ */
+function getSummaryCountsEnhanced() {
+  var INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  const res = { pendingMembers: 0, newInquiries: 0 };
+  
+  try {
+    // 承認待ち会員のカウント
+    const mSS = getSS(MEMBER_SPREADSHEET_ID);
+    const mSheet = getSheetAllowAliases(mSS, MEMBER_SHEET_NAME);
+    const mValues = mSheet.getDataRange().getValues();
+    const mHeaders = mValues[0].map(normalizeKey);
+    const sIdx = mHeaders.indexOf('status');
+    if (sIdx > -1) {
+      for (let i = 1; i < mValues.length; i++) {
+        const status = String(mValues[i][sIdx]).trim();
+        if (status === '承認待ち' || status === 'pending') res.pendingMembers++;
+      }
+    }
+    
+    // 未対応問い合わせのカウント（「未対応」または空のステータス）
+    const iSS = getSS(INQUIRY_SPREADSHEET_ID);
+    const iSheet = getSheetAllowAliases(iSS, '問い合わせ');
+    const iLastRow = iSheet.getLastRow();
+    if (iLastRow > 1) {
+      const iData = iSheet.getRange(2, 1, iLastRow - 1, iSheet.getLastColumn()).getValues();
+      iData.forEach(row => { 
+        const lastCol = row[row.length - 1];
+        if (lastCol === "未対応" || !lastCol) res.newInquiries++; 
+      });
+    }
+  } catch (e) { 
+    console.error("getSummaryCountsEnhanced error:", e);
+  }
+  
+  return { success: true, data: res };
 }
 

@@ -138,10 +138,11 @@ export default function Contact() {
                     <h2 className="text-2xl md:text-3xl font-serif font-bold text-shuyukan-blue mb-4">
                         些細なことでも、お気軽にどうぞ
                     </h2>
-                    <p className="text-gray-600 leading-relaxed">
-                        「まだ入会するか決めていないけど、ちょっと聞きたい」<br />
-                        「子どもに合うか不安で…」<br />
-                        そんなご相談も大歓迎です。お気軽にお問い合わせください。
+                    <p className="text-gray-600 leading-loose text-sm sm:text-base md:text-lg">
+                        <span className="whitespace-nowrap">「まだ入会するか決めていないけど、ちょっと聞きたい」</span><br />
+                        <span className="whitespace-nowrap">「子どもに合うか不安で…」</span><br />
+                        <span className="block mt-2">そんなご相談も大歓迎です。</span>
+                        <span className="block">お気軽にお問い合わせください。</span>
                     </p>
                 </div>
             </FadeInSection>
@@ -197,17 +198,28 @@ export default function Contact() {
                                 <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
                                     道場アクセス
                                 </h3>
-                                <div className="aspect-video w-full bg-gray-200 rounded-lg overflow-hidden shadow-md mb-4">
+                                <a
+                                    href="https://www.google.com/maps/place/%E8%B1%8A%E4%B8%AD%E5%B8%82%E7%AB%8B%E7%86%8A%E9%87%8E%E7%94%B0%E5%B0%8F%E5%AD%A6%E6%A0%A1/@34.7766699,135.4746610,17z"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block aspect-video w-full bg-gray-200 rounded-lg overflow-hidden shadow-md mb-4 relative group cursor-pointer"
+                                >
                                     <iframe
                                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3278.490806497214!2d135.47466107574744!3d34.77666997289297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6000e4e6900257bb%3A0xe67756f43279163f!2z6LGK5Lit5biC56uL54aK6YeO55Sw5bCP5a2m5qCh!5e0!3m2!1sja!2sjp!4v1705663123456!5m2!1sja!2sjp"
                                         width="100%"
                                         height="100%"
-                                        style={{ border: 0 }}
+                                        style={{ border: 0, pointerEvents: 'none' }}
                                         allowFullScreen=""
                                         loading="lazy"
                                         referrerPolicy="no-referrer-when-downgrade"
                                     ></iframe>
-                                </div>
+                                    {/* Hover overlay */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-shuyukan-blue font-bold py-2 px-4 rounded-full shadow-lg text-sm">
+                                            🗺️ Googleマップで開く
+                                        </span>
+                                    </div>
+                                </a>
                                 <address className="not-italic text-gray-600 space-y-2">
                                     <p className="font-bold text-lg">豊中市立熊野田小学校 体育館</p>
                                     <p>〒560-0015 豊中市赤阪1丁目5-1</p>

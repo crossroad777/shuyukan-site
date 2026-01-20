@@ -304,7 +304,8 @@ export default function Join() {
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-8 text-center">
                         <div className="text-5xl mb-4">🌱</div>
                         <h3 className="text-xl font-bold text-green-800 mb-3">
-                            「ちょっと見てみたいだけ」で大丈夫です
+                            <span className="whitespace-nowrap">「ちょっと見てみたいだけ」で</span><br className="sm:hidden" />
+                            <span className="whitespace-nowrap">大丈夫です</span>
                         </h3>
                         <p className="text-green-700 leading-relaxed text-left sm:text-center">
                             無理な勧誘は一切ありません。<br className="hidden sm:inline" />
@@ -331,7 +332,8 @@ export default function Join() {
                     <TrialForm />
 
                     <p className="text-center text-gray-400 text-sm mt-6">
-                        送信後、2～3日以内に担当者よりメールにてご連絡いたします。
+                        <span className="whitespace-nowrap">送信後、2～3日以内に担当者より</span><br className="sm:hidden" />
+                        <span className="whitespace-nowrap">メールにてご連絡いたします。</span>
                     </p>
                 </FadeInSection>
             </section>
@@ -343,7 +345,8 @@ export default function Join() {
                         まだ不安がありますか？
                     </p>
                     <p className="text-gray-500 mb-6 text-sm">
-                        費用や持ち物、初心者の方からよくいただくご質問をまとめています。
+                        <span className="whitespace-nowrap">費用や持ち物、初心者の方から</span><br className="sm:hidden" />
+                        <span className="whitespace-nowrap">よくいただくご質問をまとめています。</span>
                     </p>
                     <a
                         href="/faq"

@@ -23,9 +23,27 @@ export default function NewsAddModal({ onClose, onAdd }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        let newValue = type === 'checkbox' ? checked : value;
+
+        // Google Drive URLを直接表示用URLに自動変換
+        if (name === 'image' && typeof newValue === 'string') {
+            // パターン: https://drive.google.com/file/d/XXXXX/view...
+            const driveMatch = newValue.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) {
+                newValue = `https://lh3.googleusercontent.com/d/${driveMatch[1]}=w800`;
+                console.log('[NewsAddModal] Google Drive URL変換:', newValue);
+            }
+            // パターン: https://drive.google.com/open?id=XXXXX
+            const openMatch = newValue.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (openMatch) {
+                newValue = `https://lh3.googleusercontent.com/d/${openMatch[1]}=w800`;
+                console.log('[NewsAddModal] Google Drive URL変換:', newValue);
+            }
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: newValue
         }));
     };
 
@@ -33,16 +51,33 @@ export default function NewsAddModal({ onClose, onAdd }) {
         const file = e.target.files[0];
         if (!file) return;
 
+        console.log('[NewsAddModal] ファイル選択:', file.name, file.type, file.size);
         setUploading(true);
         try {
             const result = await uploadNewsImage(file);
-            if (result.success) {
-                setFormData(prev => ({ ...prev, image: result.url }));
+            console.log('[NewsAddModal] アップロード結果:', result);
+            if (result.success && result.url) {
+                // すでに lh3... 形式なら末尾にサイズ指定がなければ追加
+                let finalUrl = result.url;
+                if (finalUrl.includes('lh3.googleusercontent.com') && !finalUrl.includes('=')) {
+                    finalUrl += '=w800';
+                }
+                setFormData(prev => ({ ...prev, image: finalUrl }));
+                console.log('[NewsAddModal] 画像URL設定成功:', finalUrl);
+            } else {
+                const errorMsg = result.error || '画像URLが取得できませんでした';
+                console.error('[NewsAddModal] アップロード失敗:', errorMsg);
+                alert('画像のアップロードに失敗しました: ' + errorMsg);
             }
         } catch (error) {
+            console.error('[NewsAddModal] アップロードエラー:', error);
             alert('画像のアップロードに失敗しました: ' + error.message);
         } finally {
             setUploading(false);
+            // ファイル入力をリセット（同じファイルを再選択できるように）
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     };
 
@@ -131,9 +166,12 @@ export default function NewsAddModal({ onClose, onAdd }) {
                                 type="button"
                                 onClick={triggerFileSelect}
                                 disabled={uploading}
-                                className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-sm font-medium border border-gray-300 transition-colors whitespace-nowrap"
+                                className={`px-3 py-2 rounded text-sm font-medium border transition-colors whitespace-nowrap ${uploading
+                                    ? 'bg-blue-100 text-blue-600 border-blue-300 cursor-wait'
+                                    : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                                    }`}
                             >
-                                {uploading ? '中...' : '画像を選択'}
+                                {uploading ? '⏳ アップロード中...' : '📁 画像を選択'}
                             </button>
                             <input
                                 type="file"
@@ -159,7 +197,15 @@ export default function NewsAddModal({ onClose, onAdd }) {
                                 </button>
                             </div>
                         )}
-                        <p className="text-[10px] text-gray-400 mt-1">※ローカルから選択するか、Googleドライブの直接URLを指定してください</p>
+                        <div className="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-700 space-y-1">
+                            <p className="font-bold">📋 画像の追加方法：</p>
+                            <ol className="list-decimal list-inside space-y-1">
+                                <li>Google Drive に画像をアップロード</li>
+                                <li>右クリック →「共有」→「リンクを知っている全員」に変更</li>
+                                <li>リンクをコピー（例: https://drive.google.com/file/d/<span className="font-mono bg-amber-100 px-1">XXXXX</span>/view）</li>
+                                <li>上の入力欄に貼り付け（自動変換されます）</li>
+                            </ol>
+                        </div>
                     </div>
 
                     {/* Link URL */}

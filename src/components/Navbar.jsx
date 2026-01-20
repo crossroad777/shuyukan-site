@@ -80,7 +80,7 @@ const Navbar = () => {
                     <div className="flex md:hidden">
                         <button
                             onClick={toggleMenu}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white focus:outline-none transition-colors"
+                            className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white focus:outline-none transition-colors"
                         >
                             <span className="sr-only">メニューを開く</span>
                             <div className="space-y-1.5">

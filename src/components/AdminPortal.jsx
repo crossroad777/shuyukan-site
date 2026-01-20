@@ -40,7 +40,7 @@ export default function AdminPortal({ user }) {
         { id: 'manual', label: 'ガイドの編集', icon: '📖' },
         { id: 'events', label: '行事予定の管理', icon: '📅' },
         { id: 'admin_schedule', label: '稽古日程表の管理', icon: '🗓️' },
-        { id: 'key', label: '当番・連絡網の編成', icon: '🔑' },
+        { id: 'key', label: '当番・連絡網', icon: '🔑' },
         { id: 'docs', label: 'ファイル一括管理', icon: '📁' },
     ];
 
@@ -170,7 +170,10 @@ export default function AdminPortal({ user }) {
                         <p className="text-red-100 text-sm">運営・編集などの管理業務を一括で行います</p>
                     </div>
                 </div>
-                <span className="bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold font-sans">ADMIN ONLY</span>
+                <div className="flex flex-col items-end gap-1">
+                    <span className="bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold font-sans">ADMIN ONLY</span>
+                    <span className="text-[10px] text-red-200 opacity-70">Release v1.0.0</span>
+                </div>
             </div>
 
             <div className="space-y-8">
@@ -196,6 +199,38 @@ export default function AdminPortal({ user }) {
                         </div>
                     </div>
                 )}
+
+                {/* お問い合わせ・体験申込アラート - 最優先で表示 */}
+                {summary.newInquiries > 0 && (
+                    <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-1 rounded-xl shadow-xl animate-pulse-subtle relative overflow-hidden">
+                        {/* 光沢エフェクト */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-shimmer"></div>
+                        <div className="bg-white p-6 rounded-lg flex flex-col md:flex-row items-center justify-between gap-4 relative">
+                            <div className="flex items-center gap-4 text-center md:text-left">
+                                <div className="relative">
+                                    <span className="text-5xl">📩</span>
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-[10px] items-center justify-center font-bold">{summary.newInquiries}</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl md:text-2xl font-bold text-gray-800">
+                                        📬 新しいお問い合わせ・体験申込が <span className="text-teal-600 text-2xl md:text-3xl">{summary.newInquiries}件</span> 届いています！
+                                    </h3>
+                                    <p className="text-gray-600 mt-1">体験入学の希望や一般のお問い合わせが届いています。早めの対応をお願いします。</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setActiveView('inquiries')}
+                                className="w-full md:w-auto bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 text-lg hover:scale-105"
+                            >
+                                🔍 今すぐ確認する
+                            </button>
+                        </div>
+                    </div>
+                )}
+
 
                 {/* 1. 📢 クイックアクション */}
                 <section className="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl border border-red-200">

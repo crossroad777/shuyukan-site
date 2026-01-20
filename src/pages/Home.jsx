@@ -101,7 +101,7 @@ export default function Home() {
             <div className="text-center mb-12">
               <span className="text-shuyukan-red font-bold tracking-widest uppercase text-sm">For Parents</span>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-shuyukan-blue mt-2 mb-4">
-                剣道で育つ、3つの「楽しい」
+                剣道で育つ、3つの<span className="whitespace-nowrap">「楽しい」</span>
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base text-left sm:text-center">
                 子どもたちは「楽しい」から続けられる。<br className="hidden sm:inline" />
@@ -114,8 +114,10 @@ export default function Home() {
             {/* Card 1: 仲間といるのが楽しい */}
             <FadeInSection delay={200}>
               <Link to="/benefits" className="block group h-full">
-                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
-                  <div className="text-5xl mb-4">🤝</div>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
+                    <img src="/images/kendo_friendship.png" alt="仲間との稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">仲間といるのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">友情・礼</p>
                   <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">
@@ -145,8 +147,10 @@ export default function Home() {
             {/* Card 2: できるようになるのが楽しい */}
             <FadeInSection delay={400}>
               <Link to="/benefits" className="block group h-full">
-                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
-                  <div className="text-5xl mb-4">🎯</div>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
+                    <img src="/images/kendo_challenge.png" alt="挑戦する姿" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">できるようになるのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">挑戦</p>
                   <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">
@@ -176,8 +180,10 @@ export default function Home() {
             {/* Card 3: 体を動かすのが楽しい */}
             <FadeInSection delay={600}>
               <Link to="/benefits" className="block group h-full">
-                <div className="bg-white p-8 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
-                  <div className="text-5xl mb-4">💪</div>
+                <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
+                  <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
+                    <img src="/images/kendo_active.png" alt="元気に稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">体を動かすのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">心と体</p>
                   <ul className="text-sm text-gray-600 space-y-2 mb-6 flex-1">

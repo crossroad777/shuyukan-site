@@ -17,10 +17,11 @@ export default function PortalButton({ icon, label, onClick, color = 'bg-shuyuka
       <span className="text-lg font-bold tracking-wider text-left leading-tight flex-1">{label}</span>
 
       {badgeCount > 0 && (
-        <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold border-2 border-white shadow-lg animate-pulse">
+        <span className="absolute -top-2 -right-2 flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-full bg-gradient-to-r from-red-500 via-red-600 to-red-500 text-white text-xs font-bold border-2 border-white shadow-lg shadow-red-500/50 animate-bounce">
           {badgeCount > 99 ? '99+' : badgeCount}
         </span>
       )}
+
     </button>
   );
 }

@@ -15,6 +15,7 @@ const fallbackNews = [
         title: '体験入部 随時受付中！',
         category: '体験会',
         isPinned: true,
+        image: '/assets/news_kids.png',
         content: '初心者大歓迎。見学・体験は土曜日17:00〜、日曜日14:00〜で受付中です。',
         link: '/join'
     },
@@ -24,6 +25,7 @@ const fallbackNews = [
         title: '1月の稽古日程について',
         category: 'お知らせ',
         isPinned: false,
+        image: '/assets/news_practice.png',
         content: '1月の稽古日程を更新しました。詳細はカレンダーをご確認ください。',
         link: '/practice'
     },
@@ -33,6 +35,7 @@ const fallbackNews = [
         title: '新年初稽古のお知らせ',
         category: '行事',
         isPinned: false,
+        image: '/assets/news_practice.png',
         content: '1月6日（日）に新年初稽古を行います。',
         link: '#'
     }
@@ -272,8 +275,11 @@ export async function uploadNewsImage(file) {
 
                 const response = await fetch(NEWS_API_URL, {
                     method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify(payload)
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify(payload),
+                    redirect: 'follow'
                 });
 
                 if (!response.ok) {

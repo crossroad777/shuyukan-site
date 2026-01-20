@@ -107,7 +107,7 @@ const Footer = () => {
 
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 tracking-wider">
                     <p>
-                        &copy; {currentYear} Shuyukan Kendo Club. All rights reserved.
+                        &copy; {currentYear} Shuyukan Kendo Club. All rights reserved. <span className="ml-4 opacity-50">v1.0.0</span>
                     </p>
                     <div className="flex space-x-8 mt-4 md:mt-0">
                         <Link to="/privacy" className="hover:text-white transition-colors">プライバシーポリシー</Link>
