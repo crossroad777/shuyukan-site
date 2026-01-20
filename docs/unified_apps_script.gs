@@ -373,16 +373,38 @@ function updateMember(id, data) {
 
 
 function deleteMember(id) {
-  const ss = getSS(MEMBER_SPREADSHEET_ID);
-  const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
-  const values = sheet.getDataRange().getValues();
-  for (let i = 1; i < values.length; i++) {
-    if (String(values[i][0]) === String(id)) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
+    if (!sheet) throw new Error("Member sheet not found");
+    const values = sheet.getDataRange().getValues();
+    const headers = values[0];
+    const idCol = headers.indexOf('会員番号');
+    
+    const targetId = String(id).trim();
+    const isRowBasedId = /^\d+$/.test(targetId);
+    
+    for (let i = 1; i < values.length; i++) {
+      const rowNumber = i + 1;
+      let matched = false;
+      
+      if (isRowBasedId && String(rowNumber) === targetId) {
+        matched = true;
+      } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
+        matched = true;
+      } else if (String(values[i][0]).trim() === targetId) {
+        matched = true;
+      }
+      
+      if (matched) {
+        sheet.deleteRow(rowNumber);
+        return { success: true };
+      }
     }
+    return { success: false, error: "Member not found" };
+  } catch (e) {
+    return { success: false, error: e.toString() };
   }
-  return { success: false, error: "Member not found" };
 }
 
 // --- 3. お知らせ管理 ---
@@ -459,15 +481,37 @@ function updateNews(id, newsData) {
 }
 
 function deleteNews(id) {
-  const ss = getSS(NEWS_SPREADSHEET_ID);
-  const sheet = getSheetAllowAliases(ss, 'お知らせ');
-  const lastRow = sheet.getLastRow();
-  const targetRow = lastRow - parseInt(id) + 1;
-  if (targetRow > 1) {
-    sheet.deleteRow(targetRow);
-    return { success: true };
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, 'お知らせ');
+    if (!sheet) throw new Error("News sheet not found");
+    const values = sheet.getDataRange().getValues();
+    const headers = values[0];
+    const idCol = headers.indexOf('id'); // News sheet usually uses 'id' column if added, otherwise row-based
+    
+    const targetId = String(id).trim();
+    const isRowBasedId = /^\d+$/.test(targetId);
+
+    for (let i = 1; i < values.length; i++) {
+      const rowNumber = i + 1;
+      let matched = false;
+      
+      // IDマッチング (News)
+      if (isRowBasedId && String(rowNumber) === targetId) {
+        matched = true;
+      } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
+        matched = true;
+      }
+      
+      if (matched) {
+        sheet.deleteRow(rowNumber);
+        return { success: true };
+      }
+    }
+    return { success: false, error: "News not found" };
+  } catch (e) {
+    return { success: false, error: e.toString() };
   }
-  return { success: false, error: "News not found" };
 }
 
 // --- 4. 出欠管理 ---
@@ -552,9 +596,21 @@ function updateAccounting(params) {
   
   if (params.method === 'delete') {
     const data = sheet.getDataRange().getValues();
+    const targetId = String(params.id).trim();
+    const isRowBasedId = /^\d+$/.test(targetId);
+
     for (let i = 1; i < data.length; i++) {
-      if (String(data[i][0]) === String(params.id)) {
-        sheet.deleteRow(i + 1);
+      const rowNumber = i + 1;
+      let matched = false;
+      if (String(data[i][0]).trim() === targetId) {
+        matched = true;
+      } else if (isRowBasedId && String(rowNumber - 1) === targetId) {
+        // ID: row[0] || (idx + 1) -> Row 2 is idx 0, ID 1. So rowNumber - 1 is ID.
+        matched = true;
+      }
+
+      if (matched) {
+        sheet.deleteRow(rowNumber);
         return { success: true };
       }
     }
