@@ -159,42 +159,43 @@ const NewsSection = () => {
                                     to={item.link || '#'}
                                     className="group block bg-gray-50 rounded overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-shuyukan-gold/30"
                                 >
-                                    {/* サムネイル画像 */}
-                                    {item.image && (
-                                        <div className="w-full bg-gray-100 overflow-hidden">
+                                    {/* サムネイル画像 - 控えめなプレイスホルダー付き */}
+                                    <div className="w-full bg-gray-100 overflow-hidden aspect-video flex items-center justify-center relative bg-gradient-to-br from-gray-50 to-gray-100">
+                                        {item.image ? (
                                             <img
                                                 src={convertDriveUrl(item.image)}
                                                 alt={item.title}
-                                                className="w-full h-auto object-contain max-h-40 group-hover:scale-105 transition-transform duration-300"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 onError={(e) => {
-                                                    // 画像読み込みエラー時はコンテナごと隠す
-                                                    e.target.parentElement.style.display = 'none';
+                                                    // 画像読み込みエラー時はアイコン表示に切り替え
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
                                                 }}
                                             />
+                                        ) : null}
+                                        <div className={`absolute inset-0 flex items-center justify-center text-gray-300 ${item.image ? 'hidden' : 'flex'}`}>
+                                            <span className="text-4xl opacity-20">🥋</span>
                                         </div>
-                                    )}
+                                    </div>
+
                                     <div className="p-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="inline-block bg-shuyukan-blue/10 text-shuyukan-blue text-[10px] px-2 py-1 rounded font-bold">
+                                            <span className="inline-block bg-shuyukan-blue/5 text-shuyukan-blue text-[9px] px-1.5 py-0.5 rounded border border-shuyukan-blue/10 font-bold">
                                                 {item.category}
                                             </span>
-                                            {/* 7日以内の投稿にNEWバッジを表示 */}
+                                            {/* 控えめなNEWラベル: アニメーションを削除し、サイズを調整 */}
                                             {item.date && (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7 && (
-                                                <span className="relative inline-flex items-center justify-center">
-                                                    <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
-                                                    <span className="relative inline-flex items-center bg-gradient-to-r from-red-500 via-red-600 to-red-500 text-white text-[11px] px-2.5 py-1 rounded-full font-bold shadow-lg shadow-red-500/50 border border-white/30">
-                                                        ✨ NEW
-                                                    </span>
+                                                <span className="inline-flex items-center bg-shuyukan-red text-white text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-tighter">
+                                                    NEW
                                                 </span>
                                             )}
-
                                         </div>
-                                        <p className="text-xs text-shuyukan-gold font-bold mb-1 font-mono">{formatDateOnly(item.date)}</p>
+                                        <p className="text-[10px] text-shuyukan-gold font-bold mb-1 font-mono opacity-80">{formatDateOnly(item.date)}</p>
                                         <h3 className="text-sm font-bold text-gray-800 leading-relaxed group-hover:text-shuyukan-blue transition-colors line-clamp-2">
                                             {item.title}
                                         </h3>
-                                        {item.content && (
-                                            <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                                        {item.content && !item.content.startsWith('http') && (
+                                            <p className="text-[11px] text-gray-500 mt-2 line-clamp-2 leading-relaxed">
                                                 {item.content}
                                             </p>
                                         )}
