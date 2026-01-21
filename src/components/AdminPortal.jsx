@@ -9,6 +9,7 @@ import AccountingDashboard from './AccountingDashboard';
 import { fetchSummaryCounts } from '../services/memberService';
 import { addNews } from '../services/newsService';
 import { useEffect } from 'react';
+import InquiryManager from './InquiryManager';
 
 
 export default function AdminPortal({ user }) {
@@ -47,6 +48,7 @@ export default function AdminPortal({ user }) {
     // 3. ⚙️ 運営・会員管理
     const operationalItems = [
         { id: 'members', label: '会員名簿の管理', icon: '👥' },
+        { id: 'news_admin', label: 'お知らせ機能管理', icon: '📢' },
         { id: 'inquiries', label: 'お問い合わせ管理', icon: '❓', badgeCount: summary.newInquiries },
         { id: 'attendance', label: '全員の出欠管理', icon: '✅' },
         { id: 'accounting', label: '会計・予算管理', icon: '💰' },
@@ -77,7 +79,8 @@ export default function AdminPortal({ user }) {
                 <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-gray-100 min-h-[400px]">
                     {activeView === 'members' || activeView === 'new_requests' ? (
                         <AdminDashboard user={user} initialStatusFilter={dashboardFilter} />
-
+                    ) : activeView === 'news_admin' ? (
+                        <AdminDashboard user={user} initialTab="news" />
                     ) : activeView === 'manual' ? (
                         <DocumentManager
                             initialFolderId={FOLDER_IDS.MANUAL}
@@ -100,13 +103,7 @@ export default function AdminPortal({ user }) {
                             readOnly={false}
                         />
                     ) : activeView === 'inquiries' ? (
-                        <DocumentManager
-                            initialFolderId={FOLDER_IDS.INQUIRIES}
-                            title="❓ お問い合わせ管理"
-                            userRole="admin"
-                            readOnly={false}
-                        />
-
+                        <InquiryManager />
                     ) : activeView === 'admin_schedule' ? (
                         <div className="space-y-6">
                             <h2 className="text-2xl font-bold text-shuyukan-blue mb-6 border-b pb-4 flex justify-between items-center">

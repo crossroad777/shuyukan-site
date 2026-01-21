@@ -24,11 +24,9 @@ googleProvider.setCustomParameters({
     prompt: 'select_account'
 });
 
-// 管理者メールアドレスリスト
+// 管理者メールアドレスリスト (スプレッドシート管理へ移行中のため、バックアップ用)
 const ADMIN_EMAILS = [
-    'kotani.tatsuhiro@gmail.com', // 開発者・構築担当
-    'shuyukan.info@gmail.com',    // 剣道部管理者
-    // 追加の管理者があればここに追加
+    'shuyukan.info@gmail.com',    // マスター管理者（常にアクセス可能）
 ];
 
 export { auth, googleProvider, ADMIN_EMAILS };

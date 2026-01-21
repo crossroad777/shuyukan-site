@@ -31,12 +31,12 @@ function formatDateOnly(dateStr) {
     return originalStr;
 }
 
-export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
+export default function AdminDashboard({ user, initialStatusFilter = 'all', initialTab = 'members' }) {
     const [members, setMembers] = useState([]);
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('members'); // members, news
+    const [activeTab, setActiveTab] = useState(initialTab); // members, news
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
     const [statusFilter, setStatusFilter] = useState(initialStatusFilter); // 初期表示フィルター
 
@@ -400,7 +400,12 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all' }) {
                                             <tr key={m.id} className="hover:bg-gray-50">
                                                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{m.id}</td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
-                                                    <div className="font-bold text-gray-900">{m.name}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="font-bold text-gray-900">{m.name}</div>
+                                                        {(m.role === '管理者' || m.role === 'admin') && (
+                                                            <span className="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold border border-red-200">管理者</span>
+                                                        )}
+                                                    </div>
                                                     <div className="text-xs text-gray-400">{m.furigana}</div>
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">{m.grade}</td>

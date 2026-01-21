@@ -7,39 +7,8 @@
 // 管理者がスプレッドシートを作成後、ここにURLを設定します
 const NEWS_API_URL = import.meta.env.VITE_NEWS_API_URL || '';
 
-// ローカル開発用のフォールバックデータ
-const fallbackNews = [
-    {
-        id: 1,
-        date: '2026.01.11',
-        title: '体験入部 随時受付中！',
-        category: '体験会',
-        isPinned: true,
-        image: '/assets/news_kids.png',
-        content: '初心者大歓迎。見学・体験は土曜日17:00〜、日曜日14:00〜で受付中です。',
-        link: '/join'
-    },
-    {
-        id: 2,
-        date: '2026.01.10',
-        title: '1月の稽古日程について',
-        category: 'お知らせ',
-        isPinned: false,
-        image: '/assets/news_practice.png',
-        content: '1月の稽古日程を更新しました。詳細はカレンダーをご確認ください。',
-        link: '/practice'
-    },
-    {
-        id: 3,
-        date: '2026.01.05',
-        title: '新年初稽古のお知らせ',
-        category: '行事',
-        isPinned: false,
-        image: '/assets/news_practice.png',
-        content: '1月6日（日）に新年初稽古を行います。',
-        link: '#'
-    }
-];
+// ローカル開発用のフォールバックデータ（本番版では空）
+const fallbackNews = [];
 
 /**
  * お知らせ一覧を取得

@@ -49,9 +49,6 @@ export default function Login() {
     <SiteFrame title="会員ログイン">
       <div className="max-w-md mx-auto">
         <div className="bg-white border border-gray-200 p-8 rounded-lg shadow-sm text-center">
-          <div className="mb-6">
-            <span className="text-5xl">🥋</span>
-          </div>
 
           <h3 className="font-bold text-xl text-shuyukan-blue mb-2">部員・関係者専用</h3>
           <p className="text-sm text-gray-600 mb-6">

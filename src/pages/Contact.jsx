@@ -192,62 +192,60 @@ export default function Contact() {
                     </div>
 
                     {/* Access / Info Section */}
-                    <FadeInSection delay={200}>
-                        <div className="space-y-8">
-                            <div>
-                                <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
-                                    道場アクセス
-                                </h3>
-                                <a
-                                    href="https://www.google.com/maps/place/%E8%B1%8A%E4%B8%AD%E5%B8%82%E7%AB%8B%E7%86%8A%E9%87%8E%E7%94%B0%E5%B0%8F%E5%AD%A6%E6%A0%A1/@34.7766699,135.4746610,17z"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block aspect-video w-full bg-gray-200 rounded-lg overflow-hidden shadow-md mb-4 relative group cursor-pointer"
-                                >
-                                    <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3278.490806497214!2d135.47466107574744!3d34.77666997289297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6000e4e6900257bb%3A0xe67756f43279163f!2z6LGK5Lit5biC56uL54aK6YeO55Sw5bCP5a2m5qCh!5e0!3m2!1sja!2sjp!4v1705663123456!5m2!1sja!2sjp"
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0, pointerEvents: 'none' }}
-                                        allowFullScreen=""
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                    ></iframe>
-                                    {/* Hover overlay */}
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-shuyukan-blue font-bold py-2 px-4 rounded-full shadow-lg text-sm">
-                                            🗺️ Googleマップで開く
-                                        </span>
-                                    </div>
-                                </a>
-                                <address className="not-italic text-gray-600 space-y-2">
-                                    <p className="font-bold text-lg">豊中市立熊野田小学校 体育館</p>
-                                    <p>〒560-0015 豊中市赤阪1丁目5-1</p>
-                                    <p className="text-sm">※ 学校敷地内への駐車はできません。近隣のコインパーキングをご利用ください。</p>
-                                </address>
-                            </div>
-
-                            <div>
-                                <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
-                                    稽古日時（令和7年度）
-                                </h3>
-                                <ul className="space-y-2 text-gray-700">
-                                    <li className="border-b border-gray-100 pb-2">
-                                        <span className="font-bold block">土曜日</span>
-                                        <span className="text-sm">小学生 17:00-19:00 / 中学生以上 18:00-20:00</span>
-                                    </li>
-                                    <li className="border-b border-gray-100 pb-2">
-                                        <span className="font-bold block">日曜日</span>
-                                        <span className="text-sm">全学年 14:00-16:00</span>
-                                    </li>
-                                    <li className="text-sm text-gray-500 mt-2">
-                                        ※第3・5日曜 16:15-18:15<br />
-                                        ※学校行事等により変更になる場合があります
-                                    </li>
-                                </ul>
-                            </div>
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
+                                道場アクセス
+                            </h3>
+                            <a
+                                href="https://www.google.com/maps/place/%E8%B1%8A%E4%B8%AD%E5%B8%82%E7%AB%8B%E7%86%8A%E9%87%8E%E7%94%B0%E5%B0%8F%E5%AD%A6%E6%A0%A1/@34.7766699,135.4746610,17z"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block aspect-video w-full bg-gray-200 rounded-lg overflow-hidden shadow-md mb-4 relative group cursor-pointer"
+                            >
+                                <iframe
+                                    src="https://maps.google.com/maps?q=豊中市立熊野田小学校&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0, pointerEvents: 'none' }}
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                ></iframe>
+                                {/* Hover overlay */}
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-shuyukan-blue font-bold py-2 px-4 rounded-full shadow-lg text-sm">
+                                        🗺️ Googleマップで開く
+                                    </span>
+                                </div>
+                            </a>
+                            <address className="not-italic text-gray-600 space-y-2">
+                                <p className="font-bold text-lg">豊中市立熊野田小学校 体育館</p>
+                                <p>〒560-0015 豊中市赤阪1丁目5-1</p>
+                                <p className="text-sm">※ 学校敷地内への駐車はできません。近隣のコインパーキングをご利用ください。</p>
+                            </address>
                         </div>
-                    </FadeInSection>
+
+                        <div>
+                            <h3 className="text-xl font-serif font-bold text-shuyukan-blue border-b-2 border-shuyukan-gold pb-2 mb-4">
+                                稽古日時（令和7年度）
+                            </h3>
+                            <ul className="space-y-2 text-gray-700">
+                                <li className="border-b border-gray-100 pb-2">
+                                    <span className="font-bold block">土曜日</span>
+                                    <span className="text-sm">小学生 17:00-19:00 / 中学生以上 18:00-20:00</span>
+                                </li>
+                                <li className="border-b border-gray-100 pb-2">
+                                    <span className="font-bold block">日曜日</span>
+                                    <span className="text-sm">全学年 14:00-16:00</span>
+                                </li>
+                                <li className="text-sm text-gray-500 mt-2">
+                                    ※第3・5日曜 16:15-18:15<br />
+                                    ※学校行事等により変更になる場合があります
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </FadeInSection>
         </SiteFrame>

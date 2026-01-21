@@ -28,12 +28,16 @@ export function AuthProvider({ children }) {
       const member = await fetchMemberByEmail(firebaseUser.email);
       if (member) {
         const isApproved = member.status === '在籍' || member.status === 'active';
+
+        // スプレッドシートの「権限」カラムに「管理者」と入っているかチェック
+        const hasAdminRole = member.role === '管理者' || member.role === 'admin';
+
         return {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
-          role: isApproved ? 'member' : 'pending',
+          role: hasAdminRole ? 'admin' : (isApproved ? 'member' : 'pending'),
           memberData: member
         };
       }

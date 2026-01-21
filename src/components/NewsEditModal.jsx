@@ -23,10 +23,15 @@ export default function NewsEditModal({ item, onClose, onSave }) {
 
     useEffect(() => {
         if (item) {
+            let displayDate = item.date || '';
+            if (displayDate.includes('T')) {
+                displayDate = displayDate.split('T')[0].replace(/-/g, '.');
+            }
+
             setFormData({
                 title: item.title || '',
                 category: item.category || 'お知らせ',
-                date: item.date || '',
+                date: displayDate,
                 image: item.image || '',
                 link: item.link || '',
                 content: item.content || '',
@@ -37,9 +42,23 @@ export default function NewsEditModal({ item, onClose, onSave }) {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        let newValue = type === 'checkbox' ? checked : value;
+
+        // Google Drive URLを直接表示用URLに自動変換 (NewsAddModalと同期)
+        if (name === 'image' && typeof newValue === 'string') {
+            const driveMatch = newValue.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch) {
+                newValue = `https://lh3.googleusercontent.com/d/${driveMatch[1]}=w800`;
+            }
+            const openMatch = newValue.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (openMatch) {
+                newValue = `https://lh3.googleusercontent.com/d/${openMatch[1]}=w800`;
+            }
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: newValue
         }));
     };
 
@@ -50,13 +69,18 @@ export default function NewsEditModal({ item, onClose, onSave }) {
         setUploading(true);
         try {
             const result = await uploadNewsImage(file);
-            if (result.success) {
-                setFormData(prev => ({ ...prev, image: result.url }));
+            if (result.success && result.url) {
+                let finalUrl = result.url;
+                if (finalUrl.includes('lh3.googleusercontent.com') && !finalUrl.includes('=')) {
+                    finalUrl += '=w800';
+                }
+                setFormData(prev => ({ ...prev, image: finalUrl }));
             }
         } catch (error) {
             alert('画像のアップロードに失敗しました: ' + error.message);
         } finally {
             setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 

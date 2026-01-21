@@ -5,39 +5,8 @@
 
 const MEMBER_API_URL = import.meta.env.VITE_MEMBER_API_URL;
 
-// モックデータ（ローカル状態として保持）
-let mockMembers = [
-    {
-        id: 'S001',
-        familyId: 'F001',
-        name: '鈴木 健太',
-        email: 'suzuki.test@example.com',
-        furigana: 'すずき けんた',
-        birthDate: '2015-08-20',
-        gender: '男',
-        grade: '小学4年',
-        memberType: '少年部',
-        rank: '2級',
-        joinDate: '2023-04-01',
-        status: '在籍',
-        notes: ''
-    },
-    {
-        id: 'A001',
-        familyId: 'F003',
-        name: '山田 太郎',
-        email: 'shuyukan.info@gmail.com', // 管理者テスター用
-        furigana: 'やまだ たろう',
-        birthDate: '1985-05-10',
-        gender: '男',
-        grade: '一般',
-        memberType: '一般部',
-        rank: '三段',
-        joinDate: '2020-04-01',
-        status: '在籍',
-        notes: ''
-    }
-];
+// モックデータ（ローカル状態として保持 - 本番版では空）
+let mockMembers = [];
 
 /**
  * 全会員データを取得
@@ -90,10 +59,9 @@ export async function fetchMembers() {
             stack: error.stack,
             url: MEMBER_API_URL
         });
-        // ネットワークエラーなどの致命的なエラー時のみモックを返す、
-        // またはAPIが設定されていない場合のみにするのが安全だが、
-        // 既存の挙動を尊重してモックを返す（ただしコンソールにエラーは出す）
-        return [...mockMembers];
+        // APIエラー時は空配列を返す（モックデータは返さない）
+        console.error('[MemberService] API接続に失敗しました。空のリストを返します。');
+        return [];
     }
 }
 
@@ -189,6 +157,40 @@ export async function requestJoin(requestData) {
         notes: 'ポータルからの申請'
     });
 }
+
+/**
+ * 初回プロフィール・世帯情報を登録
+ * @param {string} email - 会員のメールアドレス
+ * @param {Object} data - プロフィールデータ
+ * @returns {Promise<Object>} 結果
+ */
+export async function setupProfile(email, data) {
+    if (!MEMBER_API_URL) {
+        console.log('プロフィールを更新しました（モック）:', data);
+        return { success: true };
+    }
+
+    try {
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'setupProfile');
+        url.searchParams.append('email', email);
+        url.searchParams.append('data', JSON.stringify(data));
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('プロフィール登録エラー:', error);
+        throw error;
+    }
+}
+
 
 /**
  * 会員情報を更新

@@ -7,9 +7,9 @@
 var MEMBER_SPREADSHEET_ID = "1zL1AS5c4kaC5shYz0RVDy3M8ZvX6Zqk_KtbrjVPQc_E"; 
 var NEWS_SPREADSHEET_ID = "1ERZDlFWtFl6R-bp04M1WtSqLiORxUGJAn-BaSlZWW5A";
 
-var MEMBER_SHEET_NAME = "会員マスタ";
-var ATTENDANCE_SHEET_NAME = '出席管理';
-var ACCOUNTING_SHEET_NAME = '会計管理';
+var MEMBER_SHEET_NAME = "会員マスター";
+var ATTENDANCE_SHEET_NAME = '出欠管理';
+var ACCOUNTING_SHEET_NAME = '会費管理';
 var NEWS_SHEET_NAME = 'お知らせ';
 
 // --- ヘルパー関数 ---
@@ -33,9 +33,10 @@ function getSheetAllowAliases(ss, primaryName) {
   
   const aliasesMap = {
     'お知らせ': ['お知らせ', 'フォームの回答 1', 'フォームの回答', 'News', 'news'],
-    '会員マスタ': ['会員マスタ', '会員マスター', 'Members', 'members'],
-    '出席管理': ['出席管理', 'Attendance', 'attendance'],
-    '会計管理': ['会計管理', 'Accounting', 'accounting']
+    '会員マスター': ['会員マスター', '会員マスタ', 'Members', 'members'],
+    '出欠管理': ['出欠管理', '出席管理', 'Attendance', 'attendance'],
+    '会費管理': ['会費管理', '会計管理', 'Accounting', 'accounting'],
+    '世帯マスター': ['世帯マスター', '世帯マスタ', 'Families', 'families']
   };
   
   const aliases = aliasesMap[primaryName] || [primaryName];
@@ -78,6 +79,9 @@ function doGet(e) {
       case 'update': return createJsonResponse(updateMember(params.id, JSON.parse(params.data)));
       case 'approveMember': return createJsonResponse(approveMember(params.id));
       case 'delete': return createJsonResponse(deleteMember(params.id));
+      case 'getInquiries': return createJsonResponse(getInquiries());
+      case 'replyToInquiry': return createJsonResponse(replyToInquiry(params.id, params.email, params.message));
+      case 'setupProfile': return createJsonResponse(setupProfile(params.email, JSON.parse(params.data)));
       case 'addNews': return createJsonResponse(addNews(JSON.parse(params.newsData)));
       case 'updateNews': return createJsonResponse(updateNews(params.id, JSON.parse(params.newsData)));
       case 'deleteNews': return createJsonResponse(deleteNews(params.id));
@@ -107,7 +111,10 @@ function doPost(e) {
       case 'add': return createJsonResponse(addMember(params.data));
       case 'update': return createJsonResponse(updateMember(params.id, params.data));
       case 'approveMember': return createJsonResponse(approveMember(params.id));
-      case 'delete': return createJsonResponse(deleteMember(params.id));
+      case 'delete': return createJsonResponse(deleteMember(params.id, params.data));
+      case 'getInquiries': return createJsonResponse(getInquiries());
+      case 'replyToInquiry': return createJsonResponse(replyToInquiry(params.id, params.email, params.message));
+      case 'setupProfile': return createJsonResponse(setupProfile(params.email, params.data));
       
       // ニュース管理
       case 'getNews': return createJsonResponse({ success: true, data: getNews() });
@@ -141,6 +148,7 @@ const MEMBER_KEY_MAP = {
   '世帯ID': 'familyId', 'FamilyID': 'familyId',
   '氏名': 'name', '名前': 'name', 'Name': 'name',
   'ふりがな': 'furigana', 'フリガナ': 'furigana', 'Furigana': 'furigana',
+  '権限': 'role', 'Role': 'role',
   'メールアドレス': 'email', 'アドレス': 'email', 'Email': 'email',
   '生年月日': 'birthDate', '誕生日': 'birthDate', 'BirthDate': 'birthDate',
   '性別': 'gender', 'Gender': 'gender',
@@ -155,13 +163,14 @@ const MEMBER_KEY_MAP = {
 };
 
 const NEWS_KEY_MAP = {
+  'ID': 'id', 'id': 'id', '番号': 'id',
   '日付': 'date', 'Date': 'date', 'タイムスタンプ': 'date', 'Timestamp': 'date',
   'タイトル': 'title', 'Title': 'title', '見出し': 'title',
   'カテゴリ': 'category', 'Category': 'category', '分類': 'category',
   '内容': 'content', '本文': 'content', 'Content': 'content', '詳細': 'content',
-  '画像': 'image', 'Image': 'image', '写真': 'image',
+  '画像': 'image', 'Image': 'image', '写真': 'image', '画像（任意）': 'image',
   '固定': 'isPinned', '固定表示': 'isPinned', 'Pinned': 'isPinned',
-  'リンク': 'link', 'Link': 'link', 'URL': 'link'
+  'リンク': 'link', 'Link': 'link', 'URL': 'link', 'link': 'link'
 };
 
 /**
@@ -236,9 +245,13 @@ function addMember(data) {
   // 申請受付メールを送信
   if (data.email) {
     try {
+      // 申請者本人への確認メール
       sendApplicationConfirmation(data.email, data.name || data.guardianName || '申請者');
+      
+      // 管理者への通知メール
+      notifyAdminNewApplication(data);
     } catch (e) {
-      console.error("申請受付メール送信エラー:", e);
+      console.error("メール送信プロセスエラー:", e);
     }
   }
   
@@ -423,13 +436,13 @@ function getNews() {
       const key = NEWS_KEY_MAP[h] || h;
       let val = row[i];
       if (val instanceof Date) {
-        val = Utilities.formatDate(val, "JST", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        val = Utilities.formatDate(val, "JST", "yyyy.MM.dd");
       }
       obj[key] = val;
     });
     
-    // IDがない場合はindexを使用
-    if (!obj.id) obj.id = index + 1;
+    // IDは「絶対行番号」とする (index 0 は values[0] = header なので row 2 は index 0+2)
+    obj.id = index + 2;
     
     // 固定表示の判定
     if (obj.isPinned !== undefined) {
@@ -441,43 +454,78 @@ function getNews() {
 }
 
 function addNews(newsData) {
-  const ss = getSS(NEWS_SPREADSHEET_ID);
-  const sheet = getSheetAllowAliases(ss, 'お知らせ');
-  const now = new Date();
-  sheet.appendRow([
-    now,
-    newsData.title,
-    newsData.category,
-    newsData.content,
-    newsData.image || "",
-    newsData.isPinned ? 'はい、固定表示する' : "",
-    newsData.link || "#"
-  ]);
-  return { success: true };
+  try {
+    const ss = getSS(NEWS_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, 'お知らせ');
+    if (!sheet) throw new Error("News sheet not found");
+
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const row = new Array(headers.length).fill("");
+    const now = newsData.date ? new Date(newsData.date.replace(/\./g, '/')) : new Date();
+    
+    // 新しいIDを生成（最後の行番号 + 1）
+    const lastRow = sheet.getLastRow();
+    const newId = lastRow + 1;
+
+    headers.forEach((h, i) => {
+      const key = NEWS_KEY_MAP[h] || h;
+      // ID列の処理を追加
+      if (key === 'id' || h === 'ID' || h === 'id') {
+        row[i] = newId;
+      } else if (key === 'date') {
+        row[i] = now;
+      } else if (key === 'title') {
+        row[i] = newsData.title || "";
+      } else if (key === 'category') {
+        row[i] = newsData.category || "お知らせ";
+      } else if (key === 'content') {
+        row[i] = newsData.content || "";
+      } else if (key === 'image') {
+        row[i] = newsData.image || "";
+      } else if (key === 'isPinned') {
+        row[i] = newsData.isPinned ? 'はい、固定表示する' : "";
+      } else if (key === 'link') {
+        row[i] = newsData.link || "#";
+      }
+    });
+
+    sheet.appendRow(row);
+    return { success: true, id: newId };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
 }
 
 function updateNews(id, newsData) {
-  // IDは通常行番号（1-indexed, headerあり）
   const ss = getSS(NEWS_SPREADSHEET_ID);
   const sheet = getSheetAllowAliases(ss, 'お知らせ');
-  const rowIdx = parseInt(id) + 1; // getNewsで index+1 したものをIDとしているため
+  const targetRow = parseInt(id); 
   
-  // 実際には getNews().reverse() しているので、IDの扱いには注意が必要
-  // ここではシンプルに「全件取得してタイトル等で一致するものを探す」か
-  // IDとして「元の行番号」を保持させるのが安全。
-  // 現在は簡易的に全データからID(index)を逆算。
-  const lastRow = sheet.getLastRow();
-  const targetRow = lastRow - parseInt(id) + 1; // reverse対応
+  if (targetRow <= 1) return { success: false, error: "Invalid Row ID" };
 
-  if (targetRow > 1) {
-    if (newsData.title) sheet.getRange(targetRow, 2).setValue(newsData.title);
-    if (newsData.category) sheet.getRange(targetRow, 3).setValue(newsData.category);
-    if (newsData.content) sheet.getRange(targetRow, 4).setValue(newsData.content);
-    if (newsData.image !== undefined) sheet.getRange(targetRow, 5).setValue(newsData.image);
-    if (newsData.isPinned !== undefined) sheet.getRange(targetRow, 6).setValue(newsData.isPinned ? 'はい、固定表示する' : '');
-    return { success: true };
+  const values = sheet.getDataRange().getValues();
+  if (targetRow > values.length) return { success: false, error: "Row not found" };
+  
+  const headers = values[0];
+  
+  // 各フィールドの値を更新 (NEWS_KEY_MAPに基づき列を特定)
+  const keyToCol = {};
+  headers.forEach((h, i) => {
+    const key = NEWS_KEY_MAP[h] || h;
+    keyToCol[key] = i + 1;
+  });
+
+  if (newsData.title && keyToCol['title']) sheet.getRange(targetRow, keyToCol['title']).setValue(newsData.title);
+  if (newsData.category && keyToCol['category']) sheet.getRange(targetRow, keyToCol['category']).setValue(newsData.category);
+  if (newsData.content !== undefined && keyToCol['content']) sheet.getRange(targetRow, keyToCol['content']).setValue(newsData.content);
+  if (newsData.image !== undefined && keyToCol['image']) sheet.getRange(targetRow, keyToCol['image']).setValue(newsData.image);
+  if (newsData.isPinned !== undefined && keyToCol['isPinned']) {
+    sheet.getRange(targetRow, keyToCol['isPinned']).setValue(newsData.isPinned ? 'はい、固定表示する' : '');
   }
-  return { success: false, error: "News not found" };
+  if (newsData.link !== undefined && keyToCol['link']) sheet.getRange(targetRow, keyToCol['link']).setValue(newsData.link);
+  if (newsData.date && keyToCol['date']) sheet.getRange(targetRow, keyToCol['date']).setValue(newsData.date);
+  
+  return { success: true };
 }
 
 function deleteNews(id) {
@@ -487,28 +535,28 @@ function deleteNews(id) {
     if (!sheet) throw new Error("News sheet not found");
     const values = sheet.getDataRange().getValues();
     const headers = values[0];
-    const idCol = headers.indexOf('id'); // News sheet usually uses 'id' column if added, otherwise row-based
+    const idCol = headers.indexOf('id');
     
     const targetId = String(id).trim();
-    const isRowBasedId = /^\d+$/.test(targetId);
+    const rowId = parseInt(targetId);
 
-    for (let i = 1; i < values.length; i++) {
-      const rowNumber = i + 1;
-      let matched = false;
-      
-      // IDマッチング (News)
-      if (isRowBasedId && String(rowNumber) === targetId) {
-        matched = true;
-      } else if (idCol >= 0 && String(values[i][idCol]).trim() === targetId) {
-        matched = true;
-      }
-      
-      if (matched) {
-        sheet.deleteRow(rowNumber);
-        return { success: true };
+    // 行番号でのマッチング
+    if (!isNaN(rowId) && rowId > 1 && rowId <= values.length) {
+      sheet.deleteRow(rowId);
+      return { success: true };
+    }
+
+    // ID列があればそちらでも検索
+    if (idCol >= 0) {
+      for (let i = 1; i < values.length; i++) {
+        if (String(values[i][idCol]).trim() === targetId) {
+          sheet.deleteRow(i + 1);
+          return { success: true };
+        }
       }
     }
-    return { success: false, error: "News not found" };
+
+    return { success: false, error: "News record not found for ID: " + id };
   } catch (e) {
     return { success: false, error: e.toString() };
   }
@@ -879,25 +927,23 @@ function uploadFile(params) {
  * @param {string} name - 申請者名
  */
 function sendApplicationConfirmation(email, name) {
-  const subject = '【豊中修猷館剣道部】利用申請を受け付けました';
+  const subject = '【豊中修猷館】利用申請を受け付けました';
   const body = `${name} 様
 
-この度は、豊中修猷館剣道部のポータルサイトへの利用申請をいただき、
-誠にありがとうございます。
+豊中修猷館 剣道部 ポータルサイトへの利用申請をいただき、ありがとうございます。
 
-申請内容を確認の上、管理者が承認処理を行います。
-承認完了後、改めてメールにてご連絡いたします。
+現在、管理者が内容を確認しております。
+承認が完了次第、こちらのメールアドレスへ通知いたしますので、今しばらくお待ちください。
 
-なお、承認には数日いただく場合がございます。
-何かご不明な点がございましたら、お問い合わせください。
+※数日経過しても返信がない場合は、お手数ですがお問い合わせください。
 
 ---
-豊中修猷館剣道部
+豊中修猷館
 https://shuyukan.info
 `;
 
-  GmailApp.sendEmail(email, subject, body);
-  console.log("申請受付メール送信完了:", email);
+  MailApp.sendEmail(email, subject, body);
+  console.log("申請受付メール送信（利用者宛）:", email);
 }
 
 /**
@@ -906,28 +952,28 @@ https://shuyukan.info
  * @param {string} name - 会員名
  */
 function sendApprovalNotification(email, name) {
-  const subject = '【豊中修猷館剣道部】利用申請が承認されました';
+  const subject = '【豊中修猷館】利用申請が承認されました';
   const body = `${name} 様
 
 お待たせいたしました。
-豊中修猷館剣道部のポータルサイトへの利用申請が承認されました。
+豊中修猷館 剣道部 ポータルサイトへの利用申請が承認されました。
 
-以下のURLからログインして、部員専用コンテンツをご利用いただけます。
+以下のリンクよりログインして、部員専用のコンテンツをご利用いただけます。
 
-▼ ログイン
+▼ 部員専用ポータル（ログイン）
 https://shuyukan.info/member
 
-※ 申請時に使用したGoogleアカウントでログインしてください。
+※申請時と同じGoogleアカウントでログインしてください。
 
 今後ともよろしくお願いいたします。
 
 ---
-豊中修猷館剣道部
+豊中修猷館
 https://shuyukan.info
 `;
 
-  GmailApp.sendEmail(email, subject, body);
-  console.log("承認完了メール送信完了:", email);
+  MailApp.sendEmail(email, subject, body);
+  console.log("承認通知メール送信（利用者宛）:", email);
 }
 
 // --- 9. 拡張メール通知機能（2026-01-21 パッチ統合） ---
@@ -967,6 +1013,7 @@ function normalizeKey(header) {
   // 共通
   if (h.includes('タイム') || h.includes('日付') || h.includes('date')) return 'date';
   if (h.includes('ステータス') || h.includes('状態') || h.includes('status')) return 'status';
+  if (h.includes('権限') || h.includes('role')) return 'role';
   if (h.includes('備考') || h.includes('メモ') || h.includes('notes')) return 'notes';
 
   // 会員向け
@@ -1072,4 +1119,184 @@ function getSummaryCountsEnhanced() {
   
   return { success: true, data: res };
 }
+
+/**
+ * 問い合わせ一覧を取得
+ */
+function getInquiries() {
+  var INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  try {
+    const ss = getSS(INQUIRY_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, '問い合わせ');
+    if (!sheet) return { success: false, error: "Inquiry sheet not found" };
+    
+    const values = sheet.getDataRange().getValues();
+    const headers = values.shift();
+    
+    const inquiries = values.map((row, index) => {
+      const obj = { id: index + 2 }; // 行番号をIDとする
+      headers.forEach((h, i) => {
+        const key = normalizeKey(h);
+        obj[key] = row[i];
+        if (row[i] instanceof Date) {
+          obj[key] = Utilities.formatDate(row[i], "JST", "yyyy-MM-dd HH:mm:ss");
+        }
+      });
+      return obj;
+    }).reverse(); // 新しい順
+    
+    return { success: true, data: inquiries };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+/**
+ * 問い合わせに返信する
+ */
+function replyToInquiry(id, email, message) {
+  var INQUIRY_SPREADSHEET_ID = "1OWk1yXIznUizhldbyzKRY5Xcs62edMwlubAGjP9rteQ";
+  try {
+    // 1. メール送信
+    const subject = "【豊中修猷館剣道部】お問い合わせへの回答";
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      body: message + "\n\n---\n豊中修猷館剣道部\nhttps://shuyukan.info"
+    });
+    
+    // 2. ステータス更新（「対応済み」）
+    const ss = getSS(INQUIRY_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, '問い合わせ');
+    const rowIdx = parseInt(id);
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const statusCol = headers.map(normalizeKey).indexOf('status') + 1;
+    
+    if (statusCol > 0) {
+      sheet.getRange(rowIdx, statusCol).setValue("対応済み");
+    }
+    
+    // 3. (オプション) 備考欄に返信内容を追記
+    const notesCol = headers.map(normalizeKey).indexOf('notes') + 1;
+    if (notesCol > 0) {
+      const now = Utilities.formatDate(new Date(), "JST", "yyyy/MM/dd HH:mm");
+      const currentNotes = sheet.getRange(rowIdx, notesCol).getValue();
+      const newNote = (currentNotes ? currentNotes + "\n" : "") + "[" + now + " 返信済み]\n" + message;
+      sheet.getRange(rowIdx, notesCol).setValue(newNote);
+    }
+    
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+/**
+ * 初回プロフィール登録・世帯連携
+ * @param {string} email - 会員のメールアドレス
+ * @param {Object} data - 入力されたプロフィールデータ
+ */
+function setupProfile(email, data) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const mSheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
+    const fSheet = getSheetAllowAliases(ss, '世帯マスター');
+    
+    if (!mSheet || !fSheet) throw new Error("シートが見つかりません");
+    
+    // 1. 会員を探す
+    const mValues = mSheet.getDataRange().getValues();
+    const mHeaders = mValues[0].map(normalizeKey);
+    const eIdx = mHeaders.indexOf('email');
+    const fIdIdx = mHeaders.indexOf('familyId');
+    const sDateIdx = mHeaders.indexOf('birthDate');
+    const genderIdx = mHeaders.indexOf('gender');
+    const rankIdx = mHeaders.indexOf('rank');
+    const guardianIdx = mHeaders.indexOf('guardianName');
+    
+    let memberRow = -1;
+    let familyId = "";
+    
+    for (let i = 1; i < mValues.length; i++) {
+      if (String(mValues[i][eIdx]).toLowerCase().trim() === email.toLowerCase().trim()) {
+        memberRow = i + 1;
+        familyId = String(mValues[i][fIdIdx] || "").trim();
+        break;
+      }
+    }
+    
+    if (memberRow === -1) throw new Error("会員が見つかりません: " + email);
+    
+    // 2. 世帯IDがない場合は新規発行 (F + 5桁)
+    if (!familyId) {
+      const fValues = fSheet.getDataRange().getValues();
+      if (fValues.length <= 1) {
+        familyId = "F00001";
+      } else {
+        const fIds = fValues.slice(1).map(r => String(r[0])); 
+        let maxId = 0;
+        fIds.forEach(id => {
+          const num = parseInt(id.replace('F', ''));
+          if (!isNaN(num) && num > maxId) maxId = num;
+        });
+        familyId = "F" + String(maxId + 1).padStart(5, '0');
+      }
+    }
+    
+    // 3. 会員マスターの更新
+    if (fIdIdx > -1) mSheet.getRange(memberRow, fIdIdx + 1).setValue(familyId);
+    if (sDateIdx > -1 && data.birthDate) mSheet.getRange(memberRow, sDateIdx + 1).setValue(data.birthDate);
+    if (genderIdx > -1 && data.gender) mSheet.getRange(memberRow, genderIdx + 1).setValue(data.gender);
+    if (rankIdx > -1 && data.rank) mSheet.getRange(memberRow, rankIdx + 1).setValue(data.rank);
+    if (guardianIdx > -1 && data.guardianName) mSheet.getRange(memberRow, guardianIdx + 1).setValue(data.guardianName);
+    
+    // 4. 世帯マスターの更新/追加
+    const fValues = fSheet.getDataRange().getValues();
+    const fHeaders = fValues[0];
+    const fNormalizedHeaders = fHeaders.map(normalizeKey);
+    
+    let fRow = -1;
+    for (let i = 1; i < fValues.length; i++) {
+      if (String(fValues[i][0]).trim() === familyId) {
+        fRow = i + 1;
+        break;
+      }
+    }
+    
+    const fData = {
+      familyId: familyId,
+      name: data.guardianName || data.name,
+      furigana: data.guardianFurigana || data.furigana,
+      relation: data.relation || "本人",
+      phone: data.phone,
+      email: data.email || email,
+      zipCode: data.zipCode,
+      address: data.address,
+      emergencyContact: data.emergencyContact,
+      notes: data.notes || "ポータルからの初回登録"
+    };
+    
+    if (fRow > -1) {
+      // 既存世帯の更新
+      fNormalizedHeaders.forEach((key, i) => {
+        if (fData[key] !== undefined) {
+          fSheet.getRange(fRow, i + 1).setValue(fData[key]);
+        }
+      });
+    } else {
+      // 新規世帯の追加
+      const newFRow = fHeaders.map((h, i) => {
+        const key = fNormalizedHeaders[i];
+        return fData[key] || "";
+      });
+      fSheet.appendRow(newFRow);
+    }
+    
+    return { success: true, familyId: familyId };
+  } catch (e) {
+    console.error("setupProfile error:", e);
+    return { success: false, error: e.toString() };
+  }
+}
+
 

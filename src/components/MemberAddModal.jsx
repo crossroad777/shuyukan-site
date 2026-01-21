@@ -26,6 +26,7 @@ export default function MemberAddModal({ onClose, onAdd }) {
         grade: '',
         memberType: '少年部',
         rank: '',
+        role: '一般',
         notes: ''
     });
     const [saving, setSaving] = useState(false);
@@ -176,6 +177,28 @@ export default function MemberAddModal({ onClose, onAdd }) {
                             placeholder="特記事項があれば入力"
                             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-shuyukan-blue"
                         />
+                    </div>
+
+                    {/* Admin Access (Role) */}
+                    <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                name="role"
+                                checked={formData.role === '管理者'}
+                                onChange={(e) => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        role: e.target.checked ? '管理者' : '一般'
+                                    }));
+                                }}
+                                className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                            />
+                            <div>
+                                <span className="block text-sm font-bold text-red-700">管理者権限を付与する</span>
+                                <span className="block text-xs text-red-600 opacity-80">チェックを入れると、このユーザーは管理画面の全機能を利用できるようになります。</span>
+                            </div>
+                        </label>
                     </div>
 
                     {/* Buttons */}

@@ -75,11 +75,13 @@ const NewsSection = () => {
         const loadNews = async () => {
             try {
                 const data = await fetchNews();
-                // 固定表示と通常のニュースを分離
-                const pinned = data.filter(item => item.isPinned);
-                const regular = data.filter(item => !item.isPinned);
+                // 固定表示（バナー用）を抽出
+                const pinned = data.filter(item => item.isPinned === true || item.isPinned === "TRUE");
                 setPinnedItems(pinned);
-                setNewsItems(regular.slice(0, 4)); // 最新4件
+
+                // 「最新情報」一覧には固定・通常問わず最新の数件を表示
+                // これにより、投稿が1件（固定）のみの場合でも「お知らせはありません」と表示されるのを防ぎます
+                setNewsItems(data.slice(0, 6));
             } catch (error) {
                 console.error('ニュース取得エラー:', error);
             } finally {
@@ -160,21 +162,24 @@ const NewsSection = () => {
                                     className="group block bg-gray-50 rounded overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-shuyukan-gold/30"
                                 >
                                     {/* サムネイル画像 - 控えめなプレイスホルダー付き */}
-                                    <div className="w-full bg-gray-100 overflow-hidden aspect-video flex items-center justify-center relative bg-gradient-to-br from-gray-50 to-gray-100">
+                                    <div className="w-full bg-gray-100 overflow-hidden aspect-video flex items-center justify-center relative bg-gradient-to-br from-gray-100 to-gray-200">
                                         {item.image ? (
                                             <img
                                                 src={convertDriveUrl(item.image)}
                                                 alt={item.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-10"
+                                                loading="lazy"
                                                 onError={(e) => {
-                                                    // 画像読み込みエラー時はアイコン表示に切り替え
-                                                    e.target.style.display = 'none';
-                                                    e.target.nextSibling.style.display = 'flex';
+                                                    // 画像読み込みエラー時は透明にして背後のアイコンを見せる
+                                                    e.target.style.opacity = '0';
                                                 }}
                                             />
                                         ) : null}
-                                        <div className={`absolute inset-0 flex items-center justify-center text-gray-300 ${item.image ? 'hidden' : 'flex'}`}>
-                                            <span className="text-4xl opacity-20">🥋</span>
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <div className="flex flex-col items-center gap-1 opacity-30">
+                                                <span className="text-4xl text-shuyukan-gold">⚔️</span>
+                                                <span className="text-[8px] text-shuyukan-gold font-bold tracking-widest uppercase">Shuyukan</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -183,9 +188,9 @@ const NewsSection = () => {
                                             <span className="inline-block bg-shuyukan-blue/5 text-shuyukan-blue text-[9px] px-1.5 py-0.5 rounded border border-shuyukan-blue/10 font-bold">
                                                 {item.category}
                                             </span>
-                                            {/* 控えめなNEWラベル: アニメーションを削除し、サイズを調整 */}
+                                            {/* 控えめなNEWラベル */}
                                             {item.date && (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7 && (
-                                                <span className="inline-flex items-center bg-shuyukan-red text-white text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-tighter">
+                                                <span className="inline-flex items-center bg-shuyukan-red text-white text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-tighter shadow-sm">
                                                     NEW
                                                 </span>
                                             )}
