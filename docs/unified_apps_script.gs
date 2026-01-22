@@ -385,6 +385,56 @@ function updateMember(id, data) {
 
 
 
+/**
+ * 初回プロフィール設定
+ * メールアドレスで会員を検索し、プロフィールデータを更新
+ */
+function setupProfile(email, data) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = getSheetAllowAliases(ss, MEMBER_SHEET_NAME);
+    if (!sheet) throw new Error("Member sheet not found");
+    
+    const values = sheet.getDataRange().getValues();
+    const headers = values[0];
+    const emailCol = headers.findIndex(h => 
+      h === 'メールアドレス' || h === 'Email' || h === 'email' || h === 'アドレス'
+    );
+    
+    if (emailCol < 0) throw new Error("Email column not found");
+    
+    const targetEmail = String(email).trim().toLowerCase();
+    
+    for (let i = 1; i < values.length; i++) {
+      const rowEmail = String(values[i][emailCol] || '').trim().toLowerCase();
+      if (rowEmail === targetEmail) {
+        const currentRow = values[i];
+        const newRow = headers.map((h, colIdx) => {
+          const key = MEMBER_KEY_MAP[h] || h;
+          if (data[key] !== undefined && data[key] !== '') {
+            let value = data[key];
+            if (h.includes('日') && typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              return new Date(value);
+            }
+            return value;
+          }
+          return currentRow[colIdx];
+        });
+        
+        const rowNumber = i + 1;
+        sheet.getRange(rowNumber, 1, 1, newRow.length).setValues([newRow]);
+        return { success: true, message: 'Profile updated successfully' };
+      }
+    }
+    
+    return { success: false, error: "Member not found with email: " + email };
+  } catch (err) {
+    console.error("setupProfile error:", err.toString());
+    return { success: false, error: err.toString() };
+  }
+}
+
+
 function deleteMember(id) {
   try {
     const ss = getSS(MEMBER_SPREADSHEET_ID);

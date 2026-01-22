@@ -77,16 +77,16 @@ const Navbar = () => {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="flex md:hidden">
+                    <div className="flex lg:hidden">
                         <button
                             onClick={toggleMenu}
                             className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white focus:outline-none transition-colors"
                         >
                             <span className="sr-only">メニューを開く</span>
                             <div className="space-y-1.5">
-                                <span className={`block w-8 h-0.5 bg-current transform transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                                <span className={`block w-8 h-0.5 bg-current transition-opacity duration-300 ${isOpen ? 'opacity-0' : ''}`}></span>
-                                <span className={`block w-8 h-0.5 bg-current transform transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                                <span className={`block w-8 h-0.5 bg-white transform transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                                <span className={`block w-8 h-0.5 bg-white transition-opacity duration-300 ${isOpen ? 'opacity-0' : ''}`}></span>
+                                <span className={`block w-8 h-0.5 bg-white transform transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
                             </div>
                         </button>
                     </div>

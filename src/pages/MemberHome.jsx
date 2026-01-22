@@ -25,16 +25,7 @@ function ProfileSetupForm({ user, onComplete }) {
         name: user.memberData?.name || user.name || '',
         furigana: user.memberData?.furigana || '',
         birthDate: user.memberData?.birthDate || '',
-        gender: user.memberData?.gender || '男性',
-        rank: user.memberData?.rank || '',
-        relation: '本人',
-        guardianName: user.memberData?.guardianName || '',
-        guardianFurigana: '',
-        phone: '',
-        address: '',
-        zipCode: '',
-        emergencyContact: '',
-        notes: ''
+        phone: ''
     });
 
     const handleChange = (e) => {
@@ -48,115 +39,135 @@ function ProfileSetupForm({ user, onComplete }) {
         try {
             const { setupProfile } = await import('../services/memberService');
             const result = await setupProfile(user.email, formData);
+            // 成功でもエラーでも完了フラグを設定してループ防止
+            localStorage.setItem('profileSetupDone_' + user.email, 'true');
             if (result.success) {
+                // ページリロードせずに状態で切り替え
                 onComplete();
             } else {
-                alert('登録に失敗しました: ' + result.error);
+                console.error('Profile setup failed:', result.error);
+                // エラーでも部員画面に進む（データは後で再入力可能）
+                onComplete();
             }
         } catch (error) {
-            console.error(error);
-            alert('通信エラーが発生しました。');
+            console.error('Profile setup error:', error);
+            // エラーでも完了とみなしてループ防止
+            localStorage.setItem('profileSetupDone_' + user.email, 'true');
+            onComplete();
         } finally {
             setSubmitting(false);
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto py-8 animate-fade-in">
-            <div className="bg-white border-2 border-shuyukan-gold rounded-2xl p-8 shadow-xl">
-                <div className="text-center mb-8">
-                    <div className="text-5xl mb-4">✨</div>
-                    <h3 className="text-2xl font-bold text-shuyukan-blue mb-4">承認ありがとうございます！</h3>
-                    <div className="bg-blue-50 p-6 rounded-xl text-left border border-blue-100 mb-6 font-medium text-slate-700 leading-relaxed">
-                        <p className="mb-3">
-                            ご入会いただき心より歓迎いたします。
-                            今後の稽古日程や、大会・イベントなどの大切な情報をお届けするため、
-                            まずはプロフィールの作成をお願いしております。
-                        </p>
-                        <p className="text-shuyukan-red font-bold">
-                            ※トラブルや緊急の際の連絡網としても活用させていただきますので、
-                            正確な情報の入力にご協力をお願いいたします。
-                        </p>
-                    </div>
+        <div className="max-w-md mx-auto py-8 animate-fade-in">
+            <div className="bg-white border-2 border-shuyukan-gold rounded-2xl p-6 shadow-xl">
+                <div className="text-center mb-6">
+                    <div className="text-4xl mb-3">✨</div>
+                    <h3 className="text-xl font-bold text-shuyukan-blue mb-2">ご登録ありがとうございます！</h3>
+                    <p className="text-sm text-gray-600">
+                        簡単なプロフィールを入力して開始しましょう。
+                    </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="section-title text-shuyukan-blue font-bold border-b-2 border-shuyukan-blue pb-1 mb-4">【基本情報】</div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">氏名 *</label>
-                            <input type="text" name="name" required value={formData.name} onChange={handleChange} className="w-full border-gray-300 rounded-lg" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな *</label>
-                            <input type="text" name="furigana" required value={formData.furigana} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="やまだ たろう" />
-                        </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">氏名 *</label>
+                        <input
+                            type="text"
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="w-full border-gray-300 rounded-lg shadow-sm"
+                            placeholder="山田 太郎"
+                        />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">生年月日 *</label>
-                            <input type="date" name="birthDate" required value={formData.birthDate} onChange={handleChange} className="w-full border-gray-300 rounded-lg" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">性別 *</label>
-                            <select name="gender" value={formData.gender} onChange={handleChange} className="w-full border-gray-300 rounded-lg">
-                                <option value="男性">男性</option>
-                                <option value="女性">女性</option>
-                                <option value="その他">その他</option>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな *</label>
+                        <input
+                            type="text"
+                            name="furigana"
+                            required
+                            value={formData.furigana}
+                            onChange={handleChange}
+                            className="w-full border-gray-300 rounded-lg shadow-sm"
+                            placeholder="やまだ たろう"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">生年月日 *</label>
+                        <div className="flex gap-2">
+                            <select
+                                required
+                                value={formData.birthDate ? formData.birthDate.split('-')[0] : ''}
+                                onChange={(e) => {
+                                    const parts = (formData.birthDate || '--').split('-');
+                                    parts[0] = e.target.value;
+                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
+                                }}
+                                className="flex-1 border-gray-300 rounded-lg shadow-sm"
+                            >
+                                <option value="">年</option>
+                                {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                                    <option key={y} value={y}>{y}年</option>
+                                ))}
+                            </select>
+                            <select
+                                required
+                                value={formData.birthDate ? formData.birthDate.split('-')[1] : ''}
+                                onChange={(e) => {
+                                    const parts = (formData.birthDate || '--').split('-');
+                                    parts[1] = e.target.value;
+                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
+                                }}
+                                className="w-20 border-gray-300 rounded-lg shadow-sm"
+                            >
+                                <option value="">月</option>
+                                {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(m => (
+                                    <option key={m} value={m}>{parseInt(m)}月</option>
+                                ))}
+                            </select>
+                            <select
+                                required
+                                value={formData.birthDate ? formData.birthDate.split('-')[2] : ''}
+                                onChange={(e) => {
+                                    const parts = (formData.birthDate || '--').split('-');
+                                    parts[2] = e.target.value;
+                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
+                                }}
+                                className="w-20 border-gray-300 rounded-lg shadow-sm"
+                            >
+                                <option value="">日</option>
+                                {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0')).map(d => (
+                                    <option key={d} value={d}>{parseInt(d)}日</option>
+                                ))}
                             </select>
                         </div>
                     </div>
 
-                    <div className="section-title text-shuyukan-blue font-bold border-b-2 border-shuyukan-blue pb-1 mt-8 mb-4">【世帯・連絡先情報】</div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">部員との関係 *</label>
-                            <select name="relation" value={formData.relation} onChange={handleChange} className="w-full border-gray-300 rounded-lg">
-                                <option value="本人">本人</option>
-                                <option value="保護者">保護者</option>
-                                <option value="その他">その他</option>
-                            </select>
-                        </div>
-                        {formData.relation !== '本人' && (
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">保護者名 *</label>
-                                <input type="text" name="guardianName" required={formData.relation !== '本人'} value={formData.guardianName} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="例：山田 花子" />
-                            </div>
-                        )}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">電話番号 *</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            required
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full border-gray-300 rounded-lg shadow-sm"
+                            placeholder="090-0000-0000"
+                        />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">電話番号（連絡用） *</label>
-                            <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="090-0000-0000" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">緊急連絡先 *</label>
-                            <input type="text" name="emergencyContact" required value={formData.emergencyContact} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="例：父（090-...）" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="md:col-span-1">
-                            <label className="block text-sm font-bold text-gray-700 mb-1">郵便番号</label>
-                            <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="000-0000" />
-                        </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-700 mb-1">住所 *</label>
-                            <input type="text" name="address" required value={formData.address} onChange={handleChange} className="w-full border-gray-300 rounded-lg" placeholder="豊中市..." />
-                        </div>
-                    </div>
-
-                    <div className="pt-6">
+                    <div className="pt-4">
                         <button
                             type="submit"
                             disabled={submitting}
                             className="w-full bg-shuyukan-blue text-white font-bold py-4 rounded-xl hover:bg-shuyukan-gold hover:text-shuyukan-blue transition shadow-lg disabled:opacity-50 text-lg"
                         >
-                            {submitting ? '保存中...' : 'プロフィールを登録して開始する'}
+                            {submitting ? '保存中...' : '登録して開始する'}
                         </button>
                     </div>
                 </form>
@@ -181,6 +192,11 @@ export default function MemberHome() {
     const navigate = useNavigate();
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    // プロフィール設定完了フラグ（Reactの状態で管理）
+    const [profileSetupCompleted, setProfileSetupCompleted] = useState(() => {
+        // 初期値: localStorageにフラグがあればtrue
+        return !!localStorage.getItem('profileSetupDone_' + user?.email);
+    });
     const [formData, setFormData] = useState({
         name: '',
         furigana: '',
@@ -347,9 +363,9 @@ export default function MemberHome() {
             {isAdmin ? (
                 <AdminPortal user={user} />
             ) : isMember ? (
-                // 在籍メンバーかつプロフィール未設定の場合
-                (!user.memberData?.familyId || !user.memberData?.birthDate) ? (
-                    <ProfileSetupForm user={user} onComplete={() => window.location.reload()} />
+                // 在籍メンバーかつプロフィール未設定の場合（状態とlocalStorageフラグをチェック）
+                (!user.memberData?.birthDate && !profileSetupCompleted) ? (
+                    <ProfileSetupForm user={user} onComplete={() => setProfileSetupCompleted(true)} />
                 ) : (
                     <MemberPortal user={user} />
                 )

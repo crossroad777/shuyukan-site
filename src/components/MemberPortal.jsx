@@ -180,8 +180,13 @@ function ProfileEditView({ user, onBack, isInitial }) {
             // user.memberData.id が行番号として保存されている前提
             await updateMember(memberData.id, formData);
             setSuccess(true);
+            // 初回設定の場合はメニューに遷移、通常更新は少し待ってからリロード
             setTimeout(() => {
-                window.location.reload(); // 情報を最新にするためリロード
+                if (isInitial) {
+                    window.location.href = '/member'; // メニューページへ遷移
+                } else {
+                    window.location.reload();
+                }
             }, 2000);
         } catch (error) {
             alert('更新に失敗しました: ' + error.message);
@@ -213,7 +218,7 @@ function ProfileEditView({ user, onBack, isInitial }) {
                     <h2 className="text-2xl font-bold flex items-center gap-2">
                         <span>👋</span> 初回プロフィール設定
                     </h2>
-                    <p className="text-blue-100 text-sm mt-1">承認ありがとうございます！ご利用の前に、必須情報の登録をお願いします。</p>
+                    <p className="text-blue-100 text-sm mt-1">ご登録ありがとうございます！ご利用の前に、必須情報の登録をお願いします。</p>
                 </div>
             ) : (
                 <h2 className="text-2xl font-bold text-shuyukan-blue border-b pb-4 mb-6">⚙️ マイプロフィール設定</h2>
@@ -269,13 +274,53 @@ function ProfileEditView({ user, onBack, isInitial }) {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700">生年月日 <span className="text-red-500">*</span></label>
-                            <input
-                                type="date"
-                                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-shuyukan-blue focus:border-shuyukan-blue"
-                                value={formData.birthDate}
-                                onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
-                                required
-                            />
+                            <div className="flex gap-2">
+                                <select
+                                    className="flex-1 border-gray-300 rounded-lg shadow-sm focus:ring-shuyukan-blue focus:border-shuyukan-blue"
+                                    value={formData.birthDate ? formData.birthDate.split('-')[0] : ''}
+                                    onChange={e => {
+                                        const parts = (formData.birthDate || '--').split('-');
+                                        parts[0] = e.target.value;
+                                        setFormData({ ...formData, birthDate: parts.join('-') });
+                                    }}
+                                    required
+                                >
+                                    <option value="">年</option>
+                                    {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                                        <option key={y} value={y}>{y}年</option>
+                                    ))}
+                                </select>
+                                <select
+                                    className="w-20 border-gray-300 rounded-lg shadow-sm focus:ring-shuyukan-blue focus:border-shuyukan-blue"
+                                    value={formData.birthDate ? formData.birthDate.split('-')[1] : ''}
+                                    onChange={e => {
+                                        const parts = (formData.birthDate || '--').split('-');
+                                        parts[1] = e.target.value;
+                                        setFormData({ ...formData, birthDate: parts.join('-') });
+                                    }}
+                                    required
+                                >
+                                    <option value="">月</option>
+                                    {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(m => (
+                                        <option key={m} value={m}>{parseInt(m)}月</option>
+                                    ))}
+                                </select>
+                                <select
+                                    className="w-20 border-gray-300 rounded-lg shadow-sm focus:ring-shuyukan-blue focus:border-shuyukan-blue"
+                                    value={formData.birthDate ? formData.birthDate.split('-')[2] : ''}
+                                    onChange={e => {
+                                        const parts = (formData.birthDate || '--').split('-');
+                                        parts[2] = e.target.value;
+                                        setFormData({ ...formData, birthDate: parts.join('-') });
+                                    }}
+                                    required
+                                >
+                                    <option value="">日</option>
+                                    {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0')).map(d => (
+                                        <option key={d} value={d}>{parseInt(d)}日</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700">緊急連絡先 (電話番号) <span className="text-red-500">*</span></label>

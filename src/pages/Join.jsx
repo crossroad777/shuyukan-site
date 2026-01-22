@@ -177,7 +177,7 @@ export default function Join() {
             <section className="max-w-4xl mx-auto mb-20 px-4">
                 <FadeInSection>
                     <div className="text-center mb-10">
-                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-shuyukan-blue mb-4">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-shuyukan-blue mb-4 whitespace-nowrap">
                             こんなお悩みありませんか？
                         </h2>
                     </div>
@@ -303,9 +303,8 @@ export default function Join() {
                 <FadeInSection>
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-8 text-center">
                         <div className="text-5xl mb-4">🌱</div>
-                        <h3 className="text-xl font-bold text-green-800 mb-3">
-                            <span className="whitespace-nowrap">「ちょっと見てみたいだけ」で</span><br className="sm:hidden" />
-                            <span className="whitespace-nowrap">大丈夫です</span>
+                        <h3 className="text-lg sm:text-xl font-bold text-green-800 mb-3">
+                            「ちょっと見てみたいだけ」で<br className="sm:hidden" />大丈夫です
                         </h3>
                         <p className="text-green-700 leading-relaxed text-left sm:text-center">
                             無理な勧誘は一切ありません。<br className="hidden sm:inline" />
@@ -324,7 +323,7 @@ export default function Join() {
                             無料体験申込フォーム
                         </h2>
                         <p className="text-gray-500 text-sm">
-                            土曜日17:00〜・日曜日14:00〜 いつでも体験できます<br />
+                            土曜日17:00〜・日曜日14:00〜<br className="sm:hidden" />いつでも体験できます<br />
                             <span className="text-shuyukan-blue font-bold">経験者のお子様も大歓迎！</span>
                         </p>
                     </div>
