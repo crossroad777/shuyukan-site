@@ -35,24 +35,33 @@ function ProfileSetupForm({ user, onComplete }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 最初にフラグを設定（APIの結果に関わらずループ防止）
+        localStorage.setItem('profileSetupDone_' + user.email, 'true');
         setSubmitting(true);
+
+        // タイムアウト: 5秒後に強制的に完了（API応答がない場合の保険）
+        const timeout = setTimeout(() => {
+            console.log('Profile setup timeout - forcing completion');
+            onComplete();
+        }, 5000);
+
         try {
             const { setupProfile } = await import('../services/memberService');
             const result = await setupProfile(user.email, formData);
-            // 成功でもエラーでも完了フラグを設定してループ防止
-            localStorage.setItem('profileSetupDone_' + user.email, 'true');
+            clearTimeout(timeout);
+
             if (result.success) {
-                // ページリロードせずに状態で切り替え
-                onComplete();
+                console.log('Profile setup successful');
             } else {
                 console.error('Profile setup failed:', result.error);
-                // エラーでも部員画面に進む（データは後で再入力可能）
-                onComplete();
             }
+            // 成功でもエラーでも部員画面に進む
+            onComplete();
         } catch (error) {
+            clearTimeout(timeout);
             console.error('Profile setup error:', error);
-            // エラーでも完了とみなしてループ防止
-            localStorage.setItem('profileSetupDone_' + user.email, 'true');
+            // エラーでも部員画面に進む
             onComplete();
         } finally {
             setSubmitting(false);
