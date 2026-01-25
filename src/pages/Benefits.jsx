@@ -37,7 +37,7 @@ export default function Benefits() {
                 <FadeInSection>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <img src="/images/12.jpg" alt="修猷館の旗" className="w-full h-full object-cover" />
+                            <img src="/images/shuyukan_flag_red.jpg" alt="修猷館の旗" className="w-full h-full object-cover" />
                         </div>
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
                             <img src="/images/gallery_fun_kids_new.jpg" alt="稽古を楽しむ子供たち" className="w-full h-full object-cover" />
@@ -245,7 +245,7 @@ export default function Benefits() {
                             <img src="/images/9.png" alt="稽古風景5" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/12.jpg" alt="稽古風景6" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/shuyukan_flag_red.jpg" alt="稽古風景6" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                     </div>
                 </FadeInSection>

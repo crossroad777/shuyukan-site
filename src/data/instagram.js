@@ -1,7 +1,7 @@
 export const instagramPosts = [
     {
         id: 1,
-        image: '/images/12.jpg',
+        image: '/images/shuyukan_flag_red.jpg',
         caption: '稽古の準備。面を付ける姿も凛々しいです。 #豊中修猷館 #剣道 #心身鍛錬',
         likes: 156,
     },
