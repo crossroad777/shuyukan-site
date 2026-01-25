@@ -1,5 +1,5 @@
 # Robots.txt - 豊中修猷館剣道部
-# https://shuyukan.vercel.app/
+# https://shuyukan-site.vercel.app/
 
 User-agent: *
 Allow: /
@@ -15,7 +15,7 @@ User-agent: Google-Extended
 Allow: /
 
 # サイトマップ
-Sitemap: https://shuyukan.vercel.app/sitemap.xml
+Sitemap: https://shuyukan-site.vercel.app/sitemap.xml
 
 # llms.txt（生成AI向け情報）
-# https://shuyukan.vercel.app/llms.txt
+# https://shuyukan-site.vercel.app/llms.txt
