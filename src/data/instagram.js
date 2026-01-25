@@ -1,19 +1,19 @@
 export const instagramPosts = [
     {
         id: 1,
-        image: '/assets/instagram/insta_post_1.png',
-        caption: '稽古前の静寂。道道具を整える時間もまた、大切な修行の一部です。 #豊中修猷館 #剣道 #心身鍛錬',
+        image: '/images/12.jpg',
+        caption: '稽古の準備。面を付ける姿も凛々しいです。 #豊中修猷館 #剣道 #心身鍛錬',
         likes: 156,
     },
     {
         id: 2,
-        image: '/assets/instagram/insta_post_2.png',
+        image: '/images/gallery_fun_kids_new.jpg',
         caption: '本日の合同稽古。小学校の体育館に、子供たちの元気な声と竹刀の音が響き渡ります。 #少年剣道 #豊中市 #熊野田',
         likes: 203,
     },
     {
         id: 3,
-        image: '/assets/instagram/insta_post_3.png',
+        image: '/assets/instagram/gallery_fun_2.png',
         caption: '基本を大切に. 一振り一振りに心を込めて。 #基本打ち #剣道女子 #生涯剣道',
         likes: 128,
     },
