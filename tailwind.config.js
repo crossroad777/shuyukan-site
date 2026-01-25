@@ -22,7 +22,7 @@ export default {
             },
             backgroundImage: {
                 'bamboo-pattern': "url('/assets/pattern_bamboo.png')",
-                'hero-dojo': "url('/assets/hero_bg.png')",
+                'hero-dojo': "url('/images/2.jpg')",
             }
         },
     },

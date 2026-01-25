@@ -105,7 +105,7 @@ export default function Home() {
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base text-left sm:text-center">
                 子どもたちは「楽しい」から続けられる。<br className="hidden sm:inline" />
-                修猷館が大切にしている、剣道だからこそ育まれる力。
+                豊中修猷館が大切にしている、剣道だからこそ育まれる力。
               </p>
             </div>
           </FadeInSection>
@@ -116,7 +116,7 @@ export default function Home() {
               <Link to="/benefits" className="block group h-full">
                 <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
                   <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
-                    <img src="/images/kendo_friendship.png" alt="仲間との稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src="/images/3.jpg" alt="仲間との稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">仲間といるのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">友情・礼</p>
@@ -149,7 +149,7 @@ export default function Home() {
               <Link to="/benefits" className="block group h-full">
                 <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
                   <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
-                    <img src="/images/kendo_challenge.png" alt="挑戦する姿" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src="/images/4.jpg" alt="挑戦する姿" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">できるようになるのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">挑戦</p>
@@ -182,7 +182,7 @@ export default function Home() {
               <Link to="/benefits" className="block group h-full">
                 <div className="bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent hover:border-shuyukan-gold transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col">
                   <div className="w-full h-40 mb-4 rounded-xl overflow-hidden">
-                    <img src="/images/kendo_active.png" alt="元気に稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src="/images/5.jpg" alt="元気に稽古" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">体を動かすのが楽しい</h3>
                   <p className="text-shuyukan-gold text-sm font-bold mb-4">心と体</p>

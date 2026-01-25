@@ -1,5 +1,5 @@
 /**
- * 修猷館 - デプロイ前APIチェックスクリプト
+ * 豊中修猷館 - デプロイ前APIチェックスクリプト
  * 
  * 使用方法:
  *   node scripts/check-api.js
@@ -12,7 +12,7 @@ const API_URL = process.env.VITE_MEMBER_API_URL ||
     'https://script.google.com/macros/s/AKfycbyG0TXwYvXuiVeSmJti2atnaJ17OT4RA86p-J18i4IqdOmutP6jvWUUSW2mSOp-QKTuxw/exec';
 
 async function checkAPI() {
-    console.log('🔍 修猷館 API チェック');
+    console.log('🔍 豊中修猷館 API チェック');
     console.log('━'.repeat(50));
     console.log(`📡 API URL: ${API_URL}`);
     console.log('');

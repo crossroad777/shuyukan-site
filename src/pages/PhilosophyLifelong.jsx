@@ -78,7 +78,7 @@ export default function PhilosophyLifelong() {
                             <p>
                                 生涯剣道の道は、決して孤独ではありません。
                                 同じ志を持つ仲間と共に汗を流し、励まし合い、成長していく。
-                                修猷館は、そんな「道場」であり続けたいと願っています。
+                                豊中修猷館は、そんな「道場」であり続けたいと願っています。
                             </p>
                             <p className="mt-4">
                                 子どもから大人まで、初心者から有段者まで。
@@ -113,7 +113,7 @@ export default function PhilosophyLifelong() {
                         <section className="text-center bg-shuyukan-gold/10 p-12 rounded-lg border border-shuyukan-gold/30">
                             <h3 className="text-2xl font-bold text-shuyukan-blue mb-4">一緒に歩みませんか？</h3>
                             <p className="text-gray-600 mb-6">
-                                修猷館では、随時見学・体験を受け付けています。
+                                豊中修猷館では、随時見学・体験を受け付けています。
                             </p>
                             <Link
                                 to="/join"

@@ -16,7 +16,7 @@ export default function Benefits() {
             {/* Hero with Video Background */}
             <section className="relative text-center mb-16 py-16 -mx-6 md:-mx-10 px-6 overflow-hidden bg-gradient-to-b from-shuyukan-blue to-shuyukan-blue/90">
                 <div className="absolute inset-0 opacity-20">
-                    <div className="absolute inset-0 bg-[url('/images/kendo_fun_group.png')] bg-cover bg-center"></div>
+                    <div className="absolute inset-0 bg-[url('/images/6.jpg')] bg-cover bg-center"></div>
                 </div>
                 <div className="relative z-10">
                     <FadeInSection>
@@ -26,7 +26,7 @@ export default function Benefits() {
                         </h1>
                         <p className="text-white/90 max-w-2xl mx-auto leading-relaxed text-lg">
                             子どもたちは「楽しい」から続けられる。<br />
-                            修猷館が大切にしている、剣道だからこそ育まれる力。
+                            豊中修猷館が大切にしている、剣道だからこそ育まれる力。
                         </p>
                     </FadeInSection>
                 </div>
@@ -37,16 +37,16 @@ export default function Benefits() {
                 <FadeInSection>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <img src="/images/kendo_friendship.png" alt="仲間との稽古" className="w-full h-full object-cover" />
+                            <img src="/images/1.jpg" alt="仲間との稽古" className="w-full h-full object-cover" />
                         </div>
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <img src="/images/kendo_challenge.png" alt="挑戦する姿" className="w-full h-full object-cover" />
+                            <img src="/images/2.jpg" alt="挑戦する姿" className="w-full h-full object-cover" />
                         </div>
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <img src="/images/kendo_active.png" alt="元気に稽古" className="w-full h-full object-cover" />
+                            <img src="/images/3.jpg" alt="元気に稽古" className="w-full h-full object-cover" />
                         </div>
                         <div className="aspect-square rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <img src="/images/kendo_fun_group.png" alt="チームワーク" className="w-full h-full object-cover" />
+                            <img src="/images/4.jpg" alt="チームワーク" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 </FadeInSection>
@@ -67,7 +67,7 @@ export default function Benefits() {
                                 width="100%"
                                 height="100%"
                                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                                title="修猷館 稽古風景"
+                                title="豊中修猷館 稽古風景"
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
@@ -89,7 +89,7 @@ export default function Benefits() {
                             {/* Image Side */}
                             <div className="md:w-2/5 relative overflow-hidden group">
                                 <img
-                                    src="/images/kendo_kids_bow.png"
+                                    src="/images/7.jpg"
                                     alt="礼をする子どもたち"
                                     className="w-full h-64 md:h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -135,7 +135,7 @@ export default function Benefits() {
                             {/* Image Side */}
                             <div className="md:w-2/5 relative overflow-hidden group">
                                 <img
-                                    src="/images/kendo_achievement.png"
+                                    src="/images/8.jpg"
                                     alt="表彰される子ども"
                                     className="w-full h-64 md:h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -181,7 +181,7 @@ export default function Benefits() {
                             {/* Image Side */}
                             <div className="md:w-2/5 relative overflow-hidden group">
                                 <img
-                                    src="/images/kendo_active.png"
+                                    src="/images/9.png"
                                     alt="元気に稽古する子どもたち"
                                     className="w-full h-64 md:h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -230,22 +230,22 @@ export default function Benefits() {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_friendship.png" alt="稽古風景1" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/5.jpg" alt="稽古風景1" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_kids_bow.png" alt="稽古風景2" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/6.jpg" alt="稽古風景2" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_challenge.png" alt="稽古風景3" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/7.jpg" alt="稽古風景3" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_fun_group.png" alt="稽古風景4" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/8.jpg" alt="稽古風景4" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_achievement.png" alt="稽古風景5" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/9.png" alt="稽古風景5" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                         <div className="aspect-[4/3] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
-                            <img src="/images/kendo_active.png" alt="稽古風景6" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                            <img src="/images/1.jpg" alt="稽古風景6" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         </div>
                     </div>
                 </FadeInSection>

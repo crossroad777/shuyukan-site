@@ -27,7 +27,7 @@ const Character = () => {
                         </p>
                         <div className="mt-6 w-24 h-1 bg-gradient-to-r from-transparent via-shuyukan-gold to-transparent mx-auto"></div>
                         <p className="mt-8 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                            修猷館のイメージキャラクターをご紹介！<br />
+                            豊中修猷館のイメージキャラクターをご紹介！<br />
                             彼らと一緒に剣道の道を楽しみましょう！
                         </p>
                     </div>
@@ -51,7 +51,7 @@ const Character = () => {
                                         IGARASHI TETTA
                                     </p>
                                     <p className="text-gray-300 text-sm leading-relaxed">
-                                        修猷館の広報担当。<br />
+                                        豊中修猷館の広報担当。<br />
                                         穏やかでポジティブ、研鑽に取り組む剣士。
                                     </p>
                                 </div>

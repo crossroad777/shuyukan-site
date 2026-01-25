@@ -5,10 +5,8 @@ import { FOLDER_IDS } from '../services/documentService';
 
 export default function MemberPortal({ user }) {
     const memberData = user.memberData || {};
-    // 必須項目が埋まっているかチェック (氏名、ふりがな、生年月日、学年、段級位、緊急連絡先)
-    const isProfileIncomplete = !memberData.name || !memberData.furigana || !memberData.birthDate || !memberData.grade || !memberData.rank || !memberData.emergencyContact;
 
-    const [activeView, setActiveView] = useState(isProfileIncomplete ? 'initialSetup' : 'menu'); // menu, manual, events, schedule, key, docs, initialSetup
+    const [activeView, setActiveView] = useState('menu'); // menu, manual, events, schedule, key, docs, initialSetup
 
     const menuItems = [
         { id: 'manual', label: '部員用ガイド', icon: '📖' },
@@ -62,20 +60,12 @@ export default function MemberPortal({ user }) {
                         <div className="space-y-6">
                             <div className="flex justify-between items-center border-b pb-4 mb-6">
                                 <h2 className="text-2xl font-bold text-shuyukan-blue">稽古日程表</h2>
-                                <a
-                                    href={`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm font-bold px-4 py-2 bg-shuyukan-blue text-white rounded-lg hover:bg-shuyukan-gold hover:text-shuyukan-blue transition-all shadow-sm"
-                                >
-                                    Googleカレンダーに追加 ↗
-                                </a>
                             </div>
                             <div className="relative w-full aspect-video md:aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden border">
                                 <iframe
                                     title="剣道部 稽古日程"
-                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo`}
-                                    className="absolute top-0 left-0 w-full h-full border-0"
+                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
+                                    className="absolute top-0 left-0 w-full h-[calc(100%+40px)] border-0"
                                     frameBorder="0"
                                     scrolling="no"
                                 />
@@ -202,7 +192,8 @@ function ProfileEditView({ user, onBack, isInitial }) {
         setLoading(true);
         try {
             const { deleteMember } = await import('../services/memberService');
-            await deleteMember(user.id);
+            // user.id (Firebase UID) ではなく memberData.id (列番号など) を指定
+            await deleteMember(memberData.id);
             alert('データの削除が完了しました。ご利用ありがとうございました。');
             window.location.href = '/'; // トップへ戻る
         } catch (error) {
@@ -213,16 +204,7 @@ function ProfileEditView({ user, onBack, isInitial }) {
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 py-4">
-            {isInitial ? (
-                <div className="bg-shuyukan-blue text-white p-6 rounded-xl shadow-lg mb-8">
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                        <span>👋</span> 初回プロフィール設定
-                    </h2>
-                    <p className="text-blue-100 text-sm mt-1">ご登録ありがとうございます！ご利用の前に、必須情報の登録をお願いします。</p>
-                </div>
-            ) : (
-                <h2 className="text-2xl font-bold text-shuyukan-blue border-b pb-4 mb-6">⚙️ マイプロフィール設定</h2>
-            )}
+            <h2 className="text-2xl font-bold text-shuyukan-blue border-b pb-4 mb-6">⚙️ マイプロフィール設定</h2>
 
             {success ? (
                 <div className="bg-green-50 border border-green-200 text-green-800 p-8 rounded-xl text-center shadow-inner">
@@ -345,24 +327,20 @@ function ProfileEditView({ user, onBack, isInitial }) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`px-8 py-3 rounded-lg font-bold shadow-md transition-all disabled:opacity-50 flex-1 ${isInitial ? 'bg-shuyukan-gold text-shuyukan-blue hover:scale-105' : 'bg-shuyukan-blue text-white hover:bg-shuyukan-gold hover:text-shuyukan-blue'
-                                }`}
+                            className="px-8 py-3 rounded-lg font-bold shadow-md transition-all disabled:opacity-50 flex-1 bg-shuyukan-blue text-white hover:bg-shuyukan-gold hover:text-shuyukan-blue"
                         >
-                            {loading ? '保存中...' : isInitial ? '入会情報を登録してスタート！' : '変更内容を保存する'}
+                            {loading ? '保存中...' : '変更内容を保存する'}
                         </button>
-                        {!isInitial && (
-                            <button
-                                type="button"
-                                onClick={onBack}
-                                className="bg-white border text-gray-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-all flex-1"
-                            >
-                                キャンセル
-                            </button>
-                        )}
+                        <button
+                            type="button"
+                            onClick={onBack}
+                            className="bg-white border text-gray-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-50 transition-all flex-1"
+                        >
+                            キャンセル
+                        </button>
                     </div>
 
                     <div className="mt-12 pt-8 border-t">
-                        <h3 className="text-lg font-bold text-red-600 mb-4">🚨 危険な操作区域</h3>
                         <div className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center justify-between gap-4">
                             <div>
                                 <p className="text-sm font-bold text-red-800">退会・データ抹消</p>

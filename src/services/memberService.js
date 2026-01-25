@@ -72,7 +72,10 @@ export async function fetchMembers() {
 export async function fetchActiveMembers() {
     const members = await fetchMembers();
     if (!Array.isArray(members)) return [];
-    return members.filter(m => m.status === '在籍' || m.status === 'active');
+    return members.filter(m => {
+        const s = String(m.status || '').trim();
+        return s === '在籍' || s === 'active' || s === '';
+    });
 }
 
 /**

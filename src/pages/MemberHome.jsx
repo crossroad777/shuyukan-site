@@ -16,176 +16,6 @@ const gradeOptions = [
     '大学生', '一般'
 ];
 
-/**
- * 初回プロフィール登録フォーム
- */
-function ProfileSetupForm({ user, onComplete }) {
-    const [submitting, setSubmitting] = useState(false);
-    const [formData, setFormData] = useState({
-        name: user.memberData?.name || user.name || '',
-        furigana: user.memberData?.furigana || '',
-        birthDate: user.memberData?.birthDate || '',
-        phone: ''
-    });
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // 最初にフラグを設定（APIの結果に関わらずループ防止）
-        localStorage.setItem('profileSetupDone_' + user.email, 'true');
-        setSubmitting(true);
-
-        // タイムアウト: 5秒後に強制的に完了（API応答がない場合の保険）
-        const timeout = setTimeout(() => {
-            console.log('Profile setup timeout - forcing completion');
-            onComplete();
-        }, 5000);
-
-        try {
-            const { setupProfile } = await import('../services/memberService');
-            const result = await setupProfile(user.email, formData);
-            clearTimeout(timeout);
-
-            if (result.success) {
-                console.log('Profile setup successful');
-            } else {
-                console.error('Profile setup failed:', result.error);
-            }
-            // 成功でもエラーでも部員画面に進む
-            onComplete();
-        } catch (error) {
-            clearTimeout(timeout);
-            console.error('Profile setup error:', error);
-            // エラーでも部員画面に進む
-            onComplete();
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    return (
-        <div className="max-w-md mx-auto py-8 animate-fade-in">
-            <div className="bg-white border-2 border-shuyukan-gold rounded-2xl p-6 shadow-xl">
-                <div className="text-center mb-6">
-                    <div className="text-4xl mb-3">✨</div>
-                    <h3 className="text-xl font-bold text-shuyukan-blue mb-2">ご登録ありがとうございます！</h3>
-                    <p className="text-sm text-gray-600">
-                        簡単なプロフィールを入力して開始しましょう。
-                    </p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">氏名 *</label>
-                        <input
-                            type="text"
-                            name="name"
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full border-gray-300 rounded-lg shadow-sm"
-                            placeholder="山田 太郎"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">ふりがな *</label>
-                        <input
-                            type="text"
-                            name="furigana"
-                            required
-                            value={formData.furigana}
-                            onChange={handleChange}
-                            className="w-full border-gray-300 rounded-lg shadow-sm"
-                            placeholder="やまだ たろう"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">生年月日 *</label>
-                        <div className="flex gap-2">
-                            <select
-                                required
-                                value={formData.birthDate ? formData.birthDate.split('-')[0] : ''}
-                                onChange={(e) => {
-                                    const parts = (formData.birthDate || '--').split('-');
-                                    parts[0] = e.target.value;
-                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
-                                }}
-                                className="flex-1 border-gray-300 rounded-lg shadow-sm"
-                            >
-                                <option value="">年</option>
-                                {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                                    <option key={y} value={y}>{y}年</option>
-                                ))}
-                            </select>
-                            <select
-                                required
-                                value={formData.birthDate ? formData.birthDate.split('-')[1] : ''}
-                                onChange={(e) => {
-                                    const parts = (formData.birthDate || '--').split('-');
-                                    parts[1] = e.target.value;
-                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
-                                }}
-                                className="w-20 border-gray-300 rounded-lg shadow-sm"
-                            >
-                                <option value="">月</option>
-                                {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(m => (
-                                    <option key={m} value={m}>{parseInt(m)}月</option>
-                                ))}
-                            </select>
-                            <select
-                                required
-                                value={formData.birthDate ? formData.birthDate.split('-')[2] : ''}
-                                onChange={(e) => {
-                                    const parts = (formData.birthDate || '--').split('-');
-                                    parts[2] = e.target.value;
-                                    handleChange({ target: { name: 'birthDate', value: parts.join('-') } });
-                                }}
-                                className="w-20 border-gray-300 rounded-lg shadow-sm"
-                            >
-                                <option value="">日</option>
-                                {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0')).map(d => (
-                                    <option key={d} value={d}>{parseInt(d)}日</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">電話番号 *</label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            required
-                            value={formData.phone}
-                            onChange={handleChange}
-                            className="w-full border-gray-300 rounded-lg shadow-sm"
-                            placeholder="090-0000-0000"
-                        />
-                    </div>
-
-                    <div className="pt-4">
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="w-full bg-shuyukan-blue text-white font-bold py-4 rounded-xl hover:bg-shuyukan-gold hover:text-shuyukan-blue transition shadow-lg disabled:opacity-50 text-lg"
-                        >
-                            {submitting ? '保存中...' : '登録して開始する'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-}
-
-
 export default function MemberHome() {
     const { user, logout, isAdmin, isMember, isPending, isGuest, loading } = useAuth();
 
@@ -193,19 +23,10 @@ export default function MemberHome() {
         console.log('[MemberHome] User State:', { user, isAdmin, isMember, isPending, isGuest });
     }, [user, isAdmin, isMember, isPending, isGuest]);
 
-
-    const isJunior = (type) => {
-        if (!type) return false;
-        return type.includes('少年') || type.includes('小') || type.includes('中') || type.includes('幼');
-    };
     const navigate = useNavigate();
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    // プロフィール設定完了フラグ（Reactの状態で管理）
-    const [profileSetupCompleted, setProfileSetupCompleted] = useState(() => {
-        // 初期値: localStorageにフラグがあればtrue
-        return !!localStorage.getItem('profileSetupDone_' + user?.email);
-    });
+
     const [formData, setFormData] = useState({
         name: '',
         furigana: '',
@@ -257,22 +78,6 @@ export default function MemberHome() {
         } finally {
             setDocsLoading(false);
         }
-    };
-
-    const formatSize = (bytes) => {
-        if (!bytes) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    };
-
-    const getFileIcon = (mimeType) => {
-        if (mimeType.includes('pdf')) return '📄';
-        if (mimeType.includes('image')) return '🖼️';
-        if (mimeType.includes('word') || mimeType.includes('text')) return '📝';
-        if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return '📊';
-        return '📁';
     };
 
     const handleLogout = () => {
@@ -372,12 +177,8 @@ export default function MemberHome() {
             {isAdmin ? (
                 <AdminPortal user={user} />
             ) : isMember ? (
-                // 在籍メンバーかつプロフィール未設定の場合（状態とlocalStorageフラグをチェック）
-                (!user.memberData?.birthDate && !profileSetupCompleted) ? (
-                    <ProfileSetupForm user={user} onComplete={() => setProfileSetupCompleted(true)} />
-                ) : (
-                    <MemberPortal user={user} />
-                )
+                // 在籍メンバー（承認済み）は常にポータル画面（メニュー）を表示
+                <MemberPortal user={user} />
             ) : null}
 
             {isPending && (

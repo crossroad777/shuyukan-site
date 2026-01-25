@@ -25,7 +25,7 @@ const Footer = () => {
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-4xl md:text-5xl font-serif font-bold tracking-widest text-white leading-tight">
-                                    修猷館
+                                    豊中修猷館
                                 </span>
                                 <span className="text-sm md:text-base text-shuyukan-gold uppercase tracking-[0.4em] font-light mt-2">
                                     Shuyukan Kendo Club
@@ -54,7 +54,7 @@ const Footer = () => {
                                 <span className="w-2 h-2 rounded-full bg-shuyukan-gold"></span> メニュー
                             </h4>
                             <ul className="space-y-4 text-base font-medium font-serif">
-                                <li><Link to="/about" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">修猷館について</Link></li>
+                                <li><Link to="/about" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">豊中修猷館について</Link></li>
                                 <li><Link to="/practice" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">稽古日程</Link></li>
                                 <li><Link to="/Teacher" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">指導者紹介</Link></li>
                                 <li><Link to="/join" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">入会案内</Link></li>

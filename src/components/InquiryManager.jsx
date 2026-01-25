@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchInquiries, replyToInquiry } from '../services/inquiryService';
+import { fetchInquiries, replyToInquiry, deleteInquiry } from '../services/inquiryService';
 
 export default function InquiryManager() {
     const [inquiries, setInquiries] = useState([]);
@@ -28,12 +28,34 @@ export default function InquiryManager() {
         setSending(true);
         try {
             await replyToInquiry(selectedInquiry.id, selectedInquiry.email, replyMessage);
-            setMessage({ text: '返信を送信しました。', type: 'success' });
+            const successMsg = '返信を送信しました。';
+            setMessage({ text: successMsg, type: 'success' });
+            alert(successMsg); // 確実な通知のためにアラートを追加
             setSelectedInquiry(null);
             setReplyMessage('');
             await loadInquiries();
+
+            // 5秒後にメッセージを消す
+            setTimeout(() => setMessage({ text: '', type: '' }), 5000);
         } catch (error) {
             setMessage({ text: '送信に失敗しました: ' + error.message, type: 'error' });
+        } finally {
+            setSending(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedInquiry) return;
+        if (!window.confirm('このお問い合わせを削除してもよろしいですか？\nこの操作は取り消せません。')) return;
+
+        setSending(true);
+        try {
+            await deleteInquiry(selectedInquiry.id);
+            alert('削除しました。');
+            setSelectedInquiry(null);
+            await loadInquiries();
+        } catch (error) {
+            setMessage({ text: '削除に失敗しました: ' + error.message, type: 'error' });
         } finally {
             setSending(false);
         }
@@ -44,8 +66,8 @@ export default function InquiryManager() {
             label: '体験入会（案内）',
             text: `お問い合わせありがとうございます。豊中修猷館剣道部です。
 体験入会はいつでも大歓迎です！
-直近の稽古日は ○月○日(曜) 9:00〜11:00 となっております。
-場所は修猷館道場です。
+直近の稽古日は ○月○日(土)17:00 - 19:00となっております。
+場所は熊野田小学校です。
 当日は動きやすい服装でお越しください。竹刀などの道具はお貸し出しいたします。
 当日お会いできるのを楽しみにしております。`
         },
@@ -146,6 +168,16 @@ export default function InquiryManager() {
                                             {selectedInquiry.notes}
                                         </div>
                                     )}
+                                    <div className="pt-4 flex justify-end">
+                                        <button
+                                            type="button"
+                                            onClick={handleDelete}
+                                            disabled={sending}
+                                            className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-red-50"
+                                        >
+                                            🗑️ このデータを削除する
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <form onSubmit={handleReply} className="mt-auto space-y-4">

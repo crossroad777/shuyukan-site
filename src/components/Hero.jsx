@@ -35,7 +35,7 @@ const Hero = () => {
                     {/* Wide Banner Image - Now spans wider area */}
                     <div className="mb-12 rounded-lg overflow-hidden border border-white/10 shadow-2xl w-full aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] group bg-shuyukan-dark relative">
                         <img
-                            src="/assets/kendo_banner_essence.png"
+                            src="/images/1.jpg"
                             alt="Kendo Essence"
                             className="w-full h-full object-cover transition-opacity duration-700 object-center"
                         />
@@ -44,7 +44,7 @@ const Hero = () => {
                             <span className="text-[#8B0000]/80 font-serif text-4xl md:text-6xl lg:text-7xl font-bold tracking-[0.2em] leading-none block" style={{
                                 textShadow: '4px 4px 10px rgba(0,0,0,0.9)'
                             }}>
-                                修猷館
+                                豊中修猷館
                             </span>
                         </div>
                     </div>

@@ -188,17 +188,21 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
 
     const filteredMembers = members.filter(m => {
         // 1. ステータスによるフィルタリング
+        const mStatus = String(m.status || '').trim();
         if (statusFilter === 'active') {
-            if (!(m.status === '在籍' || m.status === 'active')) return false;
+            // 在籍者のみ: '在籍', 'active', または未設定(空)を在籍とみなす
+            if (!(mStatus === '在籍' || mStatus === 'active' || mStatus === '')) return false;
         } else if (statusFilter === 'pending') {
-            if (!(m.status === '承認待ち' || m.status === 'pending')) return false;
+            // 承認待ちのみ
+            if (!(mStatus === '承認待ち' || mStatus === 'pending')) return false;
         }
 
         // 2. 所属（少年部・一般部等）によるフィルタリング
+        const mType = String(m.memberType || '').trim();
         if (filter === 'all') return true;
-        if (filter === '少年部') return isJunior(m.memberType);
-        if (filter === '一般部') return isAdult(m.memberType);
-        return m.memberType === filter;
+        if (filter === '少年部') return isJunior(mType);
+        if (filter === '一般部') return isAdult(mType);
+        return mType === filter;
     });
 
 

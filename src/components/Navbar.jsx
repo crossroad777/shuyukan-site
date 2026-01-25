@@ -7,7 +7,7 @@ const Navbar = () => {
 
     const navLinks = [
         { name: 'ホーム', en: 'HOME', path: '/' },
-        { name: '修猷館について', en: 'ABOUT', path: '/about' },
+        { name: '豊中修猷館について', en: 'ABOUT', path: '/about' },
         { name: '稽古日', en: 'SCHEDULE', path: '/practice' },
         { name: '指導者', en: 'TEACHER', path: '/Teacher' },
         { name: 'ご入会', en: 'JOIN', path: '/join' },
@@ -35,7 +35,7 @@ const Navbar = () => {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl lg:text-3xl font-serif text-white tracking-widest font-bold group-hover:text-shuyukan-gold transition-colors duration-300">
-                                修猷館
+                                豊中修猷館
                             </span>
                             <span className="text-[0.45rem] lg:text-[0.6rem] text-gray-400 uppercase tracking-[0.1em] font-light">
                                 Toyonaka Shuyukan

@@ -17,7 +17,7 @@ export default function About() {
                 <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4 text-white">
                     <FadeInSection>
                         <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6 tracking-widest text-shadow-lg">
-                            修猷館について
+                            豊中修猷館について
                         </h2>
                         <p className="text-xl md:text-2xl font-serif font-medium leading-relaxed tracking-wider">
                             心・技・体を磨き、<br />
@@ -33,7 +33,7 @@ export default function About() {
                 <section>
                     <div className="text-center mb-16">
                         <h3 className="text-2xl md:text-3xl font-serif font-bold text-shuyukan-blue mb-4">
-                            修猷館の三つの柱
+                            豊中修猷館の三つの柱
                         </h3>
                         <div className="w-20 h-1 bg-shuyukan-gold mx-auto rounded-full"></div>
                         <p className="mt-6 text-gray-600 leading-relaxed max-w-2xl mx-auto text-left sm:text-center">
@@ -72,7 +72,7 @@ export default function About() {
                                 <div className="w-full md:w-2/3">
                                     <h4 className="text-xl font-bold text-shuyukan-blue mb-2 font-serif">礼節と伝統 (Tradition)</h4>
                                     <p className="text-gray-600 leading-loose">
-                                        「礼に始まり、礼に終わる」。相手を敬い、感謝する心は、人間関係の基本です。修猷館では、伝統的な作法を通じて、自然と美しい所作や相手を思いやる心が身につくよう指導しています。これは学校や職場、社会生活のあらゆる場面で信頼される力となります。
+                                        「礼に始まり、礼に終わる」。相手を敬い、感謝する心は、人間関係の基本です。豊中修猷館では、伝統的な作法を通じて、自然と美しい所作や相手を思いやる心が身につくよう指導しています。これは学校や職場、社会生活のあらゆる場面で信頼される力となります。
                                     </p>
                                 </div>
                             </div>
@@ -155,7 +155,7 @@ export default function About() {
                         <h3 className="text-2xl font-serif font-bold text-shuyukan-blue mb-6">未来への約束</h3>
                         <p className="text-gray-600 leading-loose mb-10 max-w-3xl mx-auto text-left sm:text-center">
                             お子様が大人になった時、<br className="hidden sm:inline" />
-                            「修猷館で剣道をやっていてよかった」と思える場所であり続けます。
+                            「豊中修猷館で剣道をやっていてよかった」と思える場所であり続けます。
                         </p>
                         <Link to="/join" className="group inline-flex items-center gap-3 px-8 py-4 bg-shuyukan-red text-white font-bold text-base rounded-full shadow-lg hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-1 tracking-wider">
                             <span>体験入会・見学申込</span>

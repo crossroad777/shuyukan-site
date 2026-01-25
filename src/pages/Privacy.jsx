@@ -1,6 +1,6 @@
 /**
  * Privacy Policy Page - プライバシーポリシー
- * 修猷館剣道部の個人情報保護方針
+ * 豊中修猷館剣道部の個人情報保護方針
  */
 import React from 'react';
 import Navbar from '../components/Navbar.jsx';
@@ -36,7 +36,7 @@ const Privacy = () => {
                                     1. 基本方針
                                 </h2>
                                 <p className="leading-relaxed">
-                                    修猷館剣道部（以下「当会」）は、会員および関係者の個人情報の重要性を認識し、
+                                    豊中修猷館剣道部（以下「当会」）は、会員および関係者の個人情報の重要性を認識し、
                                     個人情報の保護に関する法律その他の関連法令を遵守し、
                                     適正な取り扱いおよび保護に努めます。
                                 </p>
@@ -116,7 +116,7 @@ const Privacy = () => {
                                     下記までお問い合わせください。
                                 </p>
                                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                    <p className="font-bold text-shuyukan-blue">修猷館剣道部</p>
+                                    <p className="font-bold text-shuyukan-blue">豊中修猷館剣道部</p>
                                     <p className="text-sm text-gray-600">
                                         メール：<a href="mailto:info@shuyukan-kendo.com" className="text-shuyukan-blue hover:underline">info@shuyukan-kendo.com</a>
                                     </p>

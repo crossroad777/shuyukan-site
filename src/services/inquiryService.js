@@ -53,10 +53,7 @@ export async function submitInquiry(formData) {
     try {
         const url = new URL(MEMBER_API_URL);
         url.searchParams.append('action', 'submitInquiry');
-        url.searchParams.append('name', formData.name);
-        url.searchParams.append('email', formData.email);
-        url.searchParams.append('type', formData.type);
-        url.searchParams.append('content', formData.content);
+        url.searchParams.append('data', JSON.stringify(formData));
 
         const response = await fetch(url.toString(), {
             method: 'GET', // GASの制限回避のためGETを使用
@@ -100,6 +97,33 @@ export async function replyToInquiry(id, email, message) {
         }
     } catch (error) {
         console.error('[InquiryService] Reply error:', error);
+        throw error;
+    }
+}
+
+export async function deleteInquiry(id) {
+    if (!MEMBER_API_URL) {
+        throw new Error('API URL is not configured');
+    }
+
+    try {
+        const url = new URL(MEMBER_API_URL);
+        url.searchParams.append('action', 'deleteInquiry');
+        url.searchParams.append('id', id);
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            redirect: 'follow'
+        });
+
+        const data = await response.json();
+        if (data && data.success) {
+            return data;
+        } else {
+            throw new Error(data.error || '削除に失敗しました');
+        }
+    } catch (error) {
+        console.error('[InquiryService] Delete error:', error);
         throw error;
     }
 }
