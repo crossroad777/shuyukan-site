@@ -10,11 +10,9 @@ export default function MemberPortal({ user }) {
 
     const menuItems = [
         { id: 'manual', label: '部員用ガイド', icon: '📖' },
-        { id: 'events', label: '予定されている行事', icon: '📅' },
-        { id: 'schedule', label: '稽古日程表', icon: '⚔️' },
-        { id: 'key', label: '緊急連絡網・当番', icon: '🔑' },
+        { id: 'schedule', label: '稽古日程', icon: '📅' },
         { id: 'docs', label: '共有配布資料', icon: '📁' },
-        { id: 'profile', label: 'マイプロフィール設定', icon: '⚙️' },
+        { id: 'profile', label: 'プロフィール設定', icon: '⚙️' },
     ];
 
     if (activeView !== 'menu') {
@@ -34,6 +32,7 @@ export default function MemberPortal({ user }) {
                             title="📖 部員用ガイド"
                             userRole="member"
                             readOnly={true}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'events' ? (
                         <DocumentManager
@@ -41,6 +40,7 @@ export default function MemberPortal({ user }) {
                             title="📅 予定されている行事"
                             userRole="member"
                             readOnly={true}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'key' ? (
                         <DocumentManager
@@ -48,6 +48,7 @@ export default function MemberPortal({ user }) {
                             title="🔑 緊急連絡網・当番"
                             userRole="member"
                             readOnly={true}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'docs' ? (
                         <DocumentManager
@@ -55,11 +56,12 @@ export default function MemberPortal({ user }) {
                             title="📁 共有配布資料"
                             userRole="member"
                             readOnly={true}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'schedule' ? (
                         <div className="space-y-6">
                             <div className="flex justify-between items-center border-b pb-4 mb-6">
-                                <h2 className="text-2xl font-bold text-shuyukan-blue">稽古日程表</h2>
+                                <h2 className="text-2xl font-bold text-shuyukan-blue">稽古日程</h2>
                             </div>
                             <div className="relative w-full aspect-video md:aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden border">
                                 <iframe
@@ -123,7 +125,7 @@ export default function MemberPortal({ user }) {
             </div>
 
             {/* メニューグリッド */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 {menuItems.map((item) => (
                     <div key={item.id} className="group">
                         <PortalButton
@@ -204,7 +206,7 @@ function ProfileEditView({ user, onBack, isInitial }) {
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 py-4">
-            <h2 className="text-2xl font-bold text-shuyukan-blue border-b pb-4 mb-6">⚙️ マイプロフィール設定</h2>
+            <h2 className="text-2xl font-bold text-shuyukan-blue border-b pb-4 mb-6">⚙️ プロフィール設定</h2>
 
             {success ? (
                 <div className="bg-green-50 border border-green-200 text-green-800 p-8 rounded-xl text-center shadow-inner">

@@ -38,21 +38,19 @@ export default function AdminPortal({ user }) {
 
     // 2. 📋 部員向けコンテンツ
     const memberContentItems = [
-        { id: 'manual', label: 'ガイドの編集', icon: '📖' },
-        { id: 'events', label: '行事予定の管理', icon: '📅' },
-        { id: 'admin_schedule', label: '稽古日程表の管理', icon: '🗓️' },
-        { id: 'key', label: '当番・連絡網', icon: '🔑' },
-        { id: 'docs', label: 'ファイル一括管理', icon: '📁' },
+        { id: 'manual', label: '部員用ガイド管理', icon: '📖' },
+        { id: 'admin_schedule', label: '稽古日管理', icon: '🗓️' },
+        { id: 'docs', label: '共有配布資料', icon: '📁' },
     ];
 
     // 3. ⚙️ 運営・会員管理
     const operationalItems = [
+        { id: 'admin_manual', label: '管理者用ガイド', icon: '📖' },
         { id: 'members', label: '会員名簿の管理', icon: '👥' },
         { id: 'news_admin', label: 'お知らせ機能管理', icon: '📢' },
         { id: 'inquiries', label: 'お問い合わせ管理', icon: '❓', badgeCount: summary.newInquiries },
         { id: 'attendance', label: '全員の出欠管理', icon: '✅' },
         { id: 'accounting', label: '会計・予算管理', icon: '💰' },
-        { id: 'instagram_config', label: 'SNS連携設定', icon: '📸' },
     ];
 
     const handleQuickNewsAdd = async (newsData) => {
@@ -84,9 +82,10 @@ export default function AdminPortal({ user }) {
                     ) : activeView === 'manual' ? (
                         <DocumentManager
                             initialFolderId={FOLDER_IDS.MANUAL}
-                            title="📖 ガイドの編集"
+                            title="📖 部員用ガイド管理"
                             userRole="admin"
                             readOnly={false}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'events' ? (
                         <DocumentManager
@@ -94,6 +93,7 @@ export default function AdminPortal({ user }) {
                             title="📅 行事予定の管理"
                             userRole="admin"
                             readOnly={false}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'key' ? (
                         <DocumentManager
@@ -101,13 +101,14 @@ export default function AdminPortal({ user }) {
                             title="🔑 当番・連絡網の編成"
                             userRole="admin"
                             readOnly={false}
+                            userEmail={user.email}
                         />
                     ) : activeView === 'inquiries' ? (
                         <InquiryManager />
                     ) : activeView === 'admin_schedule' ? (
                         <div className="space-y-6">
                             <h2 className="text-2xl font-bold text-shuyukan-blue mb-6 border-b pb-4 flex justify-between items-center">
-                                <span>🗓️ 稽古日程表の管理</span>
+                                <span>🗓️ 稽古日管理</span>
                                 <a
                                     href="https://calendar.google.com/calendar/u/0/r"
                                     target="_blank"
@@ -135,10 +136,32 @@ export default function AdminPortal({ user }) {
                     ) : activeView === 'docs' ? (
                         <DocumentManager
                             initialFolderId={import.meta.env.VITE_DOCUMENTS_FOLDER_ID}
-                            title="📤 ファイル一括管理"
+                            title="📤 共有配布資料"
                             userRole="admin"
                             readOnly={false}
+                            userEmail={user.email}
                         />
+                    ) : activeView === 'admin_manual' ? (
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center border-b pb-4 mb-6">
+                                <h2 className="text-2xl font-bold text-shuyukan-blue">📖 管理者用ガイド</h2>
+                                <a
+                                    href="https://drive.google.com/drive/folders/1pOFkmNDMGNy4U7Ppkv94etKfkxXflZs5"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm px-4 py-2 bg-shuyukan-blue text-white rounded-lg hover:bg-opacity-90 transition-all font-bold"
+                                >
+                                    Google Driveで開く ↗
+                                </a>
+                            </div>
+                            <DocumentManager
+                                initialFolderId="1pOFkmNDMGNy4U7Ppkv94etKfkxXflZs5"
+                                title="管理者用ガイド"
+                                userRole="admin"
+                                readOnly={false}
+                                userEmail={user.email}
+                            />
+                        </div>
                     ) : (
                         <>
                             <h2 className="text-2xl font-bold text-shuyukan-blue mb-6 border-b pb-4">

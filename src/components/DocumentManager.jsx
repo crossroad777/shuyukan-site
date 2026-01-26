@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { fetchDocuments } from '../services/documentService';
 
-export default function DocumentManager({ initialFolderId, title, userRole = 'guest', readOnly = true }) {
+export default function DocumentManager({ initialFolderId, title, userRole = 'guest', readOnly = true, userEmail = null }) {
+    // Google DriveのURLにauthuserパラメータを追加してアカウント選択を省略
+    const appendAuthUser = (url) => {
+        if (!url || !userEmail) return url;
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}authuser=${encodeURIComponent(userEmail)}`;
+    };
+
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [path, setPath] = useState([{ id: initialFolderId, name: title || 'ルート' }]);
@@ -22,19 +29,29 @@ export default function DocumentManager({ initialFolderId, title, userRole = 'gu
 
             // 役割に応じたフィルタリング（ルートフォルダの場合のみ適用）
             let filteredData = data;
+            // ルートフォルダの場合のみ、フォルダの表示を数字付きに制限して整理する
             if (folderId === ROOT_FOLDER_ID) {
                 if (userRole === 'admin') {
                     // 全て表示
                     filteredData = data;
                 } else if (userRole === 'member') {
-                    // 「01_公開」と「02_部員」のみ表示
-                    filteredData = data.filter(item =>
-                        item.name.startsWith('01_') || item.name.startsWith('02_')
-                    );
+                    // フォルダは数字（01_など）で始まるものに限定し、ファイル制限は解除して利便性を高める
+                    filteredData = data.filter(item => {
+                        const isFolder = item.type === 'folder';
+                        const startsWithDigit = /^[0-9０-９]+/.test(item.name);
+                        const isPublicInfo = !item.name.includes('管理者') && !item.name.includes('アーカイブ');
+
+                        if (isFolder) {
+                            return startsWithDigit && isPublicInfo;
+                        }
+                        return isPublicInfo; // ファイルは数字なしでも表示（単発配布物に対応）
+                    });
                 } else {
-                    // 「01_公開」のみ表示
+                    // ゲストは「01_」で始まる、かつ不適切ワードを含まないもののみ表示
                     filteredData = data.filter(item =>
-                        item.name.startsWith('01_')
+                        /^(01|０１)/.test(item.name) &&
+                        !item.name.includes('管理者') &&
+                        !item.name.includes('アーカイブ')
                     );
                 }
             }
@@ -139,7 +156,7 @@ export default function DocumentManager({ initialFolderId, title, userRole = 'gu
                                                 </button>
                                             ) : (
                                                 <a
-                                                    href={item.url}
+                                                    href={appendAuthUser(item.url)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-gray-900 font-medium group-hover:text-shuyukan-blue"
@@ -169,7 +186,7 @@ export default function DocumentManager({ initialFolderId, title, userRole = 'gu
                         （反映には数秒かかる場合があります）
                     </p>
                     <a
-                        href={`https://drive.google.com/drive/folders/${currentFolder.id}`}
+                        href={appendAuthUser(`https://drive.google.com/drive/folders/${currentFolder.id}`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-shuyukan-blue text-white rounded-lg text-sm font-bold hover:bg-opacity-90 transition-all"
