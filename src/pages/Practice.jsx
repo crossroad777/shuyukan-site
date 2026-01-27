@@ -32,8 +32,16 @@ export default function Practice() {
                     />
                 </div>
 
-                <div className="text-center text-sm text-gray-400">
-                    <p>表示されない場合は、ブラウザの広告ブロック等を一度OFFにして確認してください。</p>
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                    <p className="text-sm text-gray-400">表示されない場合は、ブラウザの広告ブロック等を一度OFFにして確認してください。</p>
+                    <a
+                        href={`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(CALENDAR_ID)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                    >
+                        📅 Googleカレンダーで開く
+                    </a>
                 </div>
             </div>
         </SiteFrame>
