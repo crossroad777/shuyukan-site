@@ -46,22 +46,6 @@ export default function Links() {
             description: "豊中市内で活動する友好団体および主要な稽古場所",
             items: [
                 { name: "豊中市立武道館ひびき", url: "https://www.city.toyonaka.osaka.jp/shisetsu/sports/budoukan.html", description: "主要な稽古場所・試合会場" },
-                { name: "西丘剣友会", url: "https://nishiokakenyukai.crayonsite.com/" },
-                { name: "いずみ会", url: "https://osa-kendo.or.jp/dojo?gid=585", description: "大阪府剣道連盟 加盟団体" },
-                { name: "初心会", url: "https://osa-kendo.or.jp/dojo?gid=606", description: "大阪府剣道連盟 加盟団体" },
-                { name: "豊中剣道教室 (豊剣教)", url: "https://osa-kendo.or.jp/dojo?gid=607", description: "大阪府剣道連盟 加盟団体" },
-                { name: "小曽根剣友会", url: "https://ozoneterauchi.1web.jp/" },
-                { name: "庄内南剣道クラブ", url: "https://shominakendo.amebaownd.com/" },
-                { name: "千里剣心会", url: "https://senri-kenshinkai.net/" },
-                { name: "野田剣友会仁風館", url: "https://ameblo.jp/nodajinpukan/", description: "公式ブログ" },
-                { name: "豊南剣修館", url: "https://honankenshukan.wixsite.com/toppage" },
-                { name: "豊中南桜塚剣友会", url: "https://minasakukennyuukai.wixsite.com/home" },
-                { name: "少路剣道クラブ", url: "http://shojikendoclub.blogspot.com/" },
-                { name: "あすなろ剣友会", url: "https://osa-kendo.or.jp/dojo?gid=140", description: "大阪府剣道連盟 加盟団体" },
-                { name: "庄内講武会", url: "https://osa-kendo.or.jp/dojo?gid=142", description: "大阪府剣道連盟 加盟団体" },
-                { name: "東丘剣友会", url: "https://osa-kendo.or.jp/dojo?gid=143", description: "大阪府剣道連盟 加盟団体" },
-                { name: "寺内剣友会", url: "https://osa-kendo.or.jp/dojo?gid=144", description: "大阪府剣道連盟 加盟団体" },
-                { name: "さくら剣友会", url: "https://osa-kendo.or.jp/dojo?gid=1506", description: "大阪府剣道連盟 加盟団体" },
             ]
         },
         {

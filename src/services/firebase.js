@@ -3,7 +3,7 @@
  * shuyukan.info@gmail.com がマスター管理者
  */
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 // Firebase設定（Firebaseコンソールから取得）
 const firebaseConfig = {
@@ -18,6 +18,11 @@ const firebaseConfig = {
 // Firebase初期化
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// 永続性の設定 (ブラウザを閉じても、再読み込みしてもログインを維持)
+setPersistence(auth, browserLocalPersistence)
+    .catch((err) => console.error('Persistence error:', err));
+
 const googleProvider = new GoogleAuthProvider();
 // 常にアカウント選択画面を表示させる設定
 googleProvider.setCustomParameters({
@@ -29,4 +34,8 @@ const ADMIN_EMAILS = [
     'shuyukan.info@gmail.com',    // マスター管理者（常にアクセス可能）
 ];
 
-export { auth, googleProvider, ADMIN_EMAILS };
+export {
+    auth,
+    googleProvider,
+    ADMIN_EMAILS
+};

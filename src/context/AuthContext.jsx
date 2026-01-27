@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signOut, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, googleProvider, ADMIN_EMAILS } from '../services/firebase';
 import { fetchMemberByEmail } from '../services/memberService';
 
@@ -56,31 +56,66 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
-      if (firebaseUser) {
-        const userData = await determineUserRole(firebaseUser);
-        setUser(userData);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+    let isSubscribed = true;
 
-    return () => unsubscribe();
+    const initAuth = async () => {
+      setLoading(true);
+      try {
+        // 1. リダイレクト結果を先にチェック
+        const result = await getRedirectResult(auth);
+        if (result && isSubscribed) {
+          console.log('Redirect result found:', result.user.email);
+          const userData = await determineUserRole(result.user);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Redirect result error:', error);
+      } finally {
+        // 2. AuthStateObserver を開始（ここでも setLoading(false) される）
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          if (!isSubscribed) return;
+
+          if (firebaseUser) {
+            const userData = await determineUserRole(firebaseUser);
+            setUser(userData);
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
+        });
+
+        return unsubscribe;
+      }
+    };
+
+    const authUnsubscribePromise = initAuth();
+
+    return () => {
+      isSubscribed = false;
+      authUnsubscribePromise.then(unsubscribe => unsubscribe && unsubscribe());
+    };
   }, []);
 
   const login = async () => {
     try {
       setLoading(true);
+      // 基本的にポップアップ方式を使用 (モバイルブラウザでも Safari/Chrome なら動作します)
+      console.log('Using signInWithPopup for login');
       const result = await signInWithPopup(auth, googleProvider);
       const userData = await determineUserRole(result.user);
       setUser(userData);
       return { success: true, role: userData.role };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: error.message };
+      // ポップアップがブロックされたモバイル環境などのためのフォールバック
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/operation-not-supported-in-this-environment') {
+        console.log('Popup blocked, falling back to redirect...');
+        await signInWithRedirect(auth, googleProvider);
+        return { success: true, redirect: true };
+      }
+      return { success: false, error: error.message, code: error.code };
     } finally {
+      // リダイレクトが発生していない場合のみロード状態を解除
       setLoading(false);
     }
   };

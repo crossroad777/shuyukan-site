@@ -63,7 +63,8 @@ export default function MemberPortal({ user }) {
                             <div className="flex justify-between items-center border-b pb-4 mb-6">
                                 <h2 className="text-2xl font-bold text-shuyukan-blue">稽古日程</h2>
                             </div>
-                            <div className="relative w-full aspect-video md:aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden border">
+                            {/* モバイル: 縦長で見やすく / PC: 横長アスペクト比 */}
+                            <div className="relative w-full h-[500px] sm:h-[450px] md:h-auto md:aspect-[16/10] bg-gray-100 rounded-lg overflow-hidden border">
                                 <iframe
                                     title="剣道部 稽古日程"
                                     src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
@@ -72,7 +73,18 @@ export default function MemberPortal({ user }) {
                                     scrolling="no"
                                 />
                             </div>
-                            <p className="text-sm text-gray-500">※ 場所や時間の詳細はカレンダー内の各項目をクリックして確認してください。</p>
+                            {/* モバイルユーザー向け: Googleカレンダーアプリで開くリンク */}
+                            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                                <p className="text-sm text-gray-500">※ 場所や時間の詳細はカレンダー内の各項目をクリックして確認してください。</p>
+                                <a
+                                    href={`https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap"
+                                >
+                                    📅 Googleカレンダーで開く
+                                </a>
+                            </div>
                         </div>
                     ) : activeView === 'profile' || activeView === 'initialSetup' ? (
                         <ProfileEditView
