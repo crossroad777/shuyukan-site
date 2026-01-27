@@ -10,7 +10,7 @@ import React from 'react';
 import SiteFrame from '../components/SiteFrame.jsx';
 
 const CALENDAR_ID = import.meta.env.VITE_GOOGLE_CALENDAR_ID;
-const CALENDAR_SRC = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=2&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`;
+const CALENDAR_SRC = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=1&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`;
 
 export default function Practice() {
     return (

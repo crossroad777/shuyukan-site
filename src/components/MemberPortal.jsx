@@ -67,7 +67,7 @@ export default function MemberPortal({ user }) {
                             <div className="relative w-full h-[500px] sm:h-[450px] md:h-auto md:aspect-[16/10] bg-gray-100 rounded-lg overflow-hidden border">
                                 <iframe
                                     title="剣道部 稽古日程"
-                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=2&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
+                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=1&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
                                     className="absolute top-0 left-0 w-full h-[calc(100%+40px)] border-0"
                                     frameBorder="0"
                                     scrolling="no"
