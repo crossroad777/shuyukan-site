@@ -4,10 +4,12 @@ import AdminDashboard from './AdminDashboard';
 import DocumentManager from './DocumentManager';
 import { FOLDER_IDS } from '../services/documentService';
 import NewsAddModal from './NewsAddModal';
+import InternalAnnouncementModal from './InternalAnnouncementModal';
 import AttendanceDashboard from './AttendanceDashboard';
 import AccountingDashboard from './AccountingDashboard';
 import { fetchSummaryCounts } from '../services/memberService';
 import { addNews } from '../services/newsService';
+import { addInternalAnnouncement } from '../services/internalAnnouncementService';
 import { useEffect } from 'react';
 import InquiryManager from './InquiryManager';
 
@@ -15,6 +17,7 @@ import InquiryManager from './InquiryManager';
 export default function AdminPortal({ user }) {
     const [activeView, setActiveView] = useState('menu');
     const [isQuickNewsModalOpen, setIsQuickNewsModalOpen] = useState(false);
+    const [isInternalAnnouncementModalOpen, setIsInternalAnnouncementModalOpen] = useState(false);
     const [summary, setSummary] = useState({ pendingMembers: 0, newInquiries: 0 });
     const [dashboardFilter, setDashboardFilter] = useState('all');
 
@@ -56,6 +59,14 @@ export default function AdminPortal({ user }) {
     const handleQuickNewsAdd = async (newsData) => {
         await addNews(newsData);
         setIsQuickNewsModalOpen(false);
+    };
+
+    const handleInternalAnnouncementAdd = async (announcementData) => {
+        await addInternalAnnouncement({
+            ...announcementData,
+            author: user.email || user.displayName || '管理者'
+        });
+        setIsInternalAnnouncementModalOpen(false);
     };
 
     const navigateToMembers = (filter = 'all') => {
@@ -258,15 +269,25 @@ export default function AdminPortal({ user }) {
                         <span className="p-1.5 bg-red-600 text-white rounded">📢</span>
                         クイックアクション
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <button
                             onClick={() => setIsQuickNewsModalOpen(true)}
-                            className="flex items-center gap-4 p-4 bg-white border-2 border-red-500 rounded-xl hover:bg-red-50 hover:border-red-600 transition-all shadow-sm group"
+                            className="flex items-center gap-4 p-4 bg-white border-2 border-orange-400 rounded-xl hover:bg-orange-50 hover:border-orange-500 transition-all shadow-sm group"
                         >
                             <span className="text-3xl group-hover:scale-110 transition-transform">📢</span>
                             <div className="text-left">
-                                <div className="font-bold text-gray-800 text-lg">お知らせ投稿</div>
-                                <div className="text-sm text-gray-500">部員へのお知らせを即時投稿します</div>
+                                <div className="font-bold text-gray-800 text-lg">公開お知らせ</div>
+                                <div className="text-sm text-gray-500">公開HPに掲載します</div>
+                            </div>
+                        </button>
+                        <button
+                            onClick={() => setIsInternalAnnouncementModalOpen(true)}
+                            className="flex items-center gap-4 p-4 bg-white border-2 border-blue-500 rounded-xl hover:bg-blue-50 hover:border-blue-600 transition-all shadow-sm group"
+                        >
+                            <span className="text-3xl group-hover:scale-110 transition-transform">🔔</span>
+                            <div className="text-left">
+                                <div className="font-bold text-gray-800 text-lg">部員向け通知</div>
+                                <div className="text-sm text-gray-500">部員のみに表示</div>
                             </div>
                         </button>
                         <button
@@ -276,8 +297,8 @@ export default function AdminPortal({ user }) {
                             <div className="flex items-center gap-4">
                                 <span className="text-3xl group-hover:scale-110 transition-transform">📝</span>
                                 <div className="text-left">
-                                    <div className="font-bold text-gray-800 text-lg">新規申込の承認</div>
-                                    <div className="text-sm text-gray-500">入会希望者の承認・確認</div>
+                                    <div className="font-bold text-gray-800 text-lg">新規申込</div>
+                                    <div className="text-sm text-gray-500">承認・確認</div>
                                 </div>
                             </div>
                             {summary.pendingMembers > 0 && (
@@ -333,11 +354,19 @@ export default function AdminPortal({ user }) {
                 </section>
             </div>
 
-            {/* クイックお知らせ投稿モーダル */}
+            {/* 公開お知らせ投稿モーダル */}
             {isQuickNewsModalOpen && (
                 <NewsAddModal
                     onClose={() => setIsQuickNewsModalOpen(false)}
                     onAdd={handleQuickNewsAdd}
+                />
+            )}
+
+            {/* 部員向けお知らせ投稿モーダル */}
+            {isInternalAnnouncementModalOpen && (
+                <InternalAnnouncementModal
+                    onClose={() => setIsInternalAnnouncementModalOpen(false)}
+                    onAdd={handleInternalAnnouncementAdd}
                 />
             )}
         </div>

@@ -11,6 +11,7 @@ var MEMBER_SHEET_NAME = "会員マスター";
 var ATTENDANCE_SHEET_NAME = '出欠管理';
 var ACCOUNTING_SHEET_NAME = '会費管理';
 var NEWS_SHEET_NAME = 'お知らせ';
+var INTERNAL_ANNOUNCEMENTS_SHEET_NAME = '部員向けお知らせ';
 
 // メール権限承認用のダミー関数
 function testMailAuthorization() {
@@ -94,6 +95,11 @@ function doGet(e) {
       case 'updateNews': return createJsonResponse(updateNews(params.id, JSON.parse(params.newsData)));
       case 'deleteNews': return createJsonResponse(deleteNews(params.id));
       
+      // 部員向けお知らせ
+      case 'getInternalAnnouncements': return createJsonResponse({ success: true, data: getInternalAnnouncements() });
+      case 'addInternalAnnouncement': return createJsonResponse(addInternalAnnouncement(JSON.parse(params.announcementData)));
+      case 'deleteInternalAnnouncement': return createJsonResponse(deleteInternalAnnouncement(params.id));
+      
       default:
         return createJsonResponse({ success: false, error: "Unknown action: " + action });
     }
@@ -136,6 +142,11 @@ function doPost(e) {
       case 'updateAccounting': return createJsonResponse(updateAccounting(params));
       case 'uploadFile': return createJsonResponse(uploadFile(params));
       case 'submitInquiry': return createJsonResponse(submitInquiry(params.data));
+      
+      // 部員向けお知らせ
+      case 'getInternalAnnouncements': return createJsonResponse({ success: true, data: getInternalAnnouncements() });
+      case 'addInternalAnnouncement': return createJsonResponse(addInternalAnnouncement(params.announcementData));
+      case 'deleteInternalAnnouncement': return createJsonResponse(deleteInternalAnnouncement(params.id));
       
       default:
         return createJsonResponse({ success: false, error: "Unknown action: " + action });
@@ -570,6 +581,128 @@ function deleteNews(id) {
     }
 
     return { success: false, error: "News record not found for ID: " + id };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+// --- 3.5 部員向けお知らせ管理 ---
+
+/**
+ * 部員向けお知らせを取得（2週間以内のもののみ）
+ */
+function getInternalAnnouncements() {
+  const ss = getSS(MEMBER_SPREADSHEET_ID);
+  let sheet = ss.getSheetByName(INTERNAL_ANNOUNCEMENTS_SHEET_NAME);
+  
+  // シートがない場合は作成
+  if (!sheet) {
+    sheet = ss.insertSheet(INTERNAL_ANNOUNCEMENTS_SHEET_NAME);
+    sheet.appendRow(['ID', '日付', 'タイトル', '本文', '投稿者', '重要度']);
+    return [];
+  }
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+  
+  const headers = data[0]; // ['ID', '日付', 'タイトル', '本文', '投稿者', '重要度']
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  
+  const results = [];
+  const rowsToDelete = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    let dateVal = row[1];
+    
+    // 日付をパース
+    let announcementDate;
+    if (dateVal instanceof Date) {
+      announcementDate = dateVal;
+    } else if (typeof dateVal === 'string') {
+      announcementDate = new Date(dateVal);
+    } else {
+      continue; // 日付不正はスキップ
+    }
+    
+    // 2週間以上古いものは削除候補
+    if (announcementDate < twoWeeksAgo) {
+      rowsToDelete.push(i + 1); // 1-indexed row number
+      continue;
+    }
+    
+    results.push({
+      id: row[0] || (i + 1),
+      date: Utilities.formatDate(announcementDate, "JST", "yyyy-MM-dd"),
+      title: row[2] || '',
+      body: row[3] || '',
+      author: row[4] || '',
+      priority: row[5] || 'normal'
+    });
+  }
+  
+  // 古い行を削除（下から削除しないとインデックスがずれる）
+  rowsToDelete.reverse().forEach(rowNum => {
+    sheet.deleteRow(rowNum);
+  });
+  
+  // 新しい順にソート
+  return results.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+/**
+ * 部員向けお知らせを追加
+ */
+function addInternalAnnouncement(data) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    let sheet = ss.getSheetByName(INTERNAL_ANNOUNCEMENTS_SHEET_NAME);
+    
+    // シートがない場合は作成
+    if (!sheet) {
+      sheet = ss.insertSheet(INTERNAL_ANNOUNCEMENTS_SHEET_NAME);
+      sheet.appendRow(['ID', '日付', 'タイトル', '本文', '投稿者', '重要度']);
+    }
+    
+    const newId = Utilities.getUuid();
+    const now = new Date();
+    
+    sheet.appendRow([
+      newId,
+      now,
+      data.title || '',
+      data.body || '',
+      data.author || '',
+      data.priority || 'normal'
+    ]);
+    
+    return { success: true, id: newId };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+/**
+ * 部員向けお知らせを削除
+ */
+function deleteInternalAnnouncement(id) {
+  try {
+    const ss = getSS(MEMBER_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(INTERNAL_ANNOUNCEMENTS_SHEET_NAME);
+    if (!sheet) return { success: false, error: 'Sheet not found' };
+    
+    const data = sheet.getDataRange().getValues();
+    const targetId = String(id).trim();
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][0]).trim() === targetId) {
+        sheet.deleteRow(i + 1);
+        return { success: true };
+      }
+    }
+    
+    return { success: false, error: 'Announcement not found' };
   } catch (e) {
     return { success: false, error: e.toString() };
   }

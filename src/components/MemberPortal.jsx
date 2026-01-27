@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PortalButton from './PortalButton';
 import DocumentManager from './DocumentManager';
 import { FOLDER_IDS } from '../services/documentService';
+import { fetchInternalAnnouncements } from '../services/internalAnnouncementService';
 
 export default function MemberPortal({ user }) {
     const memberData = user.memberData || {};
 
     const [activeView, setActiveView] = useState('menu'); // menu, manual, events, schedule, key, docs, initialSetup
+    const [internalAnnouncements, setInternalAnnouncements] = useState([]);
+
+    // 部員向けお知らせを取得
+    useEffect(() => {
+        const loadAnnouncements = async () => {
+            try {
+                const announcements = await fetchInternalAnnouncements();
+                setInternalAnnouncements(announcements);
+            } catch (error) {
+                console.error('部員向けお知らせ取得エラー:', error);
+            }
+        };
+        loadAnnouncements();
+    }, []);
 
     const menuItems = [
         { id: 'manual', label: '部員用ガイド', icon: '📖' },
@@ -127,6 +142,43 @@ export default function MemberPortal({ user }) {
                     </span>
                 </div>
             </div>
+
+            {/* 部員向けお知らせアラート */}
+            {internalAnnouncements.length > 0 && (
+                <div className="space-y-3">
+                    {internalAnnouncements.map((announcement, index) => (
+                        <div
+                            key={announcement.id || index}
+                            className={`rounded-xl p-4 shadow-sm border flex items-start gap-4 ${announcement.priority === 'important'
+                                    ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
+                                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                                }`}
+                        >
+                            <span className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl ${announcement.priority === 'important'
+                                    ? 'bg-red-100 text-red-600'
+                                    : 'bg-blue-100 text-blue-600'
+                                }`}>
+                                {announcement.priority === 'important' ? '🚨' : '🔔'}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    {announcement.priority === 'important' && (
+                                        <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded">重要</span>
+                                    )}
+                                    <span className="text-xs text-gray-500">{announcement.date}</span>
+                                </div>
+                                <h4 className={`font-bold ${announcement.priority === 'important' ? 'text-red-800' : 'text-blue-800'
+                                    }`}>
+                                    {announcement.title}
+                                </h4>
+                                {announcement.body && (
+                                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{announcement.body}</p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* 閲覧専用アナウンス */}
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800 flex items-center gap-3 shadow-sm">
