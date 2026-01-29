@@ -5,11 +5,14 @@
 import React, { useEffect, useState } from 'react';
 import { fetchMembers, fetchActiveMembers, addMember, updateMember, deleteMember, approveMember } from '../services/memberService.js';
 import { fetchNews, addNews, updateNews, deleteNews } from '../services/newsService.js';
+import { fetchInternalAnnouncements, addInternalAnnouncement, updateInternalAnnouncement, deleteInternalAnnouncement } from '../services/internalAnnouncementService.js';
 import MemberEditModal from './MemberEditModal.jsx';
 import MemberAddModal from './MemberAddModal.jsx';
 import DeleteConfirmModal from './DeleteConfirmModal.jsx';
 import NewsAddModal from './NewsAddModal.jsx';
 import NewsEditModal from './NewsEditModal.jsx';
+import InternalAnnouncementModal from './InternalAnnouncementModal.jsx';
+import InternalAnnouncementEditModal from './InternalAnnouncementEditModal.jsx';
 
 /**
  * 日付文字列を月日のみの形式に変換
@@ -34,9 +37,10 @@ function formatDateOnly(dateStr) {
 export default function AdminDashboard({ user, initialStatusFilter = 'all', initialTab = 'members' }) {
     const [members, setMembers] = useState([]);
     const [news, setNews] = useState([]);
+    const [internalAnnouncements, setInternalAnnouncements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState(initialTab); // members, news
+    const [activeTab, setActiveTab] = useState(initialTab); // members, news, internal
     const [filter, setFilter] = useState('all'); // all, 少年部, 一般部
     const [statusFilter, setStatusFilter] = useState(initialStatusFilter); // 初期表示フィルター
 
@@ -50,6 +54,10 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
     const [editNewsItem, setEditNewsItem] = useState(null);
     const [isAddNewsModalOpen, setIsAddNewsModalOpen] = useState(false);
     const [deleteNewsTarget, setDeleteNewsTarget] = useState(null);
+
+    // Internal Announcement Modal states
+    const [editInternalItem, setEditInternalItem] = useState(null);
+    const [isAddInternalModalOpen, setIsAddInternalModalOpen] = useState(false);
 
     // Notification state
     const [successMessage, setSuccessMessage] = useState(null);
@@ -76,8 +84,10 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
     useEffect(() => {
         if (activeTab === 'members') {
             loadMembers();
-        } else {
+        } else if (activeTab === 'news') {
             loadNews();
+        } else if (activeTab === 'internal') {
+            loadInternalAnnouncements();
         }
     }, [activeTab, statusFilter]);
 
@@ -104,6 +114,18 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
             setNews(data);
         } catch (error) {
             console.error('ニュース取得エラー:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadInternalAnnouncements = async () => {
+        setLoading(true);
+        try {
+            const data = await fetchInternalAnnouncements();
+            setInternalAnnouncements(data);
+        } catch (error) {
+            console.error('部員向けお知らせ取得エラー:', error);
         } finally {
             setLoading(false);
         }
@@ -176,6 +198,23 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
         await loadNews();
     };
 
+    // Internal Announcement Handlers
+    const handleAddInternal = async (itemData) => {
+        await addInternalAnnouncement(itemData);
+        await loadInternalAnnouncements();
+    };
+
+    const handleUpdateInternal = async (id, itemData) => {
+        await updateInternalAnnouncement(id, itemData);
+        await loadInternalAnnouncements();
+    };
+
+    const handleDeleteInternal = async (id) => {
+        if (!window.confirm('このお知らせを削除してもよろしいですか？')) return;
+        await deleteInternalAnnouncement(id);
+        await loadInternalAnnouncements();
+    };
+
     const isJunior = (type) => {
         if (!type) return false;
         return type.includes('少年') || type.includes('小') || type.includes('中') || type.includes('幼');
@@ -232,7 +271,16 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                         : 'text-gray-400 hover:text-gray-600'
                         }`}
                 >
-                    📢 お知らせ管理
+                    📢 サイトお知らせ
+                </button>
+                <button
+                    onClick={() => setActiveTab('internal')}
+                    className={`px-6 py-3 font-bold transition-all ${activeTab === 'internal'
+                        ? 'border-b-2 border-shuyukan-blue text-shuyukan-blue'
+                        : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                >
+                    🔔 部員向け連絡
                 </button>
             </div>
 
@@ -390,18 +438,40 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">会員番号</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">氏名</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">学年</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">区分</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">段級位</th>
                                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
-                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {filteredMembers.map((m) => (
                                             <tr key={m.id} className="hover:bg-gray-50">
+                                                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                                    {(m.status === '承認待ち' || m.status === 'pending') && (
+                                                        <button
+                                                            onClick={() => handleApproveMember(m)}
+                                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold mr-3 shadow-sm transition-all animate-bounce-in"
+                                                        >
+                                                            承認
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => setEditMember(m)}
+                                                        className="text-shuyukan-blue hover:text-shuyukan-gold mr-3"
+                                                    >
+                                                        編集
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteMemberTarget(m)}
+                                                        className="text-gray-400 hover:text-red-500"
+                                                    >
+                                                        削除
+                                                    </button>
+                                                </td>
                                                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{m.id}</td>
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
@@ -434,28 +504,6 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                                                         {m.status === 'active' ? '在籍' : m.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                                    {(m.status === '承認待ち' || m.status === 'pending') && (
-                                                        <button
-                                                            onClick={() => handleApproveMember(m)}
-                                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-bold mr-3 shadow-sm transition-all animate-bounce-in"
-                                                        >
-                                                            承認
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        onClick={() => setEditMember(m)}
-                                                        className="text-shuyukan-blue hover:text-shuyukan-gold mr-3"
-                                                    >
-                                                        編集
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setDeleteMemberTarget(m)}
-                                                        className="text-gray-400 hover:text-red-500"
-                                                    >
-                                                        削除
-                                                    </button>
-                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -472,13 +520,13 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                     </div>
 
                 </div>
-            ) : (
+            ) : activeTab === 'news' ? (
                 <div className="space-y-6">
                     {/* News Header */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
-                            <h2 className="text-2xl font-bold text-shuyukan-blue">お知らせ管理</h2>
-                            <p className="text-gray-500 text-sm">サイトのお知らせを更新・管理します</p>
+                            <h2 className="text-2xl font-bold text-shuyukan-blue">サイトお知らせ管理</h2>
+                            <p className="text-gray-500 text-sm">一般公開サイトのお知らせを更新・管理します</p>
                         </div>
                         <button
                             onClick={() => setIsAddNewsModalOpen(true)}
@@ -550,6 +598,81 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                         )}
                     </div>
                 </div>
+            ) : (
+                <div className="space-y-6">
+                    {/* Internal Announcement Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-shuyukan-blue">部員向け連絡管理</h2>
+                            <p className="text-gray-500 text-sm">部員専用ポータルの通知を管理します（2週間で自動削除）</p>
+                        </div>
+                        <button
+                            onClick={() => setIsAddInternalModalOpen(true)}
+                            className="bg-shuyukan-blue text-white px-4 py-2 rounded hover:bg-shuyukan-gold hover:text-shuyukan-blue transition"
+                        >
+                            + 新規通知
+                        </button>
+                    </div>
+
+                    {/* Internal Table */}
+                    <div className="bg-white shadow rounded-lg overflow-hidden">
+                        {loading ? (
+                            <div className="flex justify-center items-center py-12">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-shuyukan-blue"></div>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日付</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">重要度</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">内容</th>
+                                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {internalAnnouncements.map((item) => (
+                                            <tr key={item.id} className="hover:bg-gray-50">
+                                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{item.date}</td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${item.priority === 'important'
+                                                        ? 'bg-red-100 text-red-800'
+                                                        : 'bg-blue-100 text-blue-800'
+                                                        }`}>
+                                                        {item.priority === 'important' ? '🚨 重要' : '📌 通常'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-4 text-sm font-bold text-gray-900">{item.title}</td>
+                                                <td className="px-4 py-4 text-sm text-gray-500 line-clamp-1 max-w-xs">{item.body}</td>
+                                                <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                                    <button
+                                                        onClick={() => setEditInternalItem(item)}
+                                                        className="text-shuyukan-blue hover:text-shuyukan-gold mr-3"
+                                                    >
+                                                        編集
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteInternal(item.id)}
+                                                        className="text-gray-400 hover:text-red-500"
+                                                    >
+                                                        削除
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        {!loading && internalAnnouncements.length === 0 && (
+                            <div className="text-center py-12 text-gray-400">
+                                部員向けのお知らせはありません
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* Modals */}
@@ -589,6 +712,22 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                 <NewsAddModal
                     onClose={() => setIsAddNewsModalOpen(false)}
                     onAdd={handleAddNews}
+                />
+            )}
+
+            {/* Internal Announcement Modals */}
+            {isAddInternalModalOpen && (
+                <InternalAnnouncementModal
+                    onClose={() => setIsAddInternalModalOpen(false)}
+                    onAdd={handleAddInternal}
+                />
+            )}
+
+            {editInternalItem && (
+                <InternalAnnouncementEditModal
+                    item={editInternalItem}
+                    onClose={() => setEditInternalItem(null)}
+                    onSave={handleUpdateInternal}
                 />
             )}
         </div>
