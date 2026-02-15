@@ -12,6 +12,7 @@ import SwipeNavigation from './components/SwipeNavigation.jsx';
 import SwipeIndicators from './components/SwipeIndicators.jsx';
 
 import Home from './pages/Home.jsx';
+import StickyCTA from './components/StickyCTA.jsx';
 import Practice from './pages/Practice.jsx';
 import News from './pages/News.jsx';
 import Faq from './pages/Faq.jsx';
@@ -31,12 +32,22 @@ import MemberHome from './pages/MemberHome.jsx';
 import PhilosophyHarmony from './pages/PhilosophyHarmony.jsx';
 import PhilosophyEtiquette from './pages/PhilosophyEtiquette.jsx';
 import PhilosophyLifelong from './pages/PhilosophyLifelong.jsx';
+import Maintenance from './pages/Maintenance.jsx';
 
 function App() {
+  // Check for maintenance mode
+  // Note: Environment variables in Vite are strings
+  const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+
+  if (isMaintenanceMode) {
+    return <Maintenance />;
+  }
+
   return (
     <AuthProvider>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
+        <StickyCTA />
         <SwipeNavigation>
           <SwipeIndicators />
           <Routes>
