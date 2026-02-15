@@ -92,7 +92,7 @@ const Schedule = () => {
                         <div className="relative w-full aspect-video md:aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden shadow-inner border">
                             <iframe
                                 title="剣道部 練習予定（公開）"
-                                src="https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0"
+                                src="https://calendar.google.com/calendar/embed?src=98e522073c688c30411bc67f17eb8ce9617db601c6329411f4dd676ca809e82b%40group.calendar.google.com&ctz=Asia%2FTokyo&mode=MONTH&wkst=1&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0"
                                 className="absolute top-0 left-0 w-full h-[calc(100%+40px)] border-0"
                                 style={{ pointerEvents: 'auto' }}
                                 frameBorder="0"

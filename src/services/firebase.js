@@ -31,7 +31,8 @@ googleProvider.setCustomParameters({
 
 // 管理者メールアドレスリスト (スプレッドシート管理へ移行中のため、バックアップ用)
 const ADMIN_EMAILS = [
-    'shuyukan.info@gmail.com',    // マスター管理者（常にアクセス可能）
+    'shuyukan.info@gmail.com',    // マスター管理者
+    'kotani.tatsuhiro@gmail.com', // 開発者/管理者
 ];
 
 export {

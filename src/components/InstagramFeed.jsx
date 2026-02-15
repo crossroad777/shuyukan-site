@@ -1,6 +1,33 @@
 import React from 'react';
 import { Instagram } from 'lucide-react';
-import { instagramPosts } from '../data/instagram';
+
+// Mock data for Instagram (formerly in src/data/instagram.js)
+const instagramPosts = [
+    {
+        id: 1,
+        image: '/assets/zanshin/hero_bg.png',
+        caption: '秋季市民剣道大会での入賞報告',
+        likes: 42
+    },
+    {
+        id: 2,
+        image: '/assets/zanshin/concept_banner.png',
+        caption: '入会キャンペーン実施中',
+        likes: 38
+    },
+    {
+        id: 3,
+        image: '/assets/zanshin/hero_bg.png',
+        caption: '【重要】11月の稽古日程変更について',
+        likes: 25
+    },
+    {
+        id: 4,
+        image: '/assets/zanshin/concept_banner.png',
+        caption: '年末恒例「納会」のお知らせ',
+        likes: 56
+    }
+];
 
 export default function InstagramFeed() {
     return (

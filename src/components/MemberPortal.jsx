@@ -78,15 +78,16 @@ export default function MemberPortal({ user }) {
                             <div className="flex justify-between items-center border-b pb-4 mb-6">
                                 <h2 className="text-2xl font-bold text-shuyukan-blue">稽古日程</h2>
                             </div>
-                            {/* モバイル: 縦長で見やすく / PC: 横長アスペクト比 */}
-                            <div className="relative w-full h-[500px] sm:h-[450px] md:h-auto md:aspect-[16/10] bg-gray-100 rounded-lg overflow-hidden border">
-                                <iframe
-                                    title="剣道部 稽古日程"
-                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=1&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
-                                    className="absolute top-0 left-0 w-full h-[calc(100%+40px)] border-0"
-                                    frameBorder="0"
-                                    scrolling="no"
-                                />
+                            <div className="max-w-5xl mx-auto">
+                                <div className="relative w-full h-[500px] sm:h-[600px] md:h-auto md:aspect-[16/10] bg-gray-100 rounded-lg overflow-hidden border">
+                                    <iframe
+                                        title="剣道部 稽古日程"
+                                        src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&wkst=1&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
+                                        className="absolute top-0 left-0 w-full h-full border-0"
+                                        frameBorder="0"
+                                        scrolling="no"
+                                    />
+                                </div>
                             </div>
                             {/* モバイルユーザー向け: Googleカレンダーアプリで開くリンク */}
                             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -124,7 +125,7 @@ export default function MemberPortal({ user }) {
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8 py-8 animate-fade-in">
+        <div className="max-w-6xl mx-auto space-y-8 py-8 animate-fade-in overflow-x-hidden">
             {/* 部員識別バー */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-4 rounded-xl shadow-lg flex items-center justify-between mb-2">
                 <div className="flex items-center gap-4">
@@ -150,13 +151,13 @@ export default function MemberPortal({ user }) {
                         <div
                             key={announcement.id || index}
                             className={`rounded-xl p-4 shadow-sm border flex items-start gap-4 ${announcement.priority === 'important'
-                                    ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
-                                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                                ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-300'
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
                                 }`}
                         >
                             <span className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl ${announcement.priority === 'important'
-                                    ? 'bg-red-100 text-red-600'
-                                    : 'bg-blue-100 text-blue-600'
+                                ? 'bg-red-100 text-red-600'
+                                : 'bg-blue-100 text-blue-600'
                                 }`}>
                                 {announcement.priority === 'important' ? '🚨' : '🔔'}
                             </span>

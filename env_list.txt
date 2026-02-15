@@ -1,0 +1,20 @@
+
+ name                                       value               environments                        created    
+ VITE_NEWS_API_URL                          Encrypted           Production                          1d ago     
+ VITE_MEMBER_API_URL                        Encrypted           Production                          1d ago     
+ VITE_NEWS_API_URL                          Encrypted           Development                         5d ago     
+ VITE_MEMBER_API_URL                        Encrypted           Development                         5d ago     
+ VITE_NEWS_API_URL                          Encrypted           Preview                             5d ago     
+ VITE_MEMBER_API_URL                        Encrypted           Preview                             5d ago     
+ VITE_FOLDER_ID_MANUAL                      Encrypted           Production                          6d ago     
+ VITE_FOLDER_ID_KEY                         Encrypted           Production                          6d ago     
+ VITE_FOLDER_ID_EVENTS                      Encrypted           Production                          6d ago     
+ VITE_DOCUMENTS_FOLDER_ID                   Encrypted           Production                          6d ago     
+ VITE_GOOGLE_CALENDAR_ID                    Encrypted           Development, Preview, Production    6d ago     
+ VITE_FIREBASE_APP_ID                       Encrypted           Development, Preview, Production    17d ago    
+ VITE_FIREBASE_MESSAGING_SENDER_ID          Encrypted           Development, Preview, Production    17d ago    
+ VITE_FIREBASE_STORAGE_BUCKET               Encrypted           Development, Preview, Production    17d ago    
+ VITE_FIREBASE_PROJECT_ID                   Encrypted           Development, Preview, Production    17d ago    
+ VITE_FIREBASE_AUTH_DOMAIN                  Encrypted           Development, Preview, Production    17d ago    
+ VITE_FIREBASE_API_KEY                      Encrypted           Development, Preview, Production    17d ago    
+

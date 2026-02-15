@@ -9,6 +9,19 @@ const MEMBER_API_URL = import.meta.env.VITE_MEMBER_API_URL;
 let mockMembers = [];
 
 /**
+ * オブジェクトをBase64エンコードする（UTF-8対応）
+ */
+const toBase64 = (obj) => {
+    try {
+        const json = JSON.stringify(obj);
+        return window.btoa(unescape(encodeURIComponent(json)));
+    } catch (e) {
+        console.error('Base64 encoding error:', e);
+        return "";
+    }
+};
+
+/**
  * 全会員データを取得
  * @returns {Promise<Array>} 会員配列
  */
@@ -40,7 +53,6 @@ export async function fetchMembers() {
         // GAS側からエラーオブジェクト（{success: false, error: "..."}）が返ってきた場合
         if (data && data.success === false) {
             console.error('[MemberService] API Error:', data.error);
-            // エラー時はモックを返すのではなく、空配列またはエラーを投げる（今回は管理画面でエラー表示させたいので）
             throw new Error(data.error || '不明なAPIエラー');
         }
 
@@ -59,9 +71,8 @@ export async function fetchMembers() {
             stack: error.stack,
             url: MEMBER_API_URL
         });
-        // APIエラー時は空配列を返す（モックデータは返さない）
-        console.error('[MemberService] API接続に失敗しました。空のリストを返します。');
-        return [];
+        // エラーを再スローして、UI側でエラー表示ができるようにする
+        throw error;
     }
 }
 
@@ -120,12 +131,10 @@ export async function addMember(memberData) {
     }
 
     try {
-        // GASのCORS制約を回避するため、確実なGETリクエストに切り替える
         const url = new URL(MEMBER_API_URL);
-        url.searchParams.append('action', 'add');
-        url.searchParams.append('data', JSON.stringify(memberData));
+        url.searchParams.append('action', 'memberAdd');
+        url.searchParams.append('data64', toBase64(memberData));
 
-        console.log('[MemberService] Adding member via GET workaround');
         const response = await fetch(url.toString(), {
             method: 'GET',
             redirect: 'follow'
@@ -177,7 +186,7 @@ export async function setupProfile(email, data) {
         const url = new URL(MEMBER_API_URL);
         url.searchParams.append('action', 'setupProfile');
         url.searchParams.append('email', email);
-        url.searchParams.append('data', JSON.stringify(data));
+        url.searchParams.append('data64', toBase64(data));
 
         const response = await fetch(url.toString(), {
             method: 'GET',
@@ -214,15 +223,17 @@ export async function updateMember(memberId, memberData) {
     }
 
     try {
-        // GASのCORS制約とブラウザの挙動差を回避するため、
-        // 確実なGETリクエスト（クエリパラメータ経由）に切り替える
         const url = new URL(MEMBER_API_URL);
-        url.searchParams.append('action', 'update');
+        url.searchParams.append('action', 'memberUpdate');
         url.searchParams.append('id', memberId);
-        // データをJSON文字列化してパラメータに含める
-        url.searchParams.append('data', JSON.stringify(memberData));
+        url.searchParams.append('data64', toBase64(memberData));
 
-        console.log('[MemberService] Updating member via GET workaround:', memberId);
+        console.log(`[MemberService] Updating member ${memberId}:`, {
+            memberId,
+            memberData,
+            role: memberData.role
+        });
+
         const response = await fetch(url.toString(), {
             method: 'GET',
             redirect: 'follow'
@@ -232,6 +243,8 @@ export async function updateMember(memberId, memberData) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(`[MemberService] Update response:`, data);
+        return data;
 
         if (data && data.success === false) {
             throw new Error(data.error || '会員の更新に失敗しました');
@@ -259,16 +272,19 @@ export async function approveMember(memberId) {
         url.searchParams.append('action', 'approveMember');
         url.searchParams.append('id', memberId);
 
-        console.log('[MemberService] Approving member:', memberId);
         const response = await fetch(url.toString(), {
             method: 'GET',
             redirect: 'follow'
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         if (data && data.success === false) {
             throw new Error(data.error || '承認に失敗しました');
         }
+        console.log('[MemberService] Member approved successfully via GET');
         return data;
     } catch (error) {
         console.error('会員承認エラー:', error);
@@ -318,22 +334,24 @@ export async function deleteMember(memberId) {
     }
 
     try {
-        // Google Apps ScriptはPOSTでCORSエラーになるため、GETクエリパラメータ経由で送信
         const url = new URL(MEMBER_API_URL);
-        url.searchParams.append('action', 'delete');
+        url.searchParams.append('action', 'memberDelete');
         url.searchParams.append('id', memberId);
 
-        console.log('[MemberService] Deleting member via GET workaround:', memberId);
         const response = await fetch(url.toString(), {
             method: 'GET',
             redirect: 'follow'
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         if (data && data.success === false) {
             throw new Error(data.error || '会員の削除に失敗しました');
         }
-        console.log('[MemberService] Member deleted successfully');
+        console.log('[MemberService] Member deleted successfully via GET');
         return true;
     } catch (error) {
         console.error('会員削除エラー:', error);

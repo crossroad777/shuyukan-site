@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Navbar = () => {
+    const { isAuthed, isAdmin, logout } = useAuth();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
 
@@ -14,11 +17,16 @@ const Navbar = () => {
         { name: 'お知らせ', en: 'NEWS', path: '/news' },
         { name: 'よくある質問', en: 'FAQ', path: '/faq' },
         { name: 'リンク集', en: 'LINKS', path: '/links' },
-        { name: 'キャラクター紹介', en: 'CHARACTER', path: '/character' },
+        // { name: 'キャラクター紹介', en: 'CHARACTER', path: '/character' },
         { name: 'お問い合わせ', en: 'CONTACT', path: '/contact' },
     ];
 
     const toggleMenu = () => setIsOpen(!isOpen);
+
+    const handleLogout = async () => {
+        await logout();
+        setIsOpen(false);
+    };
 
     return (
         <nav className="fixed w-full z-50 bg-gradient-to-r from-shuyukan-blue to-shuyukan-dark text-white border-b border-white/10 shadow-lg">
@@ -68,16 +76,52 @@ const Navbar = () => {
                             ))}
                         </div>
 
-                        {/* Login Button pushed to the far right */}
-                        <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-white/10 h-12 flex items-center flex-shrink-0">
-                            <Link to="/login" className="px-3 xl:px-5 py-2 xl:py-3 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.65rem] xl:text-xs 2xl:text-sm font-bold tracking-wider shadow-lg border border-white/10 whitespace-nowrap">
-                                ログイン
-                            </Link>
+                        {/* Login/Portal Button pushed to the far right */}
+                        <div className="ml-2 xl:ml-4 pl-2 xl:pl-4 border-l border-white/10 h-12 flex items-center gap-2 flex-shrink-0">
+                            {isAuthed ? (
+                                <>
+                                    {isAdmin && (
+                                        <span className="flex items-center gap-1 bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-1 rounded text-[0.6rem] xl:text-[0.7rem] font-bold tracking-tight whitespace-nowrap">
+                                            <span className="text-xs">🛡️</span> 管理者
+                                        </span>
+                                    )}
+                                    <Link to="/member" className="px-3 xl:px-5 py-2 xl:py-3 bg-shuyukan-blue text-white hover:bg-blue-800 transition-all duration-300 rounded-sm text-[0.65rem] xl:text-xs 2xl:text-sm font-bold tracking-wider shadow-lg border border-white/10 whitespace-nowrap">
+                                        マイページ
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="px-3 xl:px-5 py-2 xl:py-3 bg-transparent text-gray-300 hover:text-white transition-all duration-300 rounded-sm text-[0.65rem] xl:text-xs 2xl:text-sm font-bold whitespace-nowrap border border-white/20"
+                                    >
+                                        ログアウト
+                                    </button>
+                                </>
+                            ) : (
+                                <Link to="/login" className="px-3 xl:px-5 py-2 xl:py-3 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all duration-300 rounded-sm text-[0.65rem] xl:text-xs 2xl:text-sm font-bold tracking-wider shadow-lg border border-white/10 whitespace-nowrap">
+                                    ログイン
+                                </Link>
+                            )}
                         </div>
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="flex lg:hidden">
+                    {/* Mobile Menu Button & Portal Link */}
+                    <div className="flex lg:hidden items-center gap-2">
+                        {isAuthed ? (
+                            <Link
+                                to="/member"
+                                onClick={() => setIsOpen(false)}
+                                className="px-3 py-1.5 bg-shuyukan-blue text-white rounded-sm text-[0.65rem] font-bold shadow-md border border-white/10"
+                            >
+                                マイページ
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="px-3 py-1.5 bg-shuyukan-purple text-white rounded-sm text-[0.65rem] font-bold shadow-md border border-white/10"
+                            >
+                                会員登録・ログイン
+                            </Link>
+                        )}
                         <button
                             onClick={toggleMenu}
                             className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white focus:outline-none transition-colors"
@@ -95,6 +139,40 @@ const Navbar = () => {
 
             <div className={`lg:hidden absolute top-full left-0 w-full bg-shuyukan-dark/95 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[85vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                 <div className="px-4 pt-4 pb-24 space-y-1">
+                    <div className="pb-4 border-b border-white/10">
+                        {isAuthed ? (
+                            <div className="grid grid-cols-2 gap-2">
+                                {isAdmin && (
+                                    <div className="col-span-2 flex justify-center mb-2">
+                                        <span className="flex items-center gap-2 bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md">
+                                            🛡️ 管理者権限でログイン中
+                                        </span>
+                                    </div>
+                                )}
+                                <Link
+                                    to="/member"
+                                    onClick={() => setIsOpen(false)}
+                                    className="block text-center px-4 py-3 bg-shuyukan-blue text-white rounded-sm text-sm font-bold shadow-md"
+                                >
+                                    マイページ
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="block text-center px-4 py-3 bg-gray-700 text-white rounded-sm text-sm font-bold shadow-md"
+                                >
+                                    ログアウト
+                                </button>
+                            </div>
+                        ) : (
+                            <Link
+                                to="/login"
+                                onClick={() => setIsOpen(false)}
+                                className="block w-full text-center px-5 py-4 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all rounded-sm text-sm font-bold shadow-md tracking-widest"
+                            >
+                                会員ログイン
+                            </Link>
+                        )}
+                    </div>
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}
@@ -112,15 +190,6 @@ const Navbar = () => {
                             </div>
                         </Link>
                     ))}
-                    <div className="pt-4 pb-8">
-                        <Link
-                            to="/login"
-                            onClick={() => setIsOpen(false)}
-                            className="block w-full text-center px-5 py-4 bg-shuyukan-purple text-white hover:bg-purple-800 transition-all rounded-sm text-sm font-bold shadow-md tracking-widest"
-                        >
-                            会員ログイン
-                        </Link>
-                    </div>
                 </div>
             </div>
         </nav>

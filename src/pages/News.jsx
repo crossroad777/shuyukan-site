@@ -70,6 +70,8 @@ export default function News() {
   const [newsItems, setNewsItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const loadNews = async () => {
@@ -85,11 +87,21 @@ export default function News() {
     loadNews();
   }, []);
 
+  // カテゴリ変更時にページを1に戻す
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
   const categories = ['すべて', ...new Set(newsItems.map(item => item.category).filter(c => c && typeof c === 'string' && c.trim() !== '' && c !== 'お知らせ'))];
 
   const filteredNews = selectedCategory === 'すべて'
     ? newsItems
     : newsItems.filter(item => item.category === selectedCategory);
+
+  // ページネーション計算
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = filteredNews.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <SiteFrame title="お知らせ">
@@ -115,87 +127,131 @@ export default function News() {
             読み込み中...
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredNews.map((item, index) => {
-              const hasLink = !!item.link && item.link !== '#';
-              const rawImage = item.image || extractFirstImageUrl(item.content);
-              const imageUrl = convertDriveUrl(rawImage);
-              const displayContent = cleanContent(item.content);
+          <>
+            <div className="space-y-4">
+              {currentItems.map((item, index) => {
+                const hasLink = !!item.link && item.link !== '#';
+                const rawImage = item.image || extractFirstImageUrl(item.content);
+                const imageUrl = convertDriveUrl(rawImage);
+                const displayContent = cleanContent(item.content);
 
-              return (
-                <Link
-                  key={item.id || `news-${index}`}
-                  to={hasLink ? item.link : '#'}
-                  onClick={(e) => {
-                    if (!hasLink && imageUrl) {
-                      e.preventDefault();
-                      window.open(imageUrl.replace('=w400', '=w1200'), '_blank');
-                    }
-                  }}
-                  className={`block bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 overflow-hidden ${item.isPinned
-                    ? 'border-shuyukan-red bg-red-50/50'
-                    : 'border-shuyukan-gold'
-                    } ${!hasLink && !imageUrl ? 'cursor-default hover:translate-y-0 hover:shadow-sm' : 'cursor-pointer'}`}
-                >
-                  <div className="p-6 flex flex-col md:flex-row md:items-start gap-4">
-                    {imageUrl && (
-                      <div
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          window.open(imageUrl.replace('=w400', '=w1200'), '_blank');
-                        }}
-                        className="block md:w-32 w-full aspect-square md:aspect-auto md:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity cursor-zoom-in group relative"
-                      >
-                        <img
-                          src={imageUrl}
-                          alt={item.title || 'ニュース画像'}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            e.target.parentElement.style.display = 'none';
+                return (
+                  <Link
+                    key={item.id || `news-${index}`}
+                    to={hasLink ? item.link : '#'}
+                    onClick={(e) => {
+                      if (!hasLink && imageUrl) {
+                        e.preventDefault();
+                        window.open(imageUrl.replace('=w400', '=w1200'), '_blank');
+                      }
+                    }}
+                    className={`block bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-l-4 overflow-hidden ${item.isPinned
+                      ? 'border-shuyukan-red bg-red-50/50'
+                      : 'border-shuyukan-gold'
+                      } ${!hasLink && !imageUrl ? 'cursor-default hover:translate-y-0 hover:shadow-sm' : 'cursor-pointer'}`}
+                  >
+                    <div className="p-6 flex flex-col md:flex-row md:items-start gap-4">
+                      {imageUrl && (
+                        <div
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(imageUrl.replace('=w400', '=w1200'), '_blank');
                           }}
-                        />
-                        <span className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">🔍</span>
-                      </div>
-                    )}
+                          className="block md:w-32 w-full aspect-square md:aspect-auto md:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity cursor-zoom-in group relative"
+                        >
+                          <img
+                            src={imageUrl}
+                            alt={item.title || 'ニュース画像'}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              e.target.parentElement.style.display = 'none';
+                            }}
+                          />
+                          <span className="absolute bottom-1 right-1 text-xs bg-black/50 text-white px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">🔍</span>
+                        </div>
+                      )}
 
-                    <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
-                      <div className="md:w-28 flex-shrink-0">
-                        <span className="text-sm font-mono text-shuyukan-gold font-bold">
-                          {formatDateOnly(item.date)}
-                        </span>
-                      </div>
+                      <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
+                        <div className="md:w-28 flex-shrink-0">
+                          <span className="text-sm font-mono text-shuyukan-gold font-bold">
+                            {formatDateOnly(item.date)}
+                          </span>
+                        </div>
 
-                      <div className="md:w-24 flex-shrink-0">
-                        <span className={`inline-block text-xs px-3 py-1 rounded-full font-bold ${item.isPinned
-                          ? 'bg-shuyukan-red text-white'
-                          : 'bg-shuyukan-blue/10 text-shuyukan-blue'
-                          }`}>
-                          {item.isPinned && '📌 '}
-                          {(item.category && item.category !== 'お知らせ') ? item.category : (item.date && isNaN(new Date(item.date)) ? item.date : 'お知らせ')}
-                        </span>
-                      </div>
+                        <div className="md:w-24 flex-shrink-0">
+                          <span className={`inline-block text-xs px-3 py-1 rounded-full font-bold ${item.isPinned
+                            ? 'bg-shuyukan-red text-white'
+                            : 'bg-shuyukan-blue/10 text-shuyukan-blue'
+                            }`}>
+                            {item.isPinned && '📌 '}
+                            {(item.category && item.category !== 'お知らせ') ? item.category : (item.date && isNaN(new Date(item.date)) ? item.date : 'お知らせ')}
+                          </span>
+                        </div>
 
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-800 group-hover:text-shuyukan-blue transition-colors">
-                          {item.title && item.title !== 'お知らせ' ? item.title : '最新のお知らせ'}
-                        </h3>
-                        {displayContent && (
-                          <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                            {displayContent}
-                          </p>
-                        )}
-                      </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-shuyukan-blue transition-colors">
+                            {item.title && item.title !== 'お知らせ' ? item.title : '最新のお知らせ'}
+                          </h3>
+                          {displayContent && (
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-1">
+                              {displayContent}
+                            </p>
+                          )}
+                        </div>
 
-                      <div className="text-gray-300 text-xl hidden md:block">
-                        {hasLink ? '→' : ''}
+                        <div className="text-gray-300 text-xl hidden md:block">
+                          {hasLink ? '→' : ''}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* ページネーションコントロール */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-12 pb-8">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-bold transition-all ${currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-shuyukan-blue shadow hover:shadow-md hover:bg-shuyukan-blue hover:text-white'
+                    }`}
+                >
+                  ← 前へ
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-10 h-10 rounded-lg font-bold transition-all ${currentPage === i + 1
+                        ? 'bg-shuyukan-blue text-white shadow-md'
+                        : 'bg-white text-gray-600 shadow hover:bg-gray-50'
+                        }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-bold transition-all ${currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-shuyukan-blue shadow hover:shadow-md hover:bg-shuyukan-blue hover:text-white'
+                    }`}
+                >
+                  次へ →
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {filteredNews.length === 0 && !loading && (

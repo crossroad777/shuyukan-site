@@ -476,8 +476,8 @@ export default function AdminDashboard({ user, initialStatusFilter = 'all', init
                                                 <td className="px-4 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-2">
                                                         <div className="font-bold text-gray-900">{m.name}</div>
-                                                        {(m.role === '管理者' || m.role === 'admin') && (
-                                                            <span className="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold border border-red-200">管理者</span>
+                                                        {(m.role === '管理者' || m.role === 'admin' || m.role === 'Admin') && (
+                                                            <span className="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm whitespace-nowrap">管理者</span>
                                                         )}
                                                     </div>
                                                     <div className="text-xs text-gray-400">{m.furigana}</div>

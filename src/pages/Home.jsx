@@ -14,7 +14,7 @@ import NewsSection from '../components/NewsSection.jsx';
 export default function Home() {
   return (
     <SiteFrame title="" hero={<Hero />}>
-      <NewsSection />
+      {/* <NewsSection /> */}
 
       <div className="py-20 bg-paper relative">
         <div className="absolute inset-0 asanoha-pattern mix-blend-multiply opacity-15"></div>

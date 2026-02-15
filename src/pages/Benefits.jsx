@@ -285,7 +285,7 @@ export default function Benefits() {
                 </FadeInSection>
             </section>
 
-            {/* Parent Testimonials */}
+            {/* Parent Testimonials - Hidden as requested
             <section className="mb-20">
                 <FadeInSection>
                     <div className="text-center mb-8">
@@ -334,6 +334,7 @@ export default function Benefits() {
                     </div>
                 </FadeInSection>
             </section>
+            */}
 
             {/* CTA */}
             <section className="text-center py-16 bg-gradient-to-r from-shuyukan-blue via-shuyukan-blue/95 to-shuyukan-blue text-white -mx-6 md:-mx-10 px-6 relative overflow-hidden">

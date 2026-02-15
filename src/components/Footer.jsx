@@ -61,7 +61,7 @@ const Footer = () => {
                                 <li><Link to="/news" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">お知らせ</Link></li>
                                 <li><Link to="/faq" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">よくある質問</Link></li>
                                 <li><Link to="/links" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">リンク集</Link></li>
-                                <li><Link to="/character" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">キャラクター紹介</Link></li>
+                                {/* <li><Link to="/character" className="text-gray-300 hover:text-white hover:text-shuyukan-gold transition-colors block py-1">キャラクター紹介</Link></li> */}
                             </ul>
                         </div>
 

@@ -36,6 +36,8 @@ export default function AdminPortal({ user }) {
     // 1. 📢 クイックアクション
     const quickActions = [
         { id: 'quick_news', label: 'お知らせ投稿', icon: '📢', highlight: true },
+        { id: 'internal_announcement', label: '部員向け通知', icon: '🔔', highlight: true },
+        { id: 'admin_drive', label: '管理者ファイル', icon: '📁', highlight: true },
         { id: 'new_requests', label: '新規申込の承認', icon: '📝', badgeCount: summary.pendingMembers },
     ];
 
@@ -119,7 +121,7 @@ export default function AdminPortal({ user }) {
                     ) : activeView === 'admin_schedule' ? (
                         <div className="space-y-6">
                             <h2 className="text-2xl font-bold text-shuyukan-blue mb-6 border-b pb-4 flex justify-between items-center">
-                                <span>🗓️ 稽古日管理</span>
+                                <span>🗓️ 稽古日管理 (日曜始まり)</span>
                                 <a
                                     href="https://calendar.google.com/calendar/u/0/r"
                                     target="_blank"
@@ -129,10 +131,10 @@ export default function AdminPortal({ user }) {
                                     Googleカレンダーで編集 ↗
                                 </a>
                             </h2>
-                            <div className="relative w-full aspect-video md:aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden border">
+                            <div className="relative w-full h-[800px] bg-gray-100 rounded-lg overflow-hidden border">
                                 <iframe
                                     title="剣道部 稽古日程"
-                                    src={`https://calendar.google.com/calendar/embed?src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo`}
+                                    src={`https://calendar.google.com/calendar/embed?wkst=1&hl=ja&src=${encodeURIComponent(import.meta.env.VITE_GOOGLE_CALENDAR_ID)}&ctz=Asia%2FTokyo&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0`}
                                     className="absolute top-0 left-0 w-full h-full border-0"
                                     frameBorder="0"
                                     scrolling="no"
@@ -144,10 +146,10 @@ export default function AdminPortal({ user }) {
 
                     ) : activeView === 'accounting' ? (
                         <AccountingDashboard />
-                    ) : activeView === 'docs' ? (
+                    ) : activeView === 'docs' || activeView === 'admin_drive' ? (
                         <DocumentManager
                             initialFolderId={import.meta.env.VITE_DOCUMENTS_FOLDER_ID}
-                            title="📤 共有配布資料"
+                            title={activeView === 'admin_drive' ? "📁 管理者ファイル" : "📤 共有配布資料"}
                             userRole="admin"
                             readOnly={false}
                             userEmail={user.email}
@@ -191,7 +193,7 @@ export default function AdminPortal({ user }) {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 py-8 animate-fade-in">
+        <div className="max-w-4xl mx-auto space-y-8 py-8 animate-fade-in overflow-x-hidden">
             {/* 管理者識別バー */}
             <div className="bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-3 rounded-lg shadow-md flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -269,44 +271,36 @@ export default function AdminPortal({ user }) {
                         <span className="p-1.5 bg-red-600 text-white rounded">📢</span>
                         クイックアクション
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button
-                            onClick={() => setIsQuickNewsModalOpen(true)}
-                            className="flex items-center gap-4 p-4 bg-white border-2 border-orange-400 rounded-xl hover:bg-orange-50 hover:border-orange-500 transition-all shadow-sm group"
-                        >
-                            <span className="text-3xl group-hover:scale-110 transition-transform">📢</span>
-                            <div className="text-left">
-                                <div className="font-bold text-gray-800 text-lg">公開お知らせ</div>
-                                <div className="text-sm text-gray-500">公開HPに掲載します</div>
-                            </div>
-                        </button>
-                        <button
-                            onClick={() => setIsInternalAnnouncementModalOpen(true)}
-                            className="flex items-center gap-4 p-4 bg-white border-2 border-blue-500 rounded-xl hover:bg-blue-50 hover:border-blue-600 transition-all shadow-sm group"
-                        >
-                            <span className="text-3xl group-hover:scale-110 transition-transform">🔔</span>
-                            <div className="text-left">
-                                <div className="font-bold text-gray-800 text-lg">部員向け通知</div>
-                                <div className="text-sm text-gray-500">部員のみに表示</div>
-                            </div>
-                        </button>
-                        <button
-                            onClick={() => navigateToMembers('pending')}
-                            className={`flex items-center justify-between gap-4 p-4 bg-white border-2 rounded-xl transition-all shadow-sm group ${summary.pendingMembers > 0 ? 'border-amber-500 hover:bg-amber-50' : 'border-gray-200 hover:bg-gray-50'}`}
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className="text-3xl group-hover:scale-110 transition-transform">📝</span>
-                                <div className="text-left">
-                                    <div className="font-bold text-gray-800 text-lg">新規申込</div>
-                                    <div className="text-sm text-gray-500">承認・確認</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {quickActions.map((action) => (
+                            <button
+                                key={action.id}
+                                onClick={() => {
+                                    if (action.id === 'quick_news') setIsQuickNewsModalOpen(true);
+                                    else if (action.id === 'admin_drive') setActiveView('admin_drive');
+                                    else if (action.id === 'new_requests') navigateToMembers('pending');
+                                    else setIsInternalAnnouncementModalOpen(true); // default for internal
+                                }}
+                                className={`flex items-center gap-3 p-3 bg-white border-2 rounded-xl transition-all shadow-sm group ${action.id === 'quick_news' ? 'border-orange-400 hover:bg-orange-50' :
+                                    action.id === 'admin_drive' ? 'border-shuyukan-blue/30 hover:bg-slate-50' :
+                                        action.id === 'new_requests' ? (summary.pendingMembers > 0 ? 'border-amber-500 hover:bg-amber-50' : 'border-gray-200 hover:bg-gray-50') :
+                                            'border-blue-500 hover:bg-blue-50'
+                                    }`}
+                            >
+                                <span className="text-2xl group-hover:scale-110 transition-transform">{action.icon}</span>
+                                <div className="text-left flex-1 min-w-0">
+                                    <div className="font-bold text-gray-800 text-sm sm:text-base truncate">{action.label}</div>
+                                    {action.id === 'quick_news' && <div className="text-[10px] text-gray-500 truncate">公開HP掲載</div>}
+                                    {action.id === 'admin_drive' && <div className="text-[10px] text-gray-500 truncate">ファイル管理</div>}
+                                    {action.id === 'new_requests' && <div className="text-[10px] text-gray-500 truncate">{summary.pendingMembers > 0 ? `${summary.pendingMembers}件の未承認` : '承認・確認'}</div>}
                                 </div>
-                            </div>
-                            {summary.pendingMembers > 0 && (
-                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold animate-bounce">
-                                    {summary.pendingMembers}
-                                </span>
-                            )}
-                        </button>
+                                {action.badgeCount > 0 && (
+                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold animate-bounce">
+                                        {action.badgeCount}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
                     </div>
                 </section>
 

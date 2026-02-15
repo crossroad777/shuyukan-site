@@ -5,7 +5,20 @@
 
 // Google Apps ScriptでデプロイしたWebアプリのURL
 // 管理者がスプレッドシートを作成後、ここにURLを設定します
-const NEWS_API_URL = import.meta.env.VITE_NEWS_API_URL || '';
+const NEWS_API_URL = import.meta.env.VITE_NEWS_API_URL;
+
+/**
+ * オブジェクトをBase64エンコードする（UTF-8対応）
+ */
+const toBase64 = (obj) => {
+    try {
+        const json = JSON.stringify(obj);
+        return window.btoa(unescape(encodeURIComponent(json)));
+    } catch (e) {
+        console.error('Base64 encoding error:', e);
+        return "";
+    }
+};
 
 // ローカル開発用のフォールバックデータ（本番版では空）
 const fallbackNews = [];
@@ -82,17 +95,12 @@ export async function addNews(newsData) {
     }
 
     try {
-        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
-        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify({
-                action: 'addNews',
-                newsData: newsData
-            }),
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'newsAdd');
+        url.searchParams.append('data64', toBase64(newsData));
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
             redirect: 'follow'
         });
 
@@ -104,7 +112,7 @@ export async function addNews(newsData) {
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの追加に失敗しました');
         }
-        console.log('[NewsService] News added successfully:', data);
+        console.log('[NewsService] News added successfully via GET');
         return data;
     } catch (error) {
         console.error('ニュース追加エラー:', error);
@@ -127,18 +135,13 @@ export async function updateNews(id, newsData) {
     }
 
     try {
-        // Google Apps ScriptはJSON POSTでCORSエラーになるため、
-        // Content-Type: text/plain を使用してプリフライト(OPTIONS)を回避する
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify({
-                action: 'updateNews',
-                id: id,
-                newsData: newsData
-            }),
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'newsUpdate');
+        url.searchParams.append('id', id);
+        url.searchParams.append('data64', toBase64(newsData));
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
             redirect: 'follow'
         });
 
@@ -150,7 +153,7 @@ export async function updateNews(id, newsData) {
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの更新に失敗しました');
         }
-        console.log('[NewsService] News updated successfully:', data);
+        console.log('[NewsService] News updated successfully via GET');
         return data;
     } catch (error) {
         console.error('ニュース更新エラー:', error);
@@ -172,15 +175,12 @@ export async function deleteNews(id) {
     }
 
     try {
-        const response = await fetch(NEWS_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
-            body: JSON.stringify({
-                action: 'deleteNews',
-                id: id
-            }),
+        const url = new URL(NEWS_API_URL);
+        url.searchParams.append('action', 'newsDelete');
+        url.searchParams.append('id', id);
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
             redirect: 'follow'
         });
 
@@ -191,7 +191,7 @@ export async function deleteNews(id) {
         if (data && data.success === false) {
             throw new Error(data.error || 'ニュースの削除に失敗しました');
         }
-        console.log('[NewsService] News deleted successfully');
+        console.log('[NewsService] News deleted successfully via GET');
         return true;
     } catch (error) {
         console.error('ニュース削除エラー:', error);
